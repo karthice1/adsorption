@@ -50,7 +50,7 @@ class _ARDGPR(GaussianProcessRegressor):
     """GPR whose Matern length scale is expanded to one per feature at fit time (ARD)."""
 
     def __init__(self, kernel=None):
-        super().__init__(kernel=kernel, normalize_y=True, n_restarts_optimizer=1, random_state=0)
+        super().__init__(kernel=kernel, normalize_y=True, n_restarts_optimizer=0, random_state=0)
 
     def fit(self, X, y):
         k = ConstantKernel(1.0) * Matern(length_scale=np.ones(X.shape[1]), nu=2.5,
@@ -96,7 +96,7 @@ def metrics(q_true, q_pred):
 def _group_conformal_scores(model_name, X, y, groups, seed=0):
     """Absolute out-of-study residuals (target scale) from inner grouped CV on training studies."""
     scores, study_means = np.empty(len(y)), []
-    for tr, te in GroupKFold(min(5, len(np.unique(groups)))).split(X, y, groups):
+    for tr, te in GroupKFold(min(3, len(np.unique(groups)))).split(X, y, groups):
         m = make_model(model_name, seed).fit(X.iloc[tr], y[tr])
         r = y[te] - m.predict(X.iloc[te])
         scores[te] = np.abs(r)
