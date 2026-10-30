@@ -7,7 +7,7 @@ apart, tells you which removal mechanisms a given set of measurements can and ca
 gives study-level calibrated prediction intervals and treatment designs.
 
 The revised manuscript is `manuscript/CASSIA_manuscript.md` (Word version `CASSIA_manuscript.docx`);
-the point-by-point reply to the reviewer is `manuscript/Response_to_Reviewer.md`.
+the point-by-point reply to the reviewer is `manuscript/CASSIA_response_to_reviewer.md` (`.docx`), and the supplement `manuscript/CASSIA_supplementary.md` (`.docx`).
 
 ## Architecture
 
@@ -29,7 +29,7 @@ git clone https://github.com/karthice1/adsorption && cd adsorption
 git checkout claude/exciting-hawking-ayadsw
 pip install -e .                      # the 'adsorption' equation package (repository root)
 pip install -e cassia[ml,pores,dev]   # CASSIA, xgboost, pyGAPS, pytest
-pytest -q cassia/tests                # 30 tests
+pytest -q cassia/tests                # 35 tests
 ```
 
 Python 3.10+; the exact environment used for the paper is pinned in `requirements-lock.txt`

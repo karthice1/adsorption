@@ -70,7 +70,9 @@ In scenario E the removed chromium was distributed as follows (medians): 0.62 ad
 - *Residual diagnostics did not help.* The runs test flagged 4.9–7.9% of Langmuir fits in every scenario, including the control.
 - *Kinetic model choice did not help.* PSO was preferred over PFO in 25% of control series and 27–34% of reduction scenarios, so it carries no mechanistic information.
 
-**Publishable fits overstate capacity in proportion to reduction, and the size depends on the mechanism (Fig. 2c).** Among fits with R² ≥ 0.95 (excluding the 0.6–3.1% whose q_max reached the fitting bound because the isotherm never saturated), the ratio of fitted to true q_max was:
+**Publishable fits overstate capacity in proportion to reduction, and the size depends on the mechanism (Fig. 2c, Table 3).** Fits whose q_max reached the fitting bound because the isotherm never saturated (0.6–3.1%) were excluded.
+
+**Table 3.** Fitted/true Langmuir q_max for publishable fits (R² ≥ 0.95), by scenario (synthetic; 3,000 studies per scenario).
 
 | Scenario | Median ratio (IQR) | Median ratio, reduction share > 0.3 (n) | Spearman ρ, reduction share vs ratio (mean ± SD over replicates) |
 |---|---|---|---|
@@ -114,7 +116,9 @@ In scenario E the removed chromium was distributed as follows (medians): 0.62 ad
 - *XPS* had rates of 12%, 51%, 59% and 75%.
 - The two Cr(III)-based diagnostics are complementary. The z-test misses Cr(III) that stays on the solid; XPS misses Cr(III) released to solution.
 
-**Structural equivalence: an adsorption-only model explains most Class C data (Fig. 3c).** This is the decisive result.
+**Structural equivalence: an adsorption-only model explains most Class C data (Fig. 3c, Table 4).** This is the decisive result.
+
+**Table 4.** Structural equivalence test: share of studies in which a flexible adsorption-only model is not rejected (χ² p > 0.05).
 
 | Design | Studies with reduction share > 0.3 where the adsorption-only model is *not* rejected, 10% noise | Same, 3% noise | False-rejection rate of paired pure-adsorption controls |
 |---|---|---|---|

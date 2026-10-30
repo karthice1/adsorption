@@ -1,6 +1,6 @@
 ### 3.5 Study-level prediction intervals (synthetic)
 
-Table 5 and Fig. 5 report outer leave-one-study-out evaluations on 10 corpora: 300 test studies for Cr(VI) endpoints and 182 for total-Cr endpoints, which are measured only in Class A/B studies.
+Table 6 and Fig. 5 report outer leave-one-study-out evaluations on 10 corpora: 300 test studies for Cr(VI) endpoints and 182 for total-Cr endpoints, which are measured only in Class A/B studies.
 
 **Average coverage is the wrong criterion.**
 - The pooled-residual interval M0 (the v0.1 method) reached its nominal *average* coverage for every endpoint (0.89–0.90 at 90%).
@@ -19,7 +19,7 @@ Table 5 and Fig. 5 report outer leave-one-study-out evaluations on 10 corpora: 3
 
 **Coverage is marginal over families, not conditional.** For apparent uptake, M0 covered 0.77 of hydrochar observations (0.85 with M1, 0.91 with M2), compared with 0.96–0.99 for the other families. Study-level calibration does not repair heterogeneity between families.
 
-**Table 5.** Study-level coverage at a nominal 90% under leave-one-study-out validation (10 corpora; RF with speciation features). Coverage is the fraction of a test study's observations inside its interval.
+**Table 6.** Study-level coverage at a nominal 90% under leave-one-study-out validation (10 corpora; RF with speciation features). Coverage is the fraction of a test study's observations inside its interval.
 
 | Endpoint | Method | Mean | Median | 10th pct | Worst | Studies ≥ 0.90 | Width (log₁₀) | Calibration studies |
 |---|---|---|---|---|---|---|---|---|
@@ -42,7 +42,7 @@ Table 5 and Fig. 5 report outer leave-one-study-out evaluations on 10 corpora: 3
 
 ### 3.6 Treatment design with two endpoints (synthetic)
 
-**Set-up.** Of the 300 new materials per target (20 cohorts × 15), 169 (S1) and 181 (S2) could truly meet both limits somewhere on the design grid (Table 6, Fig. 6).
+**Set-up.** Of the 300 new materials per target (20 cohorts × 15), 169 (S1) and 181 (S2) could truly meet both limits somewhere on the design grid (Table 7, Fig. 6).
 
 **Point predictions are unsafe.**
 - They recommended a design for 105 materials (S1). Only 41% of these complied in truth.
@@ -72,7 +72,7 @@ Table 5 and Fig. 5 report outer leave-one-study-out evaluations on 10 corpora: 3
 
 **Effluent predictions.** Predicted and true effluent concentrations on a design sub-grid were rank-correlated (Spearman 0.65 for Cr(VI), 0.55 for total Cr), with median absolute errors of 0.40 and 0.22 log₁₀ units. The 95% upper bounds held for 97.9% (Cr(VI)) and 100% (total Cr) of grid points.
 
-**Table 6.** Design outcomes for 300 new virtual materials per target (S1: C₀ = 20 mg L⁻¹, limits Cr(VI) ≤ 0.5 and total Cr ≤ 2 mg L⁻¹; S2: C₀ = 5 mg L⁻¹, limits 0.1 and 0.5 mg L⁻¹).
+**Table 7.** Design outcomes for 300 new virtual materials per target (S1: C₀ = 20 mg L⁻¹, limits Cr(VI) ≤ 0.5 and total Cr ≤ 2 mg L⁻¹; S2: C₀ = 5 mg L⁻¹, limits 0.1 and 0.5 mg L⁻¹).
 
 | Target | Rule | Designs recommended | Compliant (true) | Unsafe (of all materials) | Attainable materials found | Median dose (g L⁻¹) |
 |---|---|---|---|---|---|---|

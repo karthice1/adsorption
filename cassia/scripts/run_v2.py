@@ -1046,13 +1046,17 @@ def figures():
     ax[1].errorbar(g.R2_LOSO.mean().index, g.R2_LOSO.mean(), yerr=g.R2_LOSO.std(), fmt="-o", ms=3.5, color=C[0], capsize=2, label="LOSO")
     ax[1].errorbar(g.R2_random.mean().index, g.R2_random.mean(), yerr=g.R2_random.std(), fmt="--s", ms=3.5, color=MUTED, capsize=2, label="random")
     ax[1].set(xscale="log", xlabel="Number of studies", ylabel="R$^2$ (RF, +spec.)")
+    ax[1].xaxis.set_minor_locator(matplotlib.ticker.NullLocator())
     ax[1].set_xticks([12, 24, 48, 96], ["12", "24", "48", "96"])
     ax[1].legend()
     panel(ax[1], "b")
     pc = PS[PS.features == "chem"]
     fams = list(sim.FAMILIES)
-    ax[2].boxplot([pc[pc.family == f].RMSE.values for f in fams], tick_labels=[f.replace("_", "\n") for f in fams], showfliers=False, widths=0.55)
-    ax[2].tick_params(axis="x", labelsize=6.5)
+    abbr = {"AC_chemical": "ACc", "AC_physical": "ACp", "biochar_wood": "BCw", "biochar_manure": "BCm",
+            "hydrochar": "HC", "porous_carbon": "PC"}
+    ax[2].boxplot([pc[pc.family == f].RMSE.values for f in fams], tick_labels=[abbr[f] for f in fams], showfliers=False,
+                  widths=0.55, medianprops={"color": INK})
+    ax[2].tick_params(axis="x", labelsize=7, rotation=45)
     ax[2].set(ylabel="Per-study RMSE, LOSO (mg g$^{-1}$)")
     panel(ax[2], "c")
     fig.savefig(FIG / "fig4_ml_validation.png"); plt.close(fig)
@@ -1073,6 +1077,7 @@ def figures():
     panel(ax[0], "a")
     g90 = u[u.alpha == 0.1]
     ax[1].boxplot([g90[g90.method == m].coverage.values for m in names], tick_labels=["M0", "M1", "M2"], widths=0.55, showfliers=True,
+                  medianprops={"color": INK},
                   flierprops={"markersize": 2.5})
     ax[1].axhline(0.9, color=MUTED, ls=":", lw=1)
     ax[1].set(ylabel="Per-study coverage at 90%", title="Spread across studies")
@@ -1091,46 +1096,53 @@ def figures():
     # Fig 6: design
     O = pd.read_csv(RES / "design_outcomes.csv")
     SN = pd.read_csv(RES / "design_sensitivity.csv") if (RES / "design_sensitivity.csv").stat().st_size > 2 else pd.DataFrame()
-    fig, ax = plt.subplots(1, 3, figsize=(7.6, 2.9), constrained_layout=True)
-    rules = list(RULES)
-    rl = {"nominal": "point", "marginal90": "marginal\n90%", "joint90_bonf": "joint\n90%",
-          "joint90_adapt_k4": "joint 90%\n+4 batches", "joint80_adapt_k4": "joint 80%\n+4 batches",
-          "nominal_verify": "point +\nverify"}
-    for i, t in enumerate(TARGETS):
-        v, lo, hi, dose = [], [], [], []
+    for c in ("met_both",):
+        O[c] = O[c].fillna(False).astype(bool)
+    fig, ax = plt.subplots(1, 3, figsize=(7.6, 3.1), constrained_layout=True, gridspec_kw={"width_ratios": [1.9, 1, 1]})
+    rules = ["nominal", "marginal90", "joint90_bonf", "joint90_adapt_k4", "joint80_adapt_k4", "nominal_verify"]
+    rl = {"nominal": "point", "marginal90": "marg.\n90%", "joint90_bonf": "joint\n90%", "joint90_adapt_k4": "joint 90%\n+4 b.",
+          "joint80_adapt_k4": "joint 80%\n+4 b.", "nominal_verify": "point\n+verify"}
+    x = np.arange(len(rules)); w = 0.2
+    for j, (t, hatch) in enumerate((("S1", None), ("S2", "//"))):
+        uns, found, ue, fe = [], [], [[], []], [[], []]
         for r in rules:
-            f = O[(O.target == t) & (O.rule == r) & O.feasible]
-            k_, n_ = int(f.met_both.sum()), len(f)
-            p_ = k_ / n_ if n_ else np.nan
-            a_, b_ = wilson(k_, n_)
-            v.append(p_); lo.append(p_ - a_); hi.append(b_ - p_); dose.append(f.D.median())
-        xx = np.arange(len(rules)) + (i - 0.5) * 0.36
-        ax[0].bar(xx, v, 0.34, color=C[i], label=f"{t}: C$_0$ {TARGETS[t][0]:g}, limits {TARGETS[t][1]:g}/{TARGETS[t][2]:g}")
-        ax[0].errorbar(xx, v, yerr=[lo, hi], fmt="none", ecolor=INK, lw=0.8, capsize=2)
-        for x_, d_ in zip(xx, dose):
-            ax[0].text(x_, 0.02, f"{d_:g}", ha="center", fontsize=6.5, color="white")
-    ax[0].set_xticks(range(len(rules)), [rl[r] for r in rules], fontsize=6.5)
-    ax[0].set(ylabel="Designs meeting both limits", ylim=(0, 1.05), title="True compliance (dose g L$^{-1}$ in bar)")
-    ax[0].legend(fontsize=6.3, loc="upper left")
+            g = O[(O.target == t) & (O.rule == r)]
+            ku, n = int((g.feasible & ~g.met_both).sum()), len(g)
+            att = g[g.attainable]
+            kf, na = int((att.feasible & att.met_both).sum()), len(att)
+            pu, pf = ku / n, kf / na
+            lu, hu = wilson(ku, n); lf, hf = wilson(kf, na)
+            uns.append(pu); found.append(pf)
+            ue[0].append(max(pu - lu, 0)); ue[1].append(max(hu - pu, 0)); fe[0].append(max(pf - lf, 0)); fe[1].append(max(hf - pf, 0))
+        off = -1.5 * w if j == 0 else 0.5 * w
+        ax[0].bar(x + off, uns, w * 0.95, color=C[1], hatch=hatch, edgecolor="white" if hatch is None else C[1],
+                  alpha=1 if hatch is None else 0.55, label=f"unsafe, {t}")
+        ax[0].bar(x + off + w, found, w * 0.95, color=C[2], hatch=hatch, edgecolor="white" if hatch is None else C[2],
+                  alpha=1 if hatch is None else 0.55, label=f"found, {t}")
+        ax[0].errorbar(x + off, uns, yerr=ue, fmt="none", ecolor=INK, lw=0.7, capsize=1.5)
+        ax[0].errorbar(x + off + w, found, yerr=fe, fmt="none", ecolor=INK, lw=0.7, capsize=1.5)
+    ax[0].set_xticks(x, [rl[r] for r in rules], fontsize=7.5)
+    ax[0].set(ylabel="Fraction of materials", ylim=(0, 1.0), title="Design rules (S1 solid, S2 hatched)")
+    ax[0].legend(fontsize=6.5, ncol=2, loc="upper left")
     panel(ax[0], "a")
-    f = O[(O.target == "S1") & O.feasible]
-    for i, r in enumerate(rules):
+    f = O[(O.target == "S1") & O.feasible & O.rule.isin(["nominal", "nominal_verify"])]
+    for i, r in enumerate(("nominal", "nominal_verify")):
         g = f[f.rule == r]
-        ax[1].scatter(g.Cet_pred + 1e-3, g.Cet_true + 1e-3, s=9, color=C[i], alpha=0.6, label=rl[r], edgecolor="none")
+        ax[1].scatter(g.Cet_pred + 1e-3, g.Cet_true + 1e-3, s=10, color=[C[1], C[2]][i], alpha=0.6, label=rl[r].replace("\n", " "),
+                      edgecolor="none")
     ax[1].plot([1e-3, 30], [1e-3, 30], color=MUTED, lw=1)
     ax[1].axhline(2.0, color=C[1], lw=0.8, ls=":")
-    ax[1].set(xscale="log", yscale="log", xlabel="Predicted total Cr (mg L$^{-1}$)", ylabel="True total Cr (mg L$^{-1}$)", title="S1 selected designs")
+    ax[1].set(xscale="log", yscale="log", xlabel="Predicted total Cr (mg L$^{-1}$)", ylabel="True total Cr (mg L$^{-1}$)",
+              title="S1 designs")
     ax[1].legend(fontsize=6.5)
     panel(ax[1], "b")
     if len(SN):
         s1 = SN[SN.target == "S1"].groupby(["dpH", "fD"]).met_both.mean().reset_index()
-        labels = [f"pH{'+' if a > 0 else ''}{a:g}" if b == 1 else f"dose×{b:g}" for a, b in zip(s1.dpH, s1.fD)]
-        base = O[(O.target == "S1") & (O.rule == "nominal_verify") & O.feasible].met_both.mean()
-        ax[2].bar(range(len(s1)), s1.met_both, color=C[2])
-        ax[2].axhline(base, color=INK, ls=":", lw=1, label="at selected design")
-        ax[2].set_xticks(range(len(s1)), labels, rotation=35, fontsize=7.5)
-        ax[2].set(ylabel="Compliance", ylim=(0, 1.05), title="Sensitivity, point + verify")
-        ax[2].legend(fontsize=7)
+        labels = [f"pH{'+' if a_ > 0 else ''}{a_:g}" if b_ == 1 else f"dose ×{b_:g}" for a_, b_ in zip(s1.dpH, s1.fD)]
+        ax[2].bar(range(len(s1)), s1.met_both, color=C[0])
+        ax[2].axhline(1.0, color=INK, ls=":", lw=1)
+        ax[2].set_xticks(range(len(s1)), labels, rotation=40, fontsize=7.5)
+        ax[2].set(ylabel="Compliance", ylim=(0, 1.05), title="Sensitivity")
     panel(ax[2], "c")
     fig.savefig(FIG / "fig6_design.png"); plt.close(fig)
 
@@ -1150,12 +1162,13 @@ def figures():
     panel(ax[1], "b")
     f = MD[MD.feasible]
     mats = list(f.groupby(["corpus", "material"]).groups)
-    ax[2].boxplot([f[(f.corpus == c) & (f.material == m)].D.values for c, m in mats], showfliers=False, widths=0.6)
-    comp = [f[(f.corpus == c) & (f.material == m)].met_both.mean() for c, m in mats]
-    for i, cp_ in enumerate(comp):
-        ax[2].text(i + 1, 15.5, f"{cp_:.2f}", ha="center", fontsize=6, rotation=90, va="top")
-    ax[2].set_xticks(range(1, len(mats) + 1), [str(i + 1) for i in range(len(mats))], fontsize=6.5)
-    ax[2].set(xlabel="New material", ylabel="Recommended dose (g L$^{-1}$)", ylim=(0, 16), title="Design under unknown I")
+    ax[2].boxplot([f[(f.corpus == c) & (f.material == m)].D.values for c, m in mats], showfliers=False, widths=0.6,
+                  medianprops={"color": INK})
+    for i, (c, m) in enumerate(mats):
+        fr = MD[(MD.corpus == c) & (MD.material == m)].feasible.mean()
+        ax[2].text(i + 1, 8.9, f"{fr:.2f}", ha="center", fontsize=6.5, rotation=90, va="bottom", color=MUTED)
+    ax[2].set_xticks(range(1, len(mats) + 1), [str(i + 1) for i in range(len(mats))], fontsize=7)
+    ax[2].set(xlabel="New material", ylabel="Accepted dose (g L$^{-1}$)", ylim=(0, 10.5), title="Unknown I")
     panel(ax[2], "c")
     fig.savefig(FIG / "fig7_missing_chemistry.png"); plt.close(fig)
     print("figures done")

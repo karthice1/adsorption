@@ -74,7 +74,7 @@ function table(lines) {
   // width proportional to max content length, min share
   const lens = Array.from({ length: n }, (_, j) => Math.max(...rows.map((r) => (r[j] || "").length)));
   // clamp so short columns stay readable and long prose columns do not dominate
-  const wt = lens.map((x) => Math.min(Math.max(x, 11), 40));
+  const wt = lens.map((x) => Math.min(Math.max(x, 13), 40));
   const tot = wt.reduce((a, b) => a + b, 0);
   const widths = wt.map((x) => Math.floor((TEXT_W * x) / tot));
   widths[n - 1] += TEXT_W - widths.reduce((a, b) => a + b, 0);
@@ -154,10 +154,11 @@ while (i < md.length) {
   }
   const img = line.match(/^!\[[^\]]*\]\(([^)]+)\)/);
   if (img) { body.push(figure(img[1])); i++; continue; }
-  const bullet = line.match(/^- (.*)$/);
+  const bullet = line.match(/^(\s*)- (.*)$/);
   if (bullet) {
-    if (inHighlights) highlights.push(bullet[1]);
-    body.push(new Paragraph({ numbering: { reference: "bullets", level: 0 }, spacing: DOUBLE, children: runs(bullet[1]) }));
+    const lvl = bullet[1].length >= 2 ? 1 : 0;
+    if (inHighlights) highlights.push(bullet[2]);
+    body.push(new Paragraph({ numbering: { reference: "bullets", level: lvl }, spacing: DOUBLE, children: runs(bullet[2]) }));
     i++; continue;
   }
   const num = line.match(/^(\d+)\.\s+(.*)$/);
@@ -192,8 +193,11 @@ const common = {
       paragraph: { spacing: { before: 240, after: 120 }, outlineLevel: n - 1 },
     })),
   },
-  numbering: { config: [{ reference: "bullets", levels: [{ level: 0, format: LevelFormat.BULLET, text: "•",
-    alignment: AlignmentType.LEFT, style: { paragraph: { indent: { left: 567, hanging: 340 } } } }] }] },
+  numbering: { config: [{ reference: "bullets", levels: [
+    { level: 0, format: LevelFormat.BULLET, text: "\u2022", alignment: AlignmentType.LEFT,
+      style: { paragraph: { indent: { left: 567, hanging: 340 } } } },
+    { level: 1, format: LevelFormat.BULLET, text: "\u2013", alignment: AlignmentType.LEFT,
+      style: { paragraph: { indent: { left: 1134, hanging: 340 } } } }] }] },
 };
 const pageProps = {
   page: { size: { width: PAGE_W, height: 16838 }, margin: { top: MARGIN, bottom: MARGIN, left: MARGIN, right: MARGIN } },

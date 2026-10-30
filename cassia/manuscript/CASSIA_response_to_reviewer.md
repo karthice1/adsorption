@@ -82,7 +82,13 @@ Reviewer text is in *italics*; our response follows each item. "§" refers to se
 - the recommended dose and the true residual total Cr (300 re-optimised designs per material);
 - the inferred reduction share (first-order bias through the identifiability engine).
 
-Results: [MISSING].
+Results (§3.7):
+- **Speciation feature.** Unknown ionic strength and pH basis widened the 90% range of f(HCrO₄⁻) to 0.24 at pH 5–6.5, but only to 0.035–0.08 elsewhere.
+- **Predictions.** The spread of the point prediction was 0.08–0.14 log₁₀ units, and the union of the M1 intervals was only 6–14% wider than the nominal interval.
+- **Design.** Under the test-confirmed design protocol, unknown ionic strength changed the accepted dose for 3 of the 10 feasible materials, and changed the probability of reaching an accepted design within four rounds (6–100% across draws for some materials). It never produced a non-compliant accepted design.
+- **Mechanistic level.** A 0.5-unit pH error biased the inferred reduction share by up to 0.16 (90th percentile), against ≤ 0.025 for a ten-fold error in ionic strength.
+
+Conclusion: missing chemistry is second-order for prediction and design and first-order (pH basis) for mechanism inference.
 
 ---
 
@@ -92,13 +98,25 @@ Results: [MISSING].
 
 **Response.** Rebuilt (§2.9, §3.6, Fig. 6).
 1. **Separate models.** The design no longer infers effluent from uptake, which was ill-conditioned near complete removal. Residual Cr(VI) and residual total Cr are modelled directly, each by its own RF model with its own study-level CV+ interval. The total-Cr model is trained on the observations that carry a total-Cr analysis (Classes A/B).
-2. **Validation.** Both endpoint models (and q_tot,aq) are validated by LOSO with per-study conformal coverage (Table 5).
+2. **Validation.** Both endpoint models (and q_tot,aq) are validated by LOSO with per-study conformal coverage (Table 6).
 3. **Joint criterion.** A Bonferroni rule (each endpoint at α = 0.05; joint miscoverage ≤ 0.10 by the union bound) is compared with point and marginal-90% rules.
 4. **Replicated cohorts.** 20 independent cohorts × 15 new materials (300 per target, two target sets).
 5. **Truth-based metrics.** True attainability is computed from the simulator for every material, giving unsafe recommendations, missed attainable designs and dose overhead, with Wilson intervals.
 6. **Sensitivity and calibration.** Operating-window sensitivity (pH ± 0.25/0.5, dose × 0.8/1.2) and predicted-vs-true effluent are reported.
 
-Results: [DESIGN].
+Results (§3.6, Table 7, Fig. 6; S1: C₀ = 20 mg L⁻¹, limits 0.5/2 mg L⁻¹; 169 of 300 materials truly attainable):
+
+| Rule | Unsafe recommendations | Compliant designs found (of attainable) | Notes |
+|---|---|---|---|
+| Point predictions | 62/300 (20.7%; Wilson 16.5–25.6%) | 25% | Unsafe |
+| Marginal and joint 90% (Bonferroni) | 0 | 0 | Recommended nothing |
+| Joint 80% + 4 confirmatory batches | 2 | 7% | |
+| Model-guided, test-confirmed | 0 | 62% | Mean 1.4 verification rounds; median dose twice the true minimum |
+
+S2 gave the same picture.
+- We therefore report the reviewer's concern as a finding: study-level uncertainty from 30 heterogeneous studies is too large to certify low effluent concentrations for a new material.
+- Joint 95%-per-endpoint bounds for total Cr are unbounded with the ~17 studies that report total Cr; at least 19 are needed.
+- The defensible engineering use of the models is to propose designs that are then confirmed by testing.
 
 We agree that a marginal interval does not guarantee joint compliance after optimisation over a grid. The selected design is chosen *because* its bound is favourable, so §3.6 reports the realised compliance rather than the nominal one.
 
@@ -108,24 +126,28 @@ We agree that a marginal interval does not guarantee joint compliance after opti
 
 *"…the unit of calibration … whether the conformity score is calculated for each observation or for each study … report coverage per study, median, worst-study, width, coverage against nominal, number of calibration studies … clarify split, cross-conformal or other."*
 
-**Response.** Clarified and replaced (§2.8, §3.5, Fig. 5, Table 5).
+**Response.** Clarified and replaced (§2.8, §3.5, Fig. 5, Table 6).
 - **The v0.1 method is renamed M0** (pooled-residual) and described accurately. It is a cross-validation-calibrated heuristic without a formal guarantee for new studies.
 - **Two cluster-level methods were added**, both CV+ constructions (Barber et al., 2021) with the *study* as the exchangeable unit:
   - **M1** weights each calibration study equally (observation weight 1/n_j; cf. Dunn et al., 2023) and targets coverage of a random observation of a new study;
   - **M2** uses one score per study (within-study 0.9-quantile of absolute residuals) and targets 'at least 90% of a new study's observations covered' with probability ≥ 1 − 2α.
 - **Reporting.** For outer LOSO on 10 corpora (29 calibration studies per test study; four endpoints; nominal 0.50–0.95) we report per-study coverage distributions, the median, 10th-percentile and worst study, the fraction of studies covered at the nominal level, the width and the number of calibration studies.
 
-Results: [UQ].
+Results (§3.5, Table 6, Fig. 5):
+- **M0** reached nominal average coverage (0.89–0.90 at 90%), but only 65–75% of test studies were covered at ≥ 90%, and the worst study had 11–29% coverage.
+- **M1** raised the share of adequately covered studies to 76–87%; **M2** raised it to 88–93%, above its 1 − 2α = 0.80 guarantee.
+- **Width.** M2 intervals spanned 2.1–3.1 log₁₀ units.
+- **Family-conditional coverage** was lower for hydrochars (0.77–0.91), so the guarantees are marginal over families, not conditional.
 
 ---
 
 ## Major Comment 6 – ML study design
 
 - **A. LOFO with three families.** Six families are now used. LOFO now evaluates six held-out families per corpus, over 20 corpora. We agree this still does not represent the universe of carbonaceous materials, and say so.
-- **B. Uncertainty of metrics.** Every metric now carries a 1,000-replicate study-level bootstrap interval, its distribution over 20 independent corpora, and paired model comparisons (RF − XGBoost per corpus, with a sign test). [ML]
-- **C. Model-development details.** Now given (§2.7, Table S3): fixed a-priori hyperparameters, seeds, scaling (GPR only), missing-data handling (I imputed at 0.01 M with an indicator) and fold-level per-study errors. Nested grouped tuning was evaluated on three corpora: [ML].
-- **D. Log target.** Negative apparent uptake is censored at q = 0 (flagged and counted), so q + 0.1 > 0 always. Values below the LOD enter as LOD/2. Back-transformation uses Duan's smearing estimator; the naive and smeared biases are reported: [ML].
-- **Effective sample size.** The learning curve (12–96 studies) shows how LOSO performance depends on the number of *studies*, which is the relevant sample size: [ML].
+- **B. Uncertainty of metrics.** Every metric now carries a 1,000-replicate study-level bootstrap interval, its distribution over 20 independent corpora, and paired model comparisons (RF − XGBoost per corpus, with a sign test). Result: RF exceeded XGBoost under LOSO by 0.038 ± 0.090 R², better in 14/20 corpora (sign test p = 0.12). The difference is not significant and is no longer presented as model superiority.
+- **C. Model-development details.** Now given (§2.7, Table S3): fixed a-priori hyperparameters, seeds, scaling (GPR only), missing-data handling (I imputed at 0.01 M with an indicator) and fold-level per-study errors. Nested grouped tuning was evaluated on three corpora: it changed LOSO R² by +0.001 (RF) and −0.040 (XGBoost), so the fixed a-priori settings are retained.
+- **D. Log target.** Negative apparent uptake is censored at q = 0 (flagged and counted), so q + 0.1 > 0 always. Values below the LOD enter as LOD/2. Back-transformation uses Duan's smearing estimator; the mean bias was −1.86 mg g⁻¹ with the naive inverse and −1.30 mg g⁻¹ with smearing. About 4.8% of observations were censored.
+- **Effective sample size.** The learning curve (12–96 studies) shows how LOSO performance depends on the number of *studies*, which is the relevant sample size: LOSO R² was 0.47 ± 0.14 with 12 studies and 0.75 ± 0.08 with 96, while random-split R² stayed at 0.80–0.90. The between-study ICC was 0.45 ± 0.14.
 
 ---
 
@@ -149,7 +171,7 @@ Results: [UQ].
 | User-facing API | README "Minimal API"; `examples/user_data_workflow.py` |
 | Versioned release | CASSIA 0.2.0, CHANGELOG |
 | Licence | MIT (`LICENSE`) |
-| Automated tests | 34 tests |
+| Automated tests | 35 tests |
 | Coverage report | 85% line coverage (`results/coverage_report.txt`) |
 | Real-data workflow | Workflow script ready; demonstrated only on a labelled synthetic file, because no real data could be retrieved |
 | Permanent DOI | **Pending.** We will mint it via the Zenodo–GitHub integration at acceptance or resubmission; `CITATION.cff` carries the placeholder |

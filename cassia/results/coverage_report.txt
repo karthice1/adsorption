@@ -5,10 +5,10 @@ cassia/__init__.py              3      0   100%
 cassia/chemistry.py           241     46    81%
 cassia/dataset.py              48      3    94%
 cassia/fitting.py             108      7    94%
-cassia/identifiability.py     210     63    70%
+cassia/identifiability.py     214     67    69%
 cassia/pores.py                20      0   100%
-cassia/simulate.py            252     10    96%
-cassia/validation.py          194     29    85%
+cassia/simulate.py            254     10    96%
+cassia/validation.py          216     38    82%
 -----------------------------------------------
-TOTAL                        1076    158    85%
-34 passed in 49.74s
+TOTAL                        1104    171    85%
+35 passed in 55.52s

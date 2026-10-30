@@ -229,3 +229,12 @@ def test_material_descriptors_provenance():
     n = 10 * 200 * p / ((1 - p) * (1 - p + 200 * p))
     out = material_descriptors({"SBET": 1000.0}, isotherm=(p, n))
     assert out["SBET_source"] == "pyGAPS_from_isotherm" and abs(out["SBET_rel_diff"]) < 0.05
+
+
+def test_adapted_halfwidth_shrinks_with_offset_removal():
+    d = _toy(n_st=12)
+    cp = val.StudyCVPlus("RF", ["x"], K=6).fit(d, "q")
+    lo, hi, _ = cp.interval(d.iloc[:5], 0.1, "M1")
+    hw_m1 = float(np.median((hi - lo) / 2))
+    hw_k4 = cp.adapted_halfwidth(4, 0.1)
+    assert np.isfinite(hw_k4) and hw_k4 < hw_m1
