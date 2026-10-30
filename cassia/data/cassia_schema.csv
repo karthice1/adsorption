@@ -1,0 +1,32 @@
+column,unit,required
+study_id,-,True
+material_id,-,True
+material_family,-,True
+doi,-,True
+source_location,table/figure/SI,True
+extraction_method,table|digitised|SI,True
+C0,mg/L,True
+Ce_VI,mg/L,False
+Ce_total,mg/L,False
+pH,-,True
+pH_basis,initial|final|controlled,False
+D,g/L,True
+t,min,True
+T,K,True
+I,mol/L,False
+electrolyte,-,False
+SBET,m2/g,False
+Vp,cm3/g,False
+dp,nm,False
+pHpzc,-,False
+oxidation_state,-,False
+method,-,False
+cr3_measured,bool,False
+solid_phase_cr_speciation,XPS|XANES|none,False
+alkalinity,mg/L CaCO3,False
+major_anions,-,False
+major_cations,-,False
+Eh_mV,mV,False
+reducing_agents,-,False
+n,-,False
+SD,same as endpoint,False
