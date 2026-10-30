@@ -1,6 +1,6 @@
 """Reproduce every number and figure in the CASSIA manuscript.
 
-    python scripts/run_all.py            # full run (~10-20 min on 4 cores)
+    python scripts/run_all.py            # full run (~30 min on 4 cores)
     python scripts/run_all.py --quick    # reduced grid for smoke testing
 """
 from __future__ import annotations
@@ -126,7 +126,7 @@ def exp_chemistry():
     ax[2].text(9.8, (20.75 - 9.8) * 0.05916 + 0.03, "O$_2$/H$_2$O", ha="right", fontsize=7, color=MUTED)
     ax[2].set(title="Cr(VI)/Cr(III) = 1 boundary", xlabel="pH", ylabel="Eh (V)")
     ax[2].legend(fontsize=7)
-    fig.savefig(FIG / "fig2_speciation.png")
+    fig.savefig(FIG / "fig1_speciation.png")
     plt.close(fig)
 
 
@@ -215,7 +215,7 @@ def exp_identifiability(corpus, mats):
     for a_ in ax:
         a_.set_xlabel("True reduction share")
     ax[0].legend(fontsize=6.5, loc="lower left")
-    fig.savefig(FIG / "fig3_identifiability.png")
+    fig.savefig(FIG / "fig2_identifiability.png")
     plt.close(fig)
 
     # Illustrative study (selected, not representative): largest reduction share among
@@ -233,7 +233,7 @@ def exp_identifiability(corpus, mats):
             color=C[0], lw=1.5, label=f"Langmuir fit, $R^2$={fits['Langmuir'].r2:.3f}")
     ax.set(xscale="log", xlabel="$C_e$ Cr(VI) (mg/L)", ylabel="q (mg/g)", title=f"Virtual study {sid}")
     ax.legend(fontsize=6.5)
-    fig.savefig(FIG / "fig4_example_study.png")
+    fig.savefig(FIG / "fig3_example_study.png")
     plt.close(fig)
     OUT["example_study"] = {"study_id": sid, **r.set_index("study_id").loc[sid, ["true_red_frac", "R2_Langmuir",
                                                                                   "qmax_L", "qmax_true"]].to_dict()}
@@ -266,7 +266,12 @@ def exp_ml(corpus, quick):
     bsv = val.between_study_variance(df, preds[("GPR", "chem", "LOSO")])
     OUT["between_study_GPRchem_LOSO"] = {k: round(v, 4) for k, v in bsv.items()}
 
-    fig, ax = plt.subplots(figsize=(4.6, 2.7), constrained_layout=True)
+    plot_validation(T, models, schemes)
+    return df
+
+
+def plot_validation(T, models, schemes):
+    fig, ax = plt.subplots(figsize=(4.8, 3.0), constrained_layout=True)
     w = 0.12
     combos = [(m, f) for m in models for f in ("base", "chem")]
     for i, (m, f) in enumerate(combos):
@@ -277,10 +282,9 @@ def exp_ml(corpus, quick):
     ax.set_xticks(range(len(schemes)), [{"random": "Random\n5-fold", "grouped5": "Grouped\n5-fold",
                                   "LOSO": "Leave-one-\nstudy-out", "LOFO": "Leave-one-\nfamily-out"}[s] for s in schemes])
     ax.set(ylabel="$R^2$ (q$_{app}$, mg/g)", ylim=(min(0, T.R2.min() - 0.05), 1))
-    ax.legend(fontsize=6, ncol=2, loc="lower left")
-    fig.savefig(FIG / "fig5_validation.png")
+    ax.legend(fontsize=6.5, ncol=3, loc="lower center", bbox_to_anchor=(0.5, 1.0))
+    fig.savefig(FIG / "fig4_validation.png")
     plt.close(fig)
-    return df
 
 
 def exp_uq(df):
