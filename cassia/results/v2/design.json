@@ -1,9 +1,9 @@
 {
   "n_cohorts": 2,
   "n_materials_per_cohort": 4,
-  "S1|joint90_bonf": {
+  "S1|joint80_adapt_k4": {
     "n_materials": 8,
-    "n_attainable": 4,
+    "n_attainable": 6,
     "unsafe_recommendations": 0,
     "unsafe_rate": 0.0,
     "unsafe_wilson95": [
@@ -13,7 +13,7 @@
     "compliant_found": 0,
     "found_of_attainable": 0.0,
     "declared_infeasible": 8,
-    "declared_infeasible_but_attainable": 4,
+    "declared_infeasible_but_attainable": 6,
     "dose_overhead_median": null,
     "n_feasible": 0,
     "success": null,
@@ -27,11 +27,73 @@
     "fail_VI": 0,
     "fail_tot": 0,
     "joint_bound_holds": null,
-    "median_pH": null
+    "median_pH": null,
+    "mean_rounds": 0.0,
+    "halfwidth_note": "total-Cr study-level 95% bound needs >= 19 calibration studies"
+  },
+  "S1|joint90_adapt_k4": {
+    "n_materials": 8,
+    "n_attainable": 6,
+    "unsafe_recommendations": 0,
+    "unsafe_rate": 0.0,
+    "unsafe_wilson95": [
+      0.0,
+      0.3244156195108769
+    ],
+    "compliant_found": 0,
+    "found_of_attainable": 0.0,
+    "declared_infeasible": 8,
+    "declared_infeasible_but_attainable": 6,
+    "dose_overhead_median": null,
+    "n_feasible": 0,
+    "success": null,
+    "wilson95": [
+      null,
+      null
+    ],
+    "cohort_mean": null,
+    "cohort_sd": null,
+    "median_dose": null,
+    "fail_VI": 0,
+    "fail_tot": 0,
+    "joint_bound_holds": null,
+    "median_pH": null,
+    "mean_rounds": 0.0,
+    "halfwidth_note": "total-Cr study-level 95% bound needs >= 19 calibration studies"
+  },
+  "S1|joint90_bonf": {
+    "n_materials": 8,
+    "n_attainable": 6,
+    "unsafe_recommendations": 0,
+    "unsafe_rate": 0.0,
+    "unsafe_wilson95": [
+      0.0,
+      0.3244156195108769
+    ],
+    "compliant_found": 0,
+    "found_of_attainable": 0.0,
+    "declared_infeasible": 8,
+    "declared_infeasible_but_attainable": 6,
+    "dose_overhead_median": null,
+    "n_feasible": 0,
+    "success": null,
+    "wilson95": [
+      null,
+      null
+    ],
+    "cohort_mean": null,
+    "cohort_sd": null,
+    "median_dose": null,
+    "fail_VI": 0,
+    "fail_tot": 0,
+    "joint_bound_holds": null,
+    "median_pH": null,
+    "mean_rounds": 0.0,
+    "halfwidth_note": "total-Cr study-level 95% bound needs >= 19 calibration studies"
   },
   "S1|marginal90": {
     "n_materials": 8,
-    "n_attainable": 4,
+    "n_attainable": 6,
     "unsafe_recommendations": 0,
     "unsafe_rate": 0.0,
     "unsafe_wilson95": [
@@ -41,7 +103,7 @@
     "compliant_found": 0,
     "found_of_attainable": 0.0,
     "declared_infeasible": 8,
-    "declared_infeasible_but_attainable": 4,
+    "declared_infeasible_but_attainable": 6,
     "dose_overhead_median": null,
     "n_feasible": 0,
     "success": null,
@@ -55,39 +117,133 @@
     "fail_VI": 0,
     "fail_tot": 0,
     "joint_bound_holds": null,
-    "median_pH": null
+    "median_pH": null,
+    "mean_rounds": 0.0,
+    "halfwidth_note": "total-Cr study-level 95% bound needs >= 19 calibration studies"
   },
   "S1|nominal": {
     "n_materials": 8,
-    "n_attainable": 4,
-    "unsafe_recommendations": 1,
-    "unsafe_rate": 0.125,
+    "n_attainable": 6,
+    "unsafe_recommendations": 2,
+    "unsafe_rate": 0.25,
     "unsafe_wilson95": [
-      0.02241690886329617,
-      0.4708948057698615
+      0.07147768885802763,
+      0.5907301208974108
+    ],
+    "compliant_found": 1,
+    "found_of_attainable": 0.16666666666666666,
+    "declared_infeasible": 5,
+    "declared_infeasible_but_attainable": 3,
+    "dose_overhead_median": 1.5,
+    "n_feasible": 3,
+    "success": 0.3333333333333333,
+    "wilson95": [
+      0.0614903152761605,
+      0.7923450448735121
+    ],
+    "cohort_mean": 0.25,
+    "cohort_sd": 0.3535533905932738,
+    "median_dose": 6.0,
+    "fail_VI": 2,
+    "fail_tot": 1,
+    "joint_bound_holds": 0.3333333333333333,
+    "median_pH": 4.0,
+    "mean_rounds": 0.0,
+    "halfwidth_note": "total-Cr study-level 95% bound needs >= 19 calibration studies"
+  },
+  "S1|nominal_verify": {
+    "n_materials": 8,
+    "n_attainable": 6,
+    "unsafe_recommendations": 0,
+    "unsafe_rate": 0.0,
+    "unsafe_wilson95": [
+      0.0,
+      0.3244156195108769
+    ],
+    "compliant_found": 5,
+    "found_of_attainable": 0.8333333333333334,
+    "declared_infeasible": 3,
+    "declared_infeasible_but_attainable": 1,
+    "dose_overhead_median": 1.5,
+    "n_feasible": 5,
+    "success": 1.0,
+    "wilson95": [
+      0.5655085052479191,
+      1.0000000000000002
+    ],
+    "cohort_mean": 1.0,
+    "cohort_sd": 0.0,
+    "median_dose": 8.0,
+    "fail_VI": 0,
+    "fail_tot": 0,
+    "joint_bound_holds": 0.6,
+    "median_pH": 4.0,
+    "mean_rounds": 1.5,
+    "halfwidth_note": "total-Cr study-level 95% bound needs >= 19 calibration studies"
+  },
+  "S2|joint80_adapt_k4": {
+    "n_materials": 8,
+    "n_attainable": 6,
+    "unsafe_recommendations": 0,
+    "unsafe_rate": 0.0,
+    "unsafe_wilson95": [
+      0.0,
+      0.3244156195108769
     ],
     "compliant_found": 0,
     "found_of_attainable": 0.0,
-    "declared_infeasible": 7,
-    "declared_infeasible_but_attainable": 3,
+    "declared_infeasible": 8,
+    "declared_infeasible_but_attainable": 6,
     "dose_overhead_median": null,
-    "n_feasible": 1,
-    "success": 0.0,
+    "n_feasible": 0,
+    "success": null,
     "wilson95": [
-      0.0,
-      0.7934567085261071
+      null,
+      null
     ],
-    "cohort_mean": 0.0,
+    "cohort_mean": null,
     "cohort_sd": null,
-    "median_dose": 2.0,
-    "fail_VI": 1,
+    "median_dose": null,
+    "fail_VI": 0,
     "fail_tot": 0,
-    "joint_bound_holds": 0.0,
-    "median_pH": 4.0
+    "joint_bound_holds": null,
+    "median_pH": null,
+    "mean_rounds": 0.0,
+    "halfwidth_note": "total-Cr study-level 95% bound needs >= 19 calibration studies"
+  },
+  "S2|joint90_adapt_k4": {
+    "n_materials": 8,
+    "n_attainable": 6,
+    "unsafe_recommendations": 0,
+    "unsafe_rate": 0.0,
+    "unsafe_wilson95": [
+      0.0,
+      0.3244156195108769
+    ],
+    "compliant_found": 0,
+    "found_of_attainable": 0.0,
+    "declared_infeasible": 8,
+    "declared_infeasible_but_attainable": 6,
+    "dose_overhead_median": null,
+    "n_feasible": 0,
+    "success": null,
+    "wilson95": [
+      null,
+      null
+    ],
+    "cohort_mean": null,
+    "cohort_sd": null,
+    "median_dose": null,
+    "fail_VI": 0,
+    "fail_tot": 0,
+    "joint_bound_holds": null,
+    "median_pH": null,
+    "mean_rounds": 0.0,
+    "halfwidth_note": "total-Cr study-level 95% bound needs >= 19 calibration studies"
   },
   "S2|joint90_bonf": {
     "n_materials": 8,
-    "n_attainable": 5,
+    "n_attainable": 6,
     "unsafe_recommendations": 0,
     "unsafe_rate": 0.0,
     "unsafe_wilson95": [
@@ -97,7 +253,7 @@
     "compliant_found": 0,
     "found_of_attainable": 0.0,
     "declared_infeasible": 8,
-    "declared_infeasible_but_attainable": 5,
+    "declared_infeasible_but_attainable": 6,
     "dose_overhead_median": null,
     "n_feasible": 0,
     "success": null,
@@ -111,11 +267,13 @@
     "fail_VI": 0,
     "fail_tot": 0,
     "joint_bound_holds": null,
-    "median_pH": null
+    "median_pH": null,
+    "mean_rounds": 0.0,
+    "halfwidth_note": "total-Cr study-level 95% bound needs >= 19 calibration studies"
   },
   "S2|marginal90": {
     "n_materials": 8,
-    "n_attainable": 5,
+    "n_attainable": 6,
     "unsafe_recommendations": 0,
     "unsafe_rate": 0.0,
     "unsafe_wilson95": [
@@ -125,7 +283,7 @@
     "compliant_found": 0,
     "found_of_attainable": 0.0,
     "declared_infeasible": 8,
-    "declared_infeasible_but_attainable": 5,
+    "declared_infeasible_but_attainable": 6,
     "dose_overhead_median": null,
     "n_feasible": 0,
     "success": null,
@@ -139,11 +297,13 @@
     "fail_VI": 0,
     "fail_tot": 0,
     "joint_bound_holds": null,
-    "median_pH": null
+    "median_pH": null,
+    "mean_rounds": 0.0,
+    "halfwidth_note": "total-Cr study-level 95% bound needs >= 19 calibration studies"
   },
   "S2|nominal": {
     "n_materials": 8,
-    "n_attainable": 5,
+    "n_attainable": 6,
     "unsafe_recommendations": 0,
     "unsafe_rate": 0.0,
     "unsafe_wilson95": [
@@ -151,9 +311,9 @@
       0.3244156195108769
     ],
     "compliant_found": 1,
-    "found_of_attainable": 0.2,
+    "found_of_attainable": 0.16666666666666666,
     "declared_infeasible": 7,
-    "declared_infeasible_but_attainable": 4,
+    "declared_infeasible_but_attainable": 5,
     "dose_overhead_median": 1.3333333333333333,
     "n_feasible": 1,
     "success": 1.0,
@@ -167,16 +327,122 @@
     "fail_VI": 0,
     "fail_tot": 0,
     "joint_bound_holds": 0.0,
-    "median_pH": 3.5
+    "median_pH": 3.5,
+    "mean_rounds": 0.0,
+    "halfwidth_note": "total-Cr study-level 95% bound needs >= 19 calibration studies"
   },
+  "S2|nominal_verify": {
+    "n_materials": 8,
+    "n_attainable": 6,
+    "unsafe_recommendations": 0,
+    "unsafe_rate": 0.0,
+    "unsafe_wilson95": [
+      0.0,
+      0.3244156195108769
+    ],
+    "compliant_found": 5,
+    "found_of_attainable": 0.8333333333333334,
+    "declared_infeasible": 3,
+    "declared_infeasible_but_attainable": 1,
+    "dose_overhead_median": 2.0,
+    "n_feasible": 5,
+    "success": 1.0,
+    "wilson95": [
+      0.5655085052479191,
+      1.0000000000000002
+    ],
+    "cohort_mean": 1.0,
+    "cohort_sd": 0.0,
+    "median_dose": 8.0,
+    "fail_VI": 0,
+    "fail_tot": 0,
+    "joint_bound_holds": 0.8,
+    "median_pH": 3.5,
+    "mean_rounds": 1.0,
+    "halfwidth_note": "total-Cr study-level 95% bound needs >= 19 calibration studies"
+  },
+  "sensitivity_joint": [
+    {
+      "target": "S1",
+      "dpH": -0.5,
+      "fD": 1.0,
+      "met_both": 1.0
+    },
+    {
+      "target": "S1",
+      "dpH": -0.25,
+      "fD": 1.0,
+      "met_both": 1.0
+    },
+    {
+      "target": "S1",
+      "dpH": 0.0,
+      "fD": 0.8,
+      "met_both": 0.6
+    },
+    {
+      "target": "S1",
+      "dpH": 0.0,
+      "fD": 1.2,
+      "met_both": 1.0
+    },
+    {
+      "target": "S1",
+      "dpH": 0.25,
+      "fD": 1.0,
+      "met_both": 0.8
+    },
+    {
+      "target": "S1",
+      "dpH": 0.5,
+      "fD": 1.0,
+      "met_both": 0.6
+    },
+    {
+      "target": "S2",
+      "dpH": -0.5,
+      "fD": 1.0,
+      "met_both": 0.8
+    },
+    {
+      "target": "S2",
+      "dpH": -0.25,
+      "fD": 1.0,
+      "met_both": 1.0
+    },
+    {
+      "target": "S2",
+      "dpH": 0.0,
+      "fD": 0.8,
+      "met_both": 1.0
+    },
+    {
+      "target": "S2",
+      "dpH": 0.0,
+      "fD": 1.2,
+      "met_both": 1.0
+    },
+    {
+      "target": "S2",
+      "dpH": 0.25,
+      "fD": 1.0,
+      "met_both": 1.0
+    },
+    {
+      "target": "S2",
+      "dpH": 0.5,
+      "fD": 1.0,
+      "met_both": 0.8
+    }
+  ],
   "pred_vs_true_Ce6_log10": {
-    "spearman": 0.7188987822743087,
-    "median_abs_err_log10": 0.38349334896073073,
+    "spearman": 0.6907617652444606,
+    "median_abs_err_log10": 0.38049461920657085,
     "upper95_covers_truth": 1.0
   },
   "pred_vs_true_Cet_log10": {
-    "spearman": 0.5462541201245192,
-    "median_abs_err_log10": 0.24270355009728967,
+    "spearman": 0.5579621406335835,
+    "median_abs_err_log10": 0.273707660160453,
     "upper95_covers_truth": 1.0
   },
   "pred_vs_true_joint_upper_bounds_hold": 1.0

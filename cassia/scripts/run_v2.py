@@ -583,7 +583,10 @@ def stage_uq(quick=False):
 # Stage: treatment design with two endpoints and joint constraints
 # =============================================================================
 TARGETS = {"S1": (20.0, 0.5, 2.0), "S2": (5.0, 0.1, 0.5)}
-RULES = {"nominal": None, "marginal90": 0.10, "joint90_bonf": 0.05}
+RULES = {"nominal": None, "marginal90": 0.10, "joint90_bonf": 0.05, "joint90_adapt_k4": 0.05,
+         "joint80_adapt_k4": 0.10, "nominal_verify": None}
+ADAPT_DOSES = {4: (0.5, 1.0, 2.0, 4.0)}  # confirmatory batches at pH 3.0 and the target C0
+MAX_ROUNDS = 4  # verification rounds for the model-guided, test-confirmed protocol
 GRID_PH = np.round(np.arange(2.0, 7.01, 0.5), 2)
 GRID_D = np.array([0.5, 1, 2, 3, 4, 6, 8], float)  # inside the training dose range (dose series)
 
@@ -597,7 +600,7 @@ def _design_frame(m, C0, I=0.01, T=298.15):
     return G
 
 
-def _choose(G, cps, C0, lim6, limt, rule):
+def _choose(G, cps, C0, lim6, limt, rule, adapt=None):
     """Pick the lowest-dose design whose (point or upper-bound) effluent meets both limits.
 
     The decision quantities are modelled directly: log10 residual Cr(VI) and log10 residual
@@ -608,6 +611,14 @@ def _choose(G, cps, C0, lim6, limt, rule):
     G = G.assign(Ce6_pt=c6, Cet_pt=np.maximum(ct, c6))
     if RULES[rule] is None:
         G["Ce6_ub"], G["Cet_ub"] = G.Ce6_pt, G.Cet_pt
+    elif adapt is not None:
+        # study-adapted: centre shifted by the offset estimated from confirmatory batches
+        for tgt, col in (("Ce_VI", "Ce6"), ("Ce_total", "Cet")):
+            off, hw = adapt[tgt]
+            c = cps[tgt].full.predict(G[val.CHEM]) + off
+            G[f"{col}_pt"] = val.from_target(c, target=tgt)
+            G[f"{col}_ub"] = val.from_target(c + hw, target=tgt)
+        G["Cet_ub"] = np.maximum(G.Cet_ub, G.Ce6_ub)
     else:
         a = RULES[rule]
         _, hi6, _ = cps["Ce_VI"].interval(G, a, "M1")
@@ -619,6 +630,32 @@ def _choose(G, cps, C0, lim6, limt, rule):
         return None, G
     ok = ok.assign(margin=np.maximum(ok.Ce6_ub / lim6, ok.Cet_ub / limt))
     return ok.sort_values(["D", "margin"]).iloc[0], G
+
+
+def _verify(m, G, cps, C0, lim6, limt, rng, max_rounds=MAX_ROUNDS, n_rep=2):
+    """Model-guided, test-confirmed design.
+
+    Candidates are ranked by predicted effluent (point models) at the model-preferred pH, lowest
+    feasible dose first. Each round runs n_rep confirmatory batches at the candidate (true
+    response + 3% analytical noise + study bias); the design is accepted when the mean measured
+    Cr(VI) and total Cr are both below 90% of their limits. Otherwise the dose is escalated to the
+    next grid value. Returns (accepted design row or None, rounds used).
+    """
+    best, Gp = _choose(G, cps, C0, lim6, limt, "nominal")
+    if best is None:  # start from the dose the model ranks best at the most favourable pH
+        Gp = Gp.assign(score=np.maximum(Gp.Ce6_pt / lim6, Gp.Cet_pt / limt))
+        best = Gp.sort_values(["score", "D"]).iloc[0]
+    pH0 = best.pH
+    doses = [D_ for D_ in GRID_D if D_ >= best.D]
+    bias = np.exp(rng.normal(0, 0.05))
+    for r_, D_ in enumerate(doses[:max_rounds], start=1):
+        c6, ct = _truth(m, C0, pH0, D_)
+        m6 = np.mean([c6 * bias * (1 + rng.normal(0, 0.03)) for _ in range(n_rep)])
+        mt = np.mean([ct * bias * (1 + rng.normal(0, 0.03)) for _ in range(n_rep)])
+        if m6 <= 0.9 * lim6 and mt <= 0.9 * limt:
+            row = Gp[(Gp.pH == pH0) & (Gp.D == D_)].iloc[0].copy()
+            return row, r_
+    return None, min(len(doses), max_rounds)
 
 
 def _truth(m, C0, pH, D, I=0.01, T=298.15):
@@ -646,18 +683,37 @@ def _design_worker(args):
                 if any(all(v <= lim for v, lim in zip(_truth(m, C0, pg, Dg), (l6, lt))) for pg in GRID_PH):
                     min_true_D = float(Dg)
                     break
+            adapt_by_k = {}
+            for kk, doses in ADAPT_DOSES.items():
+                sub = G[(G.pH == 3.0) & G.D.isin(doses)]
+                bias = np.exp(rng2.normal(0, 0.05))
+                obs6, obst = [], []
+                for _, rr in sub.iterrows():
+                    c6, ct = _truth(m, C0, rr.pH, rr.D)
+                    obs6.append(max(c6 * bias * (1 + rng2.normal(0, 0.03)), 0.005))
+                    obst.append(max(ct * bias * (1 + rng2.normal(0, 0.03)), 0.01))
+                ad = {}
+                for tgt, obs in (("Ce_VI", obs6), ("Ce_total", obst)):
+                    off = float(np.mean(val.to_target(np.array(obs), tgt) - cps[tgt].full.predict(sub[val.CHEM])))
+                    ad[tgt] = (off, cps[tgt].adapted_halfwidth(kk, 0.05, seed=k))
+                adapt_by_k[kk] = ad
             for rule in RULES:
-                best, Gp = _choose(G, cps, C0, l6, lt, rule)
+                ad = adapt_by_k[int(rule[-1])] if "_adapt_k" in rule else None
+                if rule == "nominal_verify":
+                    best, rounds = _verify(m, G, cps, C0, l6, lt, rng2)
+                else:
+                    best, Gp = _choose(G, cps, C0, l6, lt, rule, ad)
+                    rounds = 0
                 rec = {"cohort": k, "material": m.material_id, "family": m.family, "target": tname, "rule": rule,
                        "feasible": best is not None, "attainable": bool(np.isfinite(min_true_D)),
-                       "min_true_D": min_true_D}
+                       "min_true_D": min_true_D, "rounds": rounds}
                 if best is not None:
                     c6, ct = _truth(m, C0, best.pH, best.D)
                     rec.update(pH=best.pH, D=best.D, Ce6_pred=best.Ce6_pt, Cet_pred=best.Cet_pt,
                                Ce6_ub=best.Ce6_ub, Cet_ub=best.Cet_ub, Ce6_true=c6, Cet_true=ct,
                                met_VI=c6 <= l6, met_tot=ct <= lt, met_both=(c6 <= l6) and (ct <= lt),
                                bound_holds=(c6 <= best.Ce6_ub) and (ct <= best.Cet_ub))
-                    if rule == "joint90_bonf":
+                    if rule == "nominal_verify":
                         for dp_, fD in ((-0.5, 1), (-0.25, 1), (0.25, 1), (0.5, 1), (0, 0.8), (0, 1.2)):
                             c6p, ctp = _truth(m, C0, best.pH + dp_, best.D * fD)
                             sens.append({"cohort": k, "material": m.material_id, "target": tname, "dpH": dp_,
@@ -711,7 +767,9 @@ def stage_design(quick=False):
                                "median_dose": float(f.D.median()) if n else np.nan,
                                "fail_VI": int((~f.met_VI.astype(bool)).sum()), "fail_tot": int((~f.met_tot.astype(bool)).sum()),
                                "joint_bound_holds": float(f.bound_holds.mean()) if n else np.nan,
-                               "median_pH": float(f.pH.median()) if n else np.nan}
+                               "median_pH": float(f.pH.median()) if n else np.nan,
+                               "mean_rounds": float(g.rounds.mean()) if "rounds" in g else np.nan,
+                               "halfwidth_note": "total-Cr study-level 95% bound needs >= 19 calibration studies"}
     if len(SN):
         summ["sensitivity_joint"] = SN.groupby(["target", "dpH", "fD"]).met_both.mean().round(3).reset_index().to_dict("records")
     if len(PR):
@@ -775,9 +833,19 @@ def _missing_worker(args):
         m = sim.random_material(rng2, fams[j % len(fams)], 9000 + j, hyper, "E")
         C0, l6, lt = TARGETS["S1"]
         cache = {}
+        doses = ADAPT_DOSES[4]
+        bias = np.exp(rng2.normal(0, 0.05))
+        conf = {D_: _truth(m, C0, 3.0, D_) for D_ in doses}   # confirmatory batches at the true I
+        obs = {tgt: np.array([max(conf[D_][j] * bias * (1 + rng2.normal(0, 0.03)), fl) for D_ in doses])
+               for j, (tgt, fl) in enumerate((("Ce_VI", 0.005), ("Ce_total", 0.01)))}
+        hw = {tgt: cps[tgt].adapted_halfwidth(4, 0.05, seed=k) for tgt in obs}
         for r in range(n_draw_design):
             I = float(10 ** rng.uniform(-3, -1))
-            best, _ = _choose(_design_frame(m, C0, I=I), cps, C0, l6, lt, "joint90_bonf")
+            G = _design_frame(m, C0, I=I)          # designer's features use the assumed I
+            sub = G[(G.pH == 3.0) & G.D.isin(doses)].sort_values("D")
+            ad = {tgt: (float(np.mean(val.to_target(obs[tgt], tgt) - cps[tgt].full.predict(sub[val.CHEM]))), hw[tgt])
+                  for tgt in obs}
+            best, _ = _choose(G, cps, C0, l6, lt, "joint80_adapt_k4", ad)
             if best is None:
                 drows.append({"corpus": k, "material": m.material_id, "draw": r, "I_assumed": I, "feasible": False})
                 continue
@@ -1030,7 +1098,9 @@ def figures():
     SN = pd.read_csv(RES / "design_sensitivity.csv") if (RES / "design_sensitivity.csv").stat().st_size > 2 else pd.DataFrame()
     fig, ax = plt.subplots(1, 3, figsize=(7.6, 2.9), constrained_layout=True)
     rules = list(RULES)
-    rl = {"nominal": "point", "marginal90": "marginal 90%", "joint90_bonf": "joint 90% (Bonf.)"}
+    rl = {"nominal": "point", "marginal90": "marginal\n90%", "joint90_bonf": "joint\n90%",
+          "joint90_adapt_k4": "joint 90%\n+4 batches", "joint80_adapt_k4": "joint 80%\n+4 batches",
+          "nominal_verify": "point +\nverify"}
     for i, t in enumerate(TARGETS):
         v, lo, hi, dose = [], [], [], []
         for r in rules:
@@ -1039,12 +1109,12 @@ def figures():
             p_ = k_ / n_ if n_ else np.nan
             a_, b_ = wilson(k_, n_)
             v.append(p_); lo.append(p_ - a_); hi.append(b_ - p_); dose.append(f.D.median())
-        xx = np.arange(3) + (i - 0.5) * 0.36
+        xx = np.arange(len(rules)) + (i - 0.5) * 0.36
         ax[0].bar(xx, v, 0.34, color=C[i], label=f"{t}: C$_0$ {TARGETS[t][0]:g}, limits {TARGETS[t][1]:g}/{TARGETS[t][2]:g}")
         ax[0].errorbar(xx, v, yerr=[lo, hi], fmt="none", ecolor=INK, lw=0.8, capsize=2)
         for x_, d_ in zip(xx, dose):
             ax[0].text(x_, 0.02, f"{d_:g}", ha="center", fontsize=6.5, color="white")
-    ax[0].set_xticks(range(3), [rl[r] for r in rules])
+    ax[0].set_xticks(range(len(rules)), [rl[r] for r in rules], fontsize=6.5)
     ax[0].set(ylabel="Designs meeting both limits", ylim=(0, 1.05), title="True compliance (dose g L$^{-1}$ in bar)")
     ax[0].legend(fontsize=6.3, loc="upper left")
     panel(ax[0], "a")
@@ -1060,11 +1130,11 @@ def figures():
     if len(SN):
         s1 = SN[SN.target == "S1"].groupby(["dpH", "fD"]).met_both.mean().reset_index()
         labels = [f"pH{'+' if a > 0 else ''}{a:g}" if b == 1 else f"dose×{b:g}" for a, b in zip(s1.dpH, s1.fD)]
-        base = O[(O.target == "S1") & (O.rule == "joint90_bonf") & O.feasible].met_both.mean()
+        base = O[(O.target == "S1") & (O.rule == "nominal_verify") & O.feasible].met_both.mean()
         ax[2].bar(range(len(s1)), s1.met_both, color=C[2])
         ax[2].axhline(base, color=INK, ls=":", lw=1, label="at selected design")
         ax[2].set_xticks(range(len(s1)), labels, rotation=35, fontsize=7.5)
-        ax[2].set(ylabel="Compliance", ylim=(0, 1.05), title="Operating-window sensitivity")
+        ax[2].set(ylabel="Compliance", ylim=(0, 1.05), title="Sensitivity, point + verify")
         ax[2].legend(fontsize=7)
     panel(ax[2], "c")
     fig.savefig(FIG / "fig6_design.png"); plt.close(fig)

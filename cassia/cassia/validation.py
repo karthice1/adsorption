@@ -269,6 +269,28 @@ class StudyCVPlus:
             return lo, hi, centre
         raise ValueError(method)
 
+    def adapted_halfwidth(self, k, alpha=0.1, seed=0):
+        """Half-width after removing a study offset estimated from k observations of that study.
+
+        Calibration: for every calibration study with more than k observations, k residuals are drawn
+        at random, their mean is subtracted from the remaining residuals, and the study-weighted
+        (1 - alpha) quantile of the absolute adjusted residuals is taken (test study given one unit of
+        weight, as in M1). Heuristic: it assumes the k confirmatory measurements are exchangeable with
+        the study's other observations.
+        """
+        rng = np.random.default_rng(seed)
+        v, w = [], []
+        for e in self.res:
+            r = e["r"]
+            if len(r) <= k:
+                continue
+            idx = rng.choice(len(r), k, replace=False)
+            rest = np.delete(r, idx)
+            a = np.abs(rest - r[idx].mean())
+            v.append(a); w.append(np.full(len(a), 1.0 / len(a)))
+        v, w = np.concatenate(v + [[np.inf]]), np.concatenate(w + [[1.0]])
+        return float(_wquantile(v, w, 1 - alpha))
+
 
 def conformal_loso(df, target="q_app_VI", model_name="RF", features=None, K=10, alphas=(0.1,), beta=0.9, seed=0):
     """Outer leave-one-study-out evaluation of M0/M1/M2; per-study coverage table."""
