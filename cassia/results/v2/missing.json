@@ -1,38 +1,136 @@
 {
-  "n_rows": 48,
+  "n_rows": 462,
   "by_pH_bin": [
     {
       "pH_bin": "(1.5, 3.5]",
-      "pred_spread90_log10": "0.099",
-      "width_nominal_log10": "5.058",
-      "width_union_log10": "5.24"
+      "pred_spread90_log10": "0.082",
+      "width_nominal_log10": "1.177",
+      "width_union_log10": "1.299"
     },
     {
       "pH_bin": "(3.5, 5.0]",
-      "pred_spread90_log10": "0.083",
-      "width_nominal_log10": "5.183",
-      "width_union_log10": "5.306"
+      "pred_spread90_log10": "0.075",
+      "width_nominal_log10": "1.182",
+      "width_union_log10": "1.264"
     },
     {
       "pH_bin": "(5.0, 6.5]",
-      "pred_spread90_log10": "0.179",
-      "width_nominal_log10": "5.269",
-      "width_union_log10": "5.438"
+      "pred_spread90_log10": "0.135",
+      "width_nominal_log10": "1.231",
+      "width_union_log10": "1.394"
     },
     {
       "pH_bin": "(6.5, 8.5]",
-      "pred_spread90_log10": "0.063",
-      "width_nominal_log10": "5.263",
-      "width_union_log10": "5.3"
+      "pred_spread90_log10": "0.138",
+      "width_nominal_log10": "1.283",
+      "width_union_log10": "1.467"
     }
   ],
   "fH_width90_by_pH_bin": {
-    "(1.5, 3.5]": 0.037,
-    "(3.5, 5.0]": 0.048,
-    "(5.0, 6.5]": 0.237,
-    "(6.5, 8.5]": 0.08
+    "(1.5, 3.5]": 0.035,
+    "(3.5, 5.0]": 0.045,
+    "(5.0, 6.5]": 0.241,
+    "(6.5, 8.5]": 0.081
   },
   "design": {
-    "feasible_frac": 0.0
+    "n_materials": 24,
+    "draws_per_material": 300,
+    "feasible_frac": 0.3334722222222222,
+    "dose_range_per_material": [
+      {
+        "corpus": 0,
+        "material": "AC_9000",
+        "min": 4.0,
+        "median": 4.0,
+        "max": 6.0
+      },
+      {
+        "corpus": 0,
+        "material": "AC_9001",
+        "min": 8.0,
+        "median": 8.0,
+        "max": 8.0
+      },
+      {
+        "corpus": 0,
+        "material": "POR9005",
+        "min": 2.0,
+        "median": 4.0,
+        "max": 4.0
+      },
+      {
+        "corpus": 1,
+        "material": "AC_9000",
+        "min": 4.0,
+        "median": 4.0,
+        "max": 6.0
+      },
+      {
+        "corpus": 1,
+        "material": "AC_9001",
+        "min": 6.0,
+        "median": 8.0,
+        "max": 8.0
+      },
+      {
+        "corpus": 1,
+        "material": "POR9005",
+        "min": 2.0,
+        "median": 2.0,
+        "max": 4.0
+      },
+      {
+        "corpus": 2,
+        "material": "AC_9001",
+        "min": 8.0,
+        "median": 8.0,
+        "max": 8.0
+      },
+      {
+        "corpus": 3,
+        "material": "AC_9000",
+        "min": 4.0,
+        "median": 4.0,
+        "max": 8.0
+      },
+      {
+        "corpus": 3,
+        "material": "AC_9001",
+        "min": 8.0,
+        "median": 8.0,
+        "max": 8.0
+      },
+      {
+        "corpus": 3,
+        "material": "POR9005",
+        "min": 8.0,
+        "median": 8.0,
+        "max": 8.0
+      }
+    ],
+    "compliance_prob_per_material": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Cet_true_p95_per_material": [
+      0.805,
+      0.622,
+      0.081,
+      0.605,
+      0.638,
+      0.29,
+      1.383,
+      0.24,
+      0.422,
+      0.252
+    ]
   }
 }

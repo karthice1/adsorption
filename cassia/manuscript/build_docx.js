@@ -1,5 +1,7 @@
-// Build an Elsevier-style review manuscript (.docx) from CASSIA_manuscript.md.
-//   node build_docx.js            -> CASSIA_manuscript.docx, CASSIA_highlights.docx
+// Build Elsevier-style Word files from the Markdown sources.
+//   node build_docx.js                                   -> CASSIA_manuscript.docx, CASSIA_highlights.docx
+//   node build_docx.js plain IN.md OUT.docx              -> plain document (response letter, supplement)
+// Footer line-number suppression is applied afterwards by postprocess_docx.py.
 // Conventions: A4, 2.54 cm margins, Times New Roman 12 pt, double spacing,
 // continuous line numbers, page numbers, title page, highlights/abstract on
 // their own pages, three-rule tables (caption above), figures (caption below),
@@ -13,7 +15,10 @@ const {
 } = require("docx");
 
 const DIR = __dirname;
-const md = fs.readFileSync(path.join(DIR, "CASSIA_manuscript.md"), "utf8").split("\n");
+const MODE = process.argv[2] === "plain" ? "plain" : "manuscript";
+const IN = MODE === "plain" ? process.argv[3] : "CASSIA_manuscript.md";
+const OUT = MODE === "plain" ? process.argv[4] : "CASSIA_manuscript.docx";
+const md = fs.readFileSync(path.join(DIR, IN), "utf8").split("\n");
 const FONT = "Times New Roman";
 const PAGE_W = 11906, MARGIN = 1440, TEXT_W = PAGE_W - 2 * MARGIN; // A4, DXA
 const DOUBLE = { line: 480, lineRule: LineRuleType.AUTO }, SINGLE = { line: 240, lineRule: LineRuleType.AUTO };
@@ -50,13 +55,13 @@ function runs(text, base = {}) {
 const para = (text, opts = {}) => new Paragraph({ spacing: DOUBLE, children: runs(text, opts.run), ...opts.p });
 
 // ---------- blocks ----------
-function heading(level, text) {
+function heading(level, text, breakBefore = false) {
   const isRefs = /^(References|Highlights|Abstract)$/.test(text);
   const fmt = level === 2 ? { bold: true } : level === 3 ? { bold: true, italics: true } : { italics: true };
   return new Paragraph({
     heading: [HeadingLevel.HEADING_1, HeadingLevel.HEADING_1, HeadingLevel.HEADING_2, HeadingLevel.HEADING_3][level - 1],
     spacing: { ...DOUBLE, before: level === 2 ? 240 : 120 },
-    keepNext: true,
+    keepNext: true, pageBreakBefore: breakBefore,
     children: runs(text, { ...fmt, font: FONT, size: 24, color: "000000" }),
     ...(isRefs ? {} : {}),
   });
@@ -122,10 +127,11 @@ const titlePage = [
 
 // ---------- body ----------
 const body = [];
-let i = md.findIndex((l) => l.startsWith("## Highlights"));
+let i = MODE === "plain" ? md.findIndex((l) => l.startsWith("# ")) + 1 : md.findIndex((l) => l.startsWith("## Highlights"));
 const highlights = [];
 let inHighlights = false, inRefs = false;
-const pageBreakBefore = new Set(["Highlights", "Abstract", "1. Introduction", "References"]);
+const pageBreakBefore = MODE === "plain" ? new Set() : new Set(["Highlights", "Abstract", "1. Introduction", "References"]);
+let afterTable = false;
 
 while (i < md.length) {
   const line = md[i];
@@ -135,16 +141,15 @@ while (i < md.length) {
     const text = h[2].trim();
     inHighlights = text === "Highlights";
     inRefs = text === "References";
-    const hp = heading(h[1].length, text);
-    if (pageBreakBefore.has(text)) body.push(new Paragraph({ pageBreakBefore: true, spacing: SINGLE, children: [] }));
-    body.push(hp);
+    body.push(heading(h[1].length, text, pageBreakBefore.has(text)));
+    afterTable = false;
     i++; continue;
   }
   if (line.startsWith("|")) {
     const block = [];
     while (i < md.length && md[i].startsWith("|")) block.push(md[i++]);
     body.push(table(block));
-    body.push(new Paragraph({ spacing: SINGLE, children: [] }));
+    afterTable = true;
     continue;
   }
   const img = line.match(/^!\[[^\]]*\]\(([^)]+)\)/);
@@ -168,8 +173,10 @@ while (i < md.length) {
   // figure / table captions: keep with neighbouring object
   const isTableCap = /^\*\*Table \d+\.\*\*/.test(line);
   const isFigCap = /^\*\*Fig\. \d+\.\*\*/.test(line);
+  const sp = isFigCap ? { ...SINGLE, after: 240 } : isTableCap ? { ...SINGLE, after: 120 } : { ...DOUBLE };
+  if (afterTable) { sp.before = 200; afterTable = false; }
   body.push(new Paragraph({
-    spacing: isFigCap ? { ...SINGLE, after: 240 } : isTableCap ? { ...SINGLE, after: 120 } : DOUBLE,
+    spacing: sp,
     keepNext: isTableCap, alignment: AlignmentType.JUSTIFIED,
     children: runs(line, isFigCap || isTableCap ? { size: 22 } : {}),
   }));
@@ -194,14 +201,17 @@ const pageProps = {
 const footer = { default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.CENTER,
   children: [new TextRun({ children: [PageNumber.CURRENT] })] })] }) };
 
+const plainTitle = [new Paragraph({ spacing: { ...DOUBLE, after: 240 },
+  children: [new TextRun({ text: titleLine, bold: true, size: 28 })] })];
 const doc = new Document({
   ...common,
   creator: "Karthik", title: titleLine,
-  description: "Manuscript prepared to Elsevier Guide for Authors conventions (review format)",
+  description: "Prepared to Elsevier Guide for Authors conventions (review format)",
   sections: [{
-    properties: { ...pageProps, lineNumbers: { countBy: 1, restart: LineNumberRestartFormat.CONTINUOUS, distance: 360 } },
+    properties: MODE === "plain" ? pageProps
+      : { ...pageProps, lineNumbers: { countBy: 1, restart: LineNumberRestartFormat.CONTINUOUS, distance: 360 } },
     footers: footer,
-    children: [...titlePage, ...body],
+    children: MODE === "plain" ? [...plainTitle, ...body] : [...titlePage, ...body],
   }],
 });
 
@@ -214,7 +224,7 @@ const hlDoc = new Document({
 });
 
 (async () => {
-  fs.writeFileSync(path.join(DIR, "CASSIA_manuscript.docx"), await Packer.toBuffer(doc));
-  fs.writeFileSync(path.join(DIR, "CASSIA_highlights.docx"), await Packer.toBuffer(hlDoc));
-  console.log("written; highlights:", highlights.length);
+  fs.writeFileSync(path.join(DIR, OUT), await Packer.toBuffer(doc));
+  if (MODE === "manuscript") fs.writeFileSync(path.join(DIR, "CASSIA_highlights.docx"), await Packer.toBuffer(hlDoc));
+  console.log("written", OUT, "highlights:", highlights.length);
 })();
