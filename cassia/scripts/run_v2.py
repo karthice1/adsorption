@@ -496,8 +496,8 @@ def stage_ml(quick=False):
     n_c = 3 if quick else 20
     n_gpr = 1 if quick else 5
     jobs = [(k, quick, k < n_gpr) for k in range(n_c)]
-    with Pool(NPROC) as pool:
-        res = pool.map(_ml_worker, jobs)
+    with Pool(NPROC) as pool:  # GPR jobs first, one job per dispatch
+        res = pool.map(_ml_worker, jobs, chunksize=1)
     M = pd.DataFrame([r for rows, _ in res for r in rows])
     PS = pd.concat([p for _, ps in res for p in ps], ignore_index=True)
     M.to_csv(RES / "ml_metrics.csv", index=False)

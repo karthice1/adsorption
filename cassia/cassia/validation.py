@@ -51,7 +51,8 @@ LEVELS = np.array([0.5, 0.6, 0.7, 0.8, 0.9, 0.95])
 HYPER = {
     "RF": {"n_estimators": 300, "min_samples_leaf": 2, "max_features": 1.0},
     "XGB": {"n_estimators": 500, "max_depth": 4, "learning_rate": 0.05, "subsample": 0.8, "colsample_bytree": 0.8},
-    "GPR": {"kernel": "Constant * Matern(nu=2.5, ARD) + White", "n_restarts_optimizer": 0, "normalize_y": True},
+    "GPR": {"kernel": "Constant * Matern(nu=2.5, ARD) + White", "n_restarts_optimizer": 0, "normalize_y": True,
+            "hyperparameters": "optimised on a seeded 300-row subsample of each training fold, then fixed"},
 }
 TUNE_GRID = {
     "RF": [{"min_samples_leaf": a, "max_features": b} for a in (1, 3, 5) for b in (0.33, 0.66, 1.0)],
@@ -76,12 +77,25 @@ class _ARDGPR(GaussianProcessRegressor):
     def __init__(self, kernel=None):
         super().__init__(kernel=kernel, normalize_y=True, n_restarts_optimizer=0, random_state=0)
 
+    N_HYPER = 300  # rows used to optimise kernel hyperparameters (training data only)
+
     def fit(self, X, y):
         self.kernel = ConstantKernel(1.0) * Matern(length_scale=np.ones(X.shape[1]), nu=2.5,
                                                    length_scale_bounds=(1e-2, 1e3)) + WhiteKernel(0.01, (1e-5, 1))
+        X, y = np.asarray(X), np.asarray(y)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            return super().fit(X, y)
+            if len(y) <= self.N_HYPER:
+                return super().fit(X, y)
+            # optimise the ARD kernel on a seeded subsample of the *training* rows, then refit all
+            # training rows with the kernel fixed (no test information is used)
+            idx = np.random.default_rng(0).choice(len(y), self.N_HYPER, replace=False)
+            super().fit(X[idx], y[idx])
+            final = GaussianProcessRegressor(kernel=self.kernel_, normalize_y=True, optimizer=None).fit(X, y)
+            for a in ("X_train_", "y_train_", "alpha_", "L_", "kernel_", "_y_train_mean", "_y_train_std",
+                      "log_marginal_likelihood_value_"):
+                setattr(self, a, getattr(final, a))
+            return self
 
 
 def make_model(name, seed=0, **over):
