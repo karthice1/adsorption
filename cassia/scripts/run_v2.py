@@ -692,13 +692,12 @@ def _design_worker(args):
                     c6, ct = _truth(m, C0, rr.pH, rr.D)
                     obs6.append(max(c6 * bias * (1 + rng2.normal(0, 0.03)), 0.005))
                     obst.append(max(ct * bias * (1 + rng2.normal(0, 0.03)), 0.01))
-                ad = {}
-                for tgt, obs in (("Ce_VI", obs6), ("Ce_total", obst)):
-                    off = float(np.mean(val.to_target(np.array(obs), tgt) - cps[tgt].full.predict(sub[val.CHEM])))
-                    ad[tgt] = (off, cps[tgt].adapted_halfwidth(kk, 0.05, seed=k))
-                adapt_by_k[kk] = ad
+                offs = {tgt: float(np.mean(val.to_target(np.array(obs), tgt) - cps[tgt].full.predict(sub[val.CHEM])))
+                        for tgt, obs in (("Ce_VI", obs6), ("Ce_total", obst))}
+                for a_ in (0.05, 0.10):  # per-endpoint alpha of the joint-90 and joint-80 rules
+                    adapt_by_k[(kk, a_)] = {tgt: (offs[tgt], cps[tgt].adapted_halfwidth(kk, a_, seed=k)) for tgt in offs}
             for rule in RULES:
-                ad = adapt_by_k[int(rule[-1])] if "_adapt_k" in rule else None
+                ad = adapt_by_k[(int(rule[-1]), RULES[rule])] if "_adapt_k" in rule else None
                 if rule == "nominal_verify":
                     best, rounds = _verify(m, G, cps, C0, l6, lt, rng2)
                 else:
@@ -833,19 +832,10 @@ def _missing_worker(args):
         m = sim.random_material(rng2, fams[j % len(fams)], 9000 + j, hyper, "E")
         C0, l6, lt = TARGETS["S1"]
         cache = {}
-        doses = ADAPT_DOSES[4]
-        bias = np.exp(rng2.normal(0, 0.05))
-        conf = {D_: _truth(m, C0, 3.0, D_) for D_ in doses}   # confirmatory batches at the true I
-        obs = {tgt: np.array([max(conf[D_][j] * bias * (1 + rng2.normal(0, 0.03)), fl) for D_ in doses])
-               for j, (tgt, fl) in enumerate((("Ce_VI", 0.005), ("Ce_total", 0.01)))}
-        hw = {tgt: cps[tgt].adapted_halfwidth(4, 0.05, seed=k) for tgt in obs}
         for r in range(n_draw_design):
             I = float(10 ** rng.uniform(-3, -1))
             G = _design_frame(m, C0, I=I)          # designer's features use the assumed I
-            sub = G[(G.pH == 3.0) & G.D.isin(doses)].sort_values("D")
-            ad = {tgt: (float(np.mean(val.to_target(obs[tgt], tgt) - cps[tgt].full.predict(sub[val.CHEM]))), hw[tgt])
-                  for tgt in obs}
-            best, _ = _choose(G, cps, C0, l6, lt, "joint80_adapt_k4", ad)
+            best, rounds = _verify(m, G, cps, C0, l6, lt, np.random.default_rng(1000 * j + r))
             if best is None:
                 drows.append({"corpus": k, "material": m.material_id, "draw": r, "I_assumed": I, "feasible": False})
                 continue
@@ -854,7 +844,8 @@ def _missing_worker(args):
                 cache[key] = _truth(m, C0, best.pH, best.D)
             c6, ct = cache[key]
             drows.append({"corpus": k, "material": m.material_id, "draw": r, "I_assumed": I, "feasible": True,
-                          "pH": best.pH, "D": best.D, "Ce6_true": c6, "Cet_true": ct, "met_both": c6 <= l6 and ct <= lt})
+                          "pH": best.pH, "D": best.D, "Ce6_true": c6, "Cet_true": ct, "met_both": c6 <= l6 and ct <= lt,
+                          "rounds": rounds})
     return pd.DataFrame(rows), pd.DataFrame(drows)
 
 
