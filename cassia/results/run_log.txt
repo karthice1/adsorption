@@ -1,0 +1,14 @@
+[1] chemistry
+[2] identifiability
+[3] ML validation
+  RF   base  random   R2=0.896 RMSE=7.60 (3s)
+  RF   base  grouped5 R2=0.786 RMSE=10.92 (3s)
+  RF   base  LOSO     R2=0.793 RMSE=10.74 (17s)
+  RF   base  LOFO     R2=0.584 RMSE=15.24 (2s)
+  RF   chem  random   R2=0.885 RMSE=8.02 (3s)
+  RF   chem  grouped5 R2=0.751 RMSE=11.78 (3s)
+  RF   chem  LOSO     R2=0.754 RMSE=11.72 (16s)
+  RF   chem  LOFO     R2=0.507 RMSE=16.58 (2s)
+  GPR  base  random   R2=0.781 RMSE=11.05 (39s)
+  GPR  base  grouped5 R2=0.603 RMSE=14.88 (40s)
+  GPR  base  LOSO     R2=0.436 RMSE=17.73 (312s)
