@@ -1,0 +1,38 @@
+{
+  "n_rows": 48,
+  "by_pH_bin": [
+    {
+      "pH_bin": "(1.5, 3.5]",
+      "pred_spread90_log10": "0.099",
+      "width_nominal_log10": "5.058",
+      "width_union_log10": "5.24"
+    },
+    {
+      "pH_bin": "(3.5, 5.0]",
+      "pred_spread90_log10": "0.083",
+      "width_nominal_log10": "5.183",
+      "width_union_log10": "5.306"
+    },
+    {
+      "pH_bin": "(5.0, 6.5]",
+      "pred_spread90_log10": "0.179",
+      "width_nominal_log10": "5.269",
+      "width_union_log10": "5.438"
+    },
+    {
+      "pH_bin": "(6.5, 8.5]",
+      "pred_spread90_log10": "0.063",
+      "width_nominal_log10": "5.263",
+      "width_union_log10": "5.3"
+    }
+  ],
+  "fH_width90_by_pH_bin": {
+    "(1.5, 3.5]": 0.037,
+    "(3.5, 5.0]": 0.048,
+    "(5.0, 6.5]": 0.237,
+    "(6.5, 8.5]": 0.08
+  },
+  "design": {
+    "feasible_frac": 0.0
+  }
+}

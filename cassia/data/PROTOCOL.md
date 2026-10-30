@@ -78,3 +78,15 @@ analyses, not as exclusion criteria.
 Leave-one-study-out and leave-one-material-family-out splits are defined on `study_id`
 and `material_family` before any model is fitted. At least one complete study is held
 back, unopened, as the external test set.
+
+## 8. Execution records (to be completed when the search is run)
+
+- `search_log.csv`: one row per query (date, database, exact string, filters, hits, export file, operator).
+- `prisma_flow.csv`: counts for every PRISMA 2020 stage, including duplicates removed and exclusion reasons.
+- `study_registry.csv`: one row per screened full text with inclusion decision and reason.
+- Extraction QC: each included study is extracted by one person and checked by a second against the
+  source table/figure; for digitised figures, 10% of points are re-digitised and the mean absolute
+  difference is recorded in the registry. Disagreements are resolved by discussion and logged.
+
+Status on 2026-10-30: not executed. The publisher and repository hosts were not reachable from the
+computational environment in which CASSIA 0.2 was built; no records have been screened or extracted.

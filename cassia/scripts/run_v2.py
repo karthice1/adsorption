@@ -517,7 +517,7 @@ def _uq_worker(args):
     d, _ = corpus_features(SEEDS["ml"] + k, 12 if quick else 30)
     alphas = (0.5, 0.4, 0.3, 0.2, 0.1, 0.05)
     out = []
-    for tgt in ("q_app_VI", "q_tot_aq"):
+    for tgt in ("q_app_VI", "q_tot_aq", "Ce_VI", "Ce_total"):
         r = val.conformal_loso(d, target=tgt, model_name="RF", features=val.CHEM, K=10, alphas=alphas, beta=0.9)
         r["target"], r["corpus"] = tgt, k
         out.append(r)
@@ -551,7 +551,7 @@ def stage_uq(quick=False):
 TARGETS = {"S1": (20.0, 0.5, 2.0), "S2": (5.0, 0.1, 0.5)}
 RULES = {"nominal": None, "marginal90": 0.10, "joint90_bonf": 0.05}
 GRID_PH = np.round(np.arange(2.0, 7.01, 0.5), 2)
-GRID_D = np.array([0.5, 1, 2, 3, 4, 6, 8, 10, 15], float)
+GRID_D = np.array([0.5, 1, 2, 3, 4, 6, 8], float)  # inside the training dose range (dose series)
 
 
 def _design_frame(m, C0, I=0.01, T=298.15):
@@ -564,17 +564,22 @@ def _design_frame(m, C0, I=0.01, T=298.15):
 
 
 def _choose(G, cps, C0, lim6, limt, rule):
-    q6c = val.from_target(cps["q_app_VI"].full.predict(G[val.CHEM]))
-    qtc = val.from_target(cps["q_tot_aq"].full.predict(G[val.CHEM]))
-    G = G.assign(Ce6_pt=np.clip(C0 - q6c * G.D, 0, None), Cet_pt=np.clip(C0 - qtc * G.D, 0, None))
+    """Pick the lowest-dose design whose (point or upper-bound) effluent meets both limits.
+
+    The decision quantities are modelled directly: log10 residual Cr(VI) and log10 residual
+    total Cr, each with its own study-level CV+ interval (M1).
+    """
+    c6 = val.from_target(cps["Ce_VI"].full.predict(G[val.CHEM]), target="Ce_VI")
+    ct = val.from_target(cps["Ce_total"].full.predict(G[val.CHEM]), target="Ce_total")
+    G = G.assign(Ce6_pt=c6, Cet_pt=np.maximum(ct, c6))
     if RULES[rule] is None:
         G["Ce6_ub"], G["Cet_ub"] = G.Ce6_pt, G.Cet_pt
     else:
         a = RULES[rule]
-        lo6, _, _ = cps["q_app_VI"].interval(G, a, "M1")
-        lot, _, _ = cps["q_tot_aq"].interval(G, a, "M1")
-        G["Ce6_ub"] = np.clip(C0 - val.from_target(lo6) * G.D, 0, None)
-        G["Cet_ub"] = np.clip(C0 - val.from_target(lot) * G.D, 0, None)
+        _, hi6, _ = cps["Ce_VI"].interval(G, a, "M1")
+        _, hit, _ = cps["Ce_total"].interval(G, a, "M1")
+        G["Ce6_ub"] = val.from_target(hi6, target="Ce_VI")
+        G["Cet_ub"] = val.from_target(hit, target="Ce_total")
     ok = G[(G.Ce6_ub <= lim6) & (G.Cet_ub <= limt)]
     if ok.empty:
         return None, G
@@ -591,7 +596,7 @@ def _design_worker(args):
     k, quick, n_new = args
     seed = SEEDS["ml"] + k
     d, _ = corpus_features(seed, 12 if quick else 30)
-    cps = {t: val.StudyCVPlus("RF", val.CHEM, K=10).fit(d, t) for t in ("q_app_VI", "q_tot_aq")}
+    cps = {t: val.StudyCVPlus("RF", val.CHEM, K=10).fit(d, t) for t in ("Ce_VI", "Ce_total")}
     rng = np.random.default_rng(seed)
     hyper = sim.corpus_hyperpriors(rng)  # identical to the training corpus hyper-priors
     rng2 = np.random.default_rng(SEEDS["design"] + k)
@@ -601,10 +606,17 @@ def _design_worker(args):
         m = sim.random_material(rng2, fams[j % len(fams)], 9000 + j, hyper, "E")
         for tname, (C0, l6, lt) in TARGETS.items():
             G = _design_frame(m, C0)
+            # true attainability: lowest dose (any grid pH) that meets both limits in the simulator
+            min_true_D = np.nan
+            for Dg in GRID_D:
+                if any(all(v <= lim for v, lim in zip(_truth(m, C0, pg, Dg), (l6, lt))) for pg in GRID_PH):
+                    min_true_D = float(Dg)
+                    break
             for rule in RULES:
                 best, Gp = _choose(G, cps, C0, l6, lt, rule)
                 rec = {"cohort": k, "material": m.material_id, "family": m.family, "target": tname, "rule": rule,
-                       "feasible": best is not None}
+                       "feasible": best is not None, "attainable": bool(np.isfinite(min_true_D)),
+                       "min_true_D": min_true_D}
                 if best is not None:
                     c6, ct = _truth(m, C0, best.pH, best.D)
                     rec.update(pH=best.pH, D=best.D, Ce6_pred=best.Ce6_pt, Cet_pred=best.Cet_pt,
@@ -619,14 +631,17 @@ def _design_worker(args):
                 out.append(rec)
             # predicted vs true over a sub-grid (for calibration of predicted effluent)
             if tname == "S1" and j < 5:
-                sub = G.iloc[::7]
-                q6 = val.from_target(cps["q_app_VI"].full.predict(sub[val.CHEM]))
-                qt = val.from_target(cps["q_tot_aq"].full.predict(sub[val.CHEM]))
-                for (_, rr), a6, at in zip(sub.iterrows(), q6, qt):
+                sub = G.iloc[::5]
+                p6 = val.from_target(cps["Ce_VI"].full.predict(sub[val.CHEM]), target="Ce_VI")
+                pt = val.from_target(cps["Ce_total"].full.predict(sub[val.CHEM]), target="Ce_total")
+                _, h6, _ = cps["Ce_VI"].interval(sub, 0.05, "M1")
+                _, ht, _ = cps["Ce_total"].interval(sub, 0.05, "M1")
+                for (_, rr), a6, at, u6, ut in zip(sub.iterrows(), p6, pt, h6, ht):
                     c6, ct = _truth(m, C0, rr.pH, rr.D)
                     pred.append({"cohort": k, "material": m.material_id, "pH": rr.pH, "D": rr.D,
-                                 "Ce6_pred": max(C0 - a6 * rr.D, 0), "Cet_pred": max(C0 - at * rr.D, 0),
-                                 "Ce6_true": c6, "Cet_true": ct})
+                                 "Ce6_pred": a6, "Cet_pred": max(at, a6), "Ce6_true": c6, "Cet_true": ct,
+                                 "Ce6_ub95": val.from_target(u6, target="Ce_VI"),
+                                 "Cet_ub95": val.from_target(ut, target="Ce_total")})
     return out, sens, pred
 
 
@@ -641,11 +656,23 @@ def stage_design(quick=False):
     SN.to_csv(RES / "design_sensitivity.csv", index=False)
     PR.to_csv(RES / "design_pred_vs_true.csv", index=False)
     summ = {"n_cohorts": n_c, "n_materials_per_cohort": n_new}
+    for c in ("met_both", "met_VI", "met_tot", "bound_holds"):
+        if c in O:
+            O[c] = O[c].fillna(False).astype(bool)
     for (t, rule), g in O.groupby(["target", "rule"]):
         f = g[g.feasible]
         k, n = int(f.met_both.sum()), len(f)
         per = f.groupby("cohort").met_both.mean()
-        summ[f"{t}|{rule}"] = {"n_materials": len(g), "n_feasible": n, "success": k / n if n else np.nan,
+        N = len(g)
+        unsafe = int((g.feasible & ~g.met_both).sum())
+        att = g[g.attainable]
+        summ[f"{t}|{rule}"] = {"n_materials": N, "n_attainable": int(g.attainable.sum()),
+                               "unsafe_recommendations": unsafe, "unsafe_rate": unsafe / N, "unsafe_wilson95": wilson(unsafe, N),
+                               "compliant_found": k, "found_of_attainable": float((att.feasible & att.met_both).mean()) if len(att) else np.nan,
+                               "declared_infeasible": int((~g.feasible).sum()),
+                               "declared_infeasible_but_attainable": int((~g.feasible & g.attainable).sum()),
+                               "dose_overhead_median": float((f[f.met_both].D / f[f.met_both].min_true_D).median()) if k else np.nan,
+                               "n_feasible": n, "success": k / n if n else np.nan,
                                "wilson95": wilson(k, n), "cohort_mean": float(per.mean()), "cohort_sd": float(per.std()),
                                "median_dose": float(f.D.median()) if n else np.nan,
                                "fail_VI": int((~f.met_VI.astype(bool)).sum()), "fail_tot": int((~f.met_tot.astype(bool)).sum()),
@@ -657,7 +684,10 @@ def stage_design(quick=False):
         for e in ("Ce6", "Cet"):
             lt, lp = np.log10(PR[f"{e}_true"] + 1e-3), np.log10(PR[f"{e}_pred"] + 1e-3)
             summ[f"pred_vs_true_{e}_log10"] = {"spearman": float(stats.spearmanr(lt, lp).statistic),
-                                               "median_abs_err_log10": float(np.median(np.abs(lt - lp)))}
+                                               "median_abs_err_log10": float(np.median(np.abs(lt - lp))),
+                                               "upper95_covers_truth": float((PR[f"{e}_true"] <= PR[f"{e}_ub95"]).mean())}
+        both = (PR.Ce6_true <= PR.Ce6_ub95) & (PR.Cet_true <= PR.Cet_ub95)
+        summ["pred_vs_true_joint_upper_bounds_hold"] = float(both.mean())
     dump("design", summ)
     print("design done")
 
@@ -702,7 +732,7 @@ def _missing_worker(args):
                              "width_nominal_log10": base_hi[i] - base_lo[i],
                              "width_union_log10": np.quantile(hi[:, i], 0.95) - np.quantile(lo[:, i], 0.05)})
     # design level: designer does not know I (true I = 0.01) -> dose and outcome distributions
-    cps = {t: val.StudyCVPlus("RF", val.CHEM, K=10).fit(d, t) for t in ("q_app_VI", "q_tot_aq")}
+    cps = {t: val.StudyCVPlus("RF", val.CHEM, K=10).fit(d, t) for t in ("Ce_VI", "Ce_total")}
     hyper = sim.corpus_hyperpriors(np.random.default_rng(seed))
     rng2 = np.random.default_rng(SEEDS["design"] + k)
     drows = []
@@ -739,11 +769,16 @@ def stage_missing(quick=False):
             "by_pH_bin": P.groupby("pH_bin", observed=True)[["pred_spread90_log10", "width_nominal_log10", "width_union_log10"]].median().round(3).reset_index().astype(str).to_dict("records"),
             "fH_width90_by_pH_bin": (P.fH_p95 - P.fH_p05).groupby(P.pH_bin, observed=True).median().round(3).astype(float).to_dict()}
     summ["fH_width90_by_pH_bin"] = {str(k): v for k, v in summ["fH_width90_by_pH_bin"].items()}
-    f = Dd[Dd.feasible]
+    f = Dd[Dd.feasible.astype(bool)] if "D" in Dd else Dd.iloc[:0]
+    if f.empty:
+        summ["design"] = {"feasible_frac": float(Dd.feasible.mean()) if len(Dd) else None}
+        dump("missing", summ)
+        print("missing done (no feasible designs)")
+        return
     summ["design"] = {"n_materials": int(Dd.groupby(["corpus", "material"]).ngroups),
                       "draws_per_material": int(Dd.groupby(["corpus", "material"]).size().median()),
                       "feasible_frac": float(Dd.feasible.mean()),
-                      "dose_range_per_material": f.groupby(["corpus", "material"]).D.agg(["min", "median", "max"]).reset_index().to_dict("records"),
+                      "dose_range_per_material": f.groupby(["corpus", "material"])["D"].agg(["min", "median", "max"]).reset_index().to_dict("records"),
                       "compliance_prob_per_material": f.groupby(["corpus", "material"]).met_both.mean().round(3).tolist(),
                       "Cet_true_p95_per_material": f.groupby(["corpus", "material"]).Cet_true.quantile(0.95).round(3).tolist()}
     dump("missing", summ)
@@ -936,17 +971,19 @@ def figures():
     ax[0].legend(fontsize=6.5)
     panel(ax[0], "a")
     g90 = u[u.alpha == 0.1]
-    ax[1].boxplot([g90[g90.method == m].coverage.values for m in names], tick_labels=list(names), widths=0.55, showfliers=True,
+    ax[1].boxplot([g90[g90.method == m].coverage.values for m in names], tick_labels=["M0", "M1", "M2"], widths=0.55, showfliers=True,
                   flierprops={"markersize": 2.5})
     ax[1].axhline(0.9, color=MUTED, ls=":", lw=1)
     ax[1].set(ylabel="Per-study coverage at 90%", title="Spread across studies")
     panel(ax[1], "b")
-    for i, tgt in enumerate(("q_app_VI", "q_tot_aq")):
-        gg = U[(U.target == tgt) & (U.alpha == 0.1)].groupby("method").width_log10.mean()
-        ax[2].bar(np.arange(3) + (i - 0.5) * 0.36, gg.reindex(list(names)).values, 0.34, color=C[i], label={"q_app_VI": "q$_{app,VI}$", "q_tot_aq": "q$_{tot,aq}$"}[tgt])
-    ax[2].set_xticks(range(3), list(names))
-    ax[2].set(ylabel="Mean 90% width (log$_{10}$)", title="Interval width")
-    ax[2].legend()
+    tl = {"q_app_VI": "q$_{app,VI}$", "q_tot_aq": "q$_{tot,aq}$", "Ce_VI": "C$_{e,VI}$", "Ce_total": "C$_{e,tot}$"}
+    for i, tgt in enumerate(tl):
+        gg = U[(U.target == tgt) & (U.alpha == 0.1)].groupby("method").coverage.mean()
+        ax[2].bar(np.arange(3) + (i - 1.5) * 0.2, gg.reindex(list(names)).values, 0.19, color=C[i], label=tl[tgt])
+    ax[2].set_xticks(range(3), ["M0", "M1", "M2"])
+    ax[2].axhline(0.9, color=MUTED, ls=":", lw=1)
+    ax[2].set(ylabel="Mean per-study coverage (90%)", ylim=(0.5, 1.02), title="By endpoint")
+    ax[2].legend(fontsize=6.5, ncol=2, loc="lower right")
     panel(ax[2], "c")
     fig.savefig(FIG / "fig5_conformal.png"); plt.close(fig)
 

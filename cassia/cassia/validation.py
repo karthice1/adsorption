@@ -45,6 +45,8 @@ except ImportError:  # optional
 BASE = ["C0", "pH", "D", "t", "T", "log_I", "I_imputed", "SBET", "Vp", "dp", "pHpzc"]
 CHEM = BASE + ["f_HCrO4", "f_CrO4", "f_Cr2O7", "z_mean_CrVI", "pH_minus_pzc"]
 OFFSET = 0.1
+# log-transform offsets per target (mg/g for uptake, mg/L for effluent ~ LOD/2)
+OFFSETS = {"q_app_VI": 0.1, "q_tot_aq": 0.1, "Ce_VI": 0.005, "Ce_total": 0.01}
 LEVELS = np.array([0.5, 0.6, 0.7, 0.8, 0.9, 0.95])
 HYPER = {
     "RF": {"n_estimators": 300, "min_samples_leaf": 2, "max_features": 1.0},
@@ -57,12 +59,12 @@ TUNE_GRID = {
 }
 
 
-def to_target(q):
-    return np.log10(np.clip(q, 0, None) + OFFSET)
+def to_target(q, target="q_app_VI"):
+    return np.log10(np.clip(q, 0, None) + OFFSETS.get(target, OFFSET))
 
 
-def from_target(y, smear=1.0):
-    return np.clip(10 ** y * smear - OFFSET, 0, None)
+def from_target(y, smear=1.0, target="q_app_VI"):
+    return np.clip(10 ** y * smear - OFFSETS.get(target, OFFSET), 0, None)
 
 
 def duan_smear(resid_log10):
@@ -161,7 +163,7 @@ def _tuned_params(name, X, y, groups, seed):
 def evaluate(df, model_name, features, scheme, target="q_app_VI", seed=0, tune=False, retransform="smear"):
     """Out-of-fold predictions and metrics (mg/g) with study-level bootstrap CIs."""
     d = prepare(df, target)
-    X, y = d[features], to_target(d[target].values)
+    X, y = d[features], to_target(d[target].values, target)
     groups = d["study_id"].values
     pred_log = np.full(len(y), np.nan)
     smear = np.ones(len(y))
@@ -174,7 +176,7 @@ def evaluate(df, model_name, features, scheme, target="q_app_VI", seed=0, tune=F
         if retransform == "smear":
             smear[te] = duan_smear(y[tr] - mdl.predict(X.iloc[tr]))
     q_true = np.clip(d[target].values, 0, None)
-    q_pred = from_target(pred_log, smear)
+    q_pred = from_target(pred_log, smear, target)
     res = metrics(q_true, q_pred) | cluster_bootstrap(d, q_true, q_pred)
     res.update({"model": model_name, "features": "chem" if "f_HCrO4" in features else "base", "scheme": scheme,
                 "target": target, "n_obs": len(d), "n_studies": int(d["study_id"].nunique()),
@@ -199,8 +201,9 @@ class StudyCVPlus:
         self.model_name, self.features, self.K, self.seed = model_name, features or CHEM, K, seed
 
     def fit(self, d: pd.DataFrame, target: str):
+        self.target = target
         d = prepare(d, target)
-        X, y = d[self.features], to_target(d[target].values)
+        X, y = d[self.features], to_target(d[target].values, target)
         g = d["study_id"].values
         K = min(self.K, len(np.unique(g)))
         self.fold_models, self.fold_of_study, self.res = [], {}, []
@@ -257,7 +260,7 @@ def conformal_loso(df, target="q_app_VI", model_name="RF", features=None, K=10, 
     """Outer leave-one-study-out evaluation of M0/M1/M2; per-study coverage table."""
     features = features or CHEM
     d = prepare(df, target)
-    y = to_target(d[target].values)
+    y = to_target(d[target].values, target)
     g = d["study_id"].values
     rows = []
     for test in np.unique(g):
@@ -276,7 +279,7 @@ def conformal_loso(df, target="q_app_VI", model_name="RF", features=None, K=10, 
 
 def between_study_variance(df, pred_log, target="q_app_VI"):
     d = prepare(df, target)
-    r = to_target(d[target].values) - pred_log
+    r = to_target(d[target].values, target) - pred_log
     gr = pd.Series(r).groupby(d["study_id"].values)
     n_bar = gr.size().mean()
     msb = n_bar * gr.mean().var(ddof=1)

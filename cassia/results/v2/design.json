@@ -3,6 +3,18 @@
   "n_materials_per_cohort": 4,
   "S1|joint90_bonf": {
     "n_materials": 8,
+    "n_attainable": 4,
+    "unsafe_recommendations": 0,
+    "unsafe_rate": 0.0,
+    "unsafe_wilson95": [
+      0.0,
+      0.3244156195108769
+    ],
+    "compliant_found": 0,
+    "found_of_attainable": 0.0,
+    "declared_infeasible": 8,
+    "declared_infeasible_but_attainable": 4,
+    "dose_overhead_median": null,
     "n_feasible": 0,
     "success": null,
     "wilson95": [
@@ -19,6 +31,18 @@
   },
   "S1|marginal90": {
     "n_materials": 8,
+    "n_attainable": 4,
+    "unsafe_recommendations": 0,
+    "unsafe_rate": 0.0,
+    "unsafe_wilson95": [
+      0.0,
+      0.3244156195108769
+    ],
+    "compliant_found": 0,
+    "found_of_attainable": 0.0,
+    "declared_infeasible": 8,
+    "declared_infeasible_but_attainable": 4,
+    "dose_overhead_median": null,
     "n_feasible": 0,
     "success": null,
     "wilson95": [
@@ -35,22 +59,46 @@
   },
   "S1|nominal": {
     "n_materials": 8,
-    "n_feasible": 8,
+    "n_attainable": 4,
+    "unsafe_recommendations": 1,
+    "unsafe_rate": 0.125,
+    "unsafe_wilson95": [
+      0.02241690886329617,
+      0.4708948057698615
+    ],
+    "compliant_found": 0,
+    "found_of_attainable": 0.0,
+    "declared_infeasible": 7,
+    "declared_infeasible_but_attainable": 3,
+    "dose_overhead_median": null,
+    "n_feasible": 1,
     "success": 0.0,
     "wilson95": [
       0.0,
-      0.3244156195108769
+      0.7934567085261071
     ],
     "cohort_mean": 0.0,
-    "cohort_sd": 0.0,
-    "median_dose": 3.0,
-    "fail_VI": 5,
-    "fail_tot": 8,
+    "cohort_sd": null,
+    "median_dose": 2.0,
+    "fail_VI": 1,
+    "fail_tot": 0,
     "joint_bound_holds": 0.0,
-    "median_pH": 2.5
+    "median_pH": 4.0
   },
   "S2|joint90_bonf": {
     "n_materials": 8,
+    "n_attainable": 5,
+    "unsafe_recommendations": 0,
+    "unsafe_rate": 0.0,
+    "unsafe_wilson95": [
+      0.0,
+      0.3244156195108769
+    ],
+    "compliant_found": 0,
+    "found_of_attainable": 0.0,
+    "declared_infeasible": 8,
+    "declared_infeasible_but_attainable": 5,
+    "dose_overhead_median": null,
     "n_feasible": 0,
     "success": null,
     "wilson95": [
@@ -67,6 +115,18 @@
   },
   "S2|marginal90": {
     "n_materials": 8,
+    "n_attainable": 5,
+    "unsafe_recommendations": 0,
+    "unsafe_rate": 0.0,
+    "unsafe_wilson95": [
+      0.0,
+      0.3244156195108769
+    ],
+    "compliant_found": 0,
+    "found_of_attainable": 0.0,
+    "declared_infeasible": 8,
+    "declared_infeasible_but_attainable": 5,
+    "dose_overhead_median": null,
     "n_feasible": 0,
     "success": null,
     "wilson95": [
@@ -83,26 +143,41 @@
   },
   "S2|nominal": {
     "n_materials": 8,
-    "n_feasible": 8,
-    "success": 0.0,
-    "wilson95": [
+    "n_attainable": 5,
+    "unsafe_recommendations": 0,
+    "unsafe_rate": 0.0,
+    "unsafe_wilson95": [
       0.0,
       0.3244156195108769
     ],
-    "cohort_mean": 0.0,
-    "cohort_sd": 0.0,
-    "median_dose": 2.0,
-    "fail_VI": 7,
-    "fail_tot": 7,
+    "compliant_found": 1,
+    "found_of_attainable": 0.2,
+    "declared_infeasible": 7,
+    "declared_infeasible_but_attainable": 4,
+    "dose_overhead_median": 1.3333333333333333,
+    "n_feasible": 1,
+    "success": 1.0,
+    "wilson95": [
+      0.20654329147389294,
+      1.0
+    ],
+    "cohort_mean": 1.0,
+    "cohort_sd": null,
+    "median_dose": 4.0,
+    "fail_VI": 0,
+    "fail_tot": 0,
     "joint_bound_holds": 0.0,
-    "median_pH": 4.25
+    "median_pH": 3.5
   },
   "pred_vs_true_Ce6_log10": {
-    "spearman": 0.7465291259996696,
-    "median_abs_err_log10": 2.296910381909697
+    "spearman": 0.7188987822743087,
+    "median_abs_err_log10": 0.38349334896073073,
+    "upper95_covers_truth": 1.0
   },
   "pred_vs_true_Cet_log10": {
-    "spearman": 0.6329616164638052,
-    "median_abs_err_log10": 2.4624020444483867
-  }
+    "spearman": 0.5462541201245192,
+    "median_abs_err_log10": 0.24270355009728967,
+    "upper95_covers_truth": 1.0
+  },
+  "pred_vs_true_joint_upper_bounds_hold": 1.0
 }

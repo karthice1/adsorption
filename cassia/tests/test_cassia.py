@@ -189,3 +189,43 @@ def test_pygaps_bet_adapter_recovers_analytic_area():
     n = 10 * 200 * p / ((1 - p) * (1 - p + 200 * p))  # n_m = 10 mmol/g, C = 200
     out = bet_from_published_isotherm(p, n)
     assert out["SBET"] == pytest.approx(10e-3 * 6.02214076e23 * 0.162e-18, rel=1e-3)
+
+
+def test_evaluate_conformal_and_variance_on_toy():
+    d = _toy(n_st=10)
+    d["q_app_VI"] = d["q"]
+    res, pl, dd, qp = val.evaluate(d, "RF", ["x"], "LOSO")
+    assert res["n_studies"] == 10 and res["R2_lo"] <= res["R2"] + 1e-9
+    assert len(val.per_study(dd, dd.q_app_VI.values, qp)) == 10
+    icc = val.between_study_variance(dd, pl)
+    assert 0 <= icc["ICC"] <= 1
+    cf = val.conformal_loso(d, target="q_app_VI", features=["x"], K=4, alphas=(0.2,))
+    assert set(cf.method) == {"M0", "M1", "M2"} and cf.coverage.between(0, 1).all()
+
+
+def test_chemistry_tables_and_features_flag_missing_I():
+    t = ch.speciation_table([3.0, 7.0], cr_mgL=10.0, databases=("minteq.v4.dat",))
+    assert len(t) == 2
+    assert {"HCrO4-", "Cr2O7-2"} <= set(ch.logk_table().index)
+    df = pd.DataFrame({"pH": [3.0, 3.0], "C0": [50.0, 50.0], "I": [0.01, np.nan], "T": [298.15, 298.15]})
+    f = ch.speciation_features(df)
+    assert f.I_imputed.tolist() == [False, True] and f.f_HCrO4.iloc[0] == pytest.approx(f.f_HCrO4.iloc[1])
+
+
+def test_kinetics_and_bootstrap():
+    t = np.geomspace(1, 600, 9)
+    q = 20 * (1 - np.exp(-0.02 * t))
+    tab = fit.selection_table(fit.fit_kinetics(t, q))
+    assert tab.loc[0, "model"] == "PFO"
+    Ce = np.geomspace(0.5, 200, 8)
+    fl = fit.fit_isotherms(Ce, 30 * 0.2 * Ce / (1 + 0.2 * Ce) * (1 + np.random.default_rng(1).normal(0, 0.02, 8)))["Langmuir"]
+    ci, draws = fit.bootstrap_ci(fl, Ce, B=50)
+    assert ci[0, 1] <= fl.params[1] <= ci[1, 1]
+
+
+def test_material_descriptors_provenance():
+    from cassia.pores import material_descriptors
+    p = np.linspace(0.01, 0.3, 25)
+    n = 10 * 200 * p / ((1 - p) * (1 - p + 200 * p))
+    out = material_descriptors({"SBET": 1000.0}, isotherm=(p, n))
+    assert out["SBET_source"] == "pyGAPS_from_isotherm" and abs(out["SBET_rel_diff"]) < 0.05

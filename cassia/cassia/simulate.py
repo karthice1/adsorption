@@ -328,6 +328,7 @@ def run_batch(m: Material, C0, pH0, D, t_points, T=298.15, I=0.01):
 # Virtual studies and corpora
 # ---------------------------------------------------------------------------
 EVIDENCE_MIX = {"C": 0.40, "B": 0.35, "A": 0.25}
+DOSE_SERIES = (0.5, 1.0, 2.0, 4.0, 6.0, 8.0)  # g/L at C0 = 20 mg/L, the study's optimum pH
 
 
 def virtual_study(rng, study_idx, family, hyper, scenario="E", n_iso=8, n_edge=6, n_kin=8, prefix="VS"):
@@ -344,15 +345,16 @@ def virtual_study(rng, study_idx, family, hyper, scenario="E", n_iso=8, n_edge=6
     reports_final_pH = ev == "A" or (ev == "B" and rng.random() < 0.5)
     rows = []
 
-    def add(series, C0, pH0, t_arr, total_meas, xps_meas):
-        tr = run_batch(m, C0, pH0, D, t_arr, T, I)
+    def add(series, C0, pH0, t_arr, total_meas, xps_meas, Dose=None):
+        Dz = D if Dose is None else Dose
+        tr = run_batch(m, C0, pH0, Dz, t_arr, T, I)
         for k in range(len(tr["t"])):
             one = {key: (v[k] if np.ndim(v) else v) for key, v in tr.items()}
             cv = one["Ce_VI_true"] * bias * (1 + rng.normal(0, 0.03))
             below = cv < 0.01
             row = {"study_id": sid, "material_id": m.material_id, "material_family": family,
                    "scenario": scenario, "study_evidence": ev, "series": series, "C0": C0, "pH": pH0,
-                   "D": D, "t": float(one["t"]), "T": T, "I": I if reports_I else np.nan, "I_true": I,
+                   "D": Dz, "t": float(one["t"]), "T": T, "I": I if reports_I else np.nan, "I_true": I,
                    "SBET": m.SBET, "Vp": m.Vp, "dp": m.dp, "pHpzc": m.pHpzc,
                    "Ce_VI": 0.005 if below else cv, "Ce_VI_below_LOD": below}
             if total_meas:
@@ -372,6 +374,8 @@ def virtual_study(rng, study_idx, family, hyper, scenario="E", n_iso=8, n_edge=6
     for j, pH in enumerate(np.linspace(2.0, 8.0, n_edge)):
         add("pH_edge", 50.0, float(pH), [t_eq], ev in ("A", "B"), ev == "A" and j == 0)
     add("kinetic", 50.0, pH_opt, np.geomspace(5, t_eq, n_kin), ev == "A", False)
+    for Dose in DOSE_SERIES:
+        add("dose", 20.0, pH_opt, [t_eq], ev in ("A", "B"), False, Dose=Dose)
     df = pd.DataFrame(rows)
     meta = asdict(m) | {"study_id": sid, "I": I, "T": T, "D": D, "pH_opt": pH_opt, "bias": bias,
                         "t_eq": t_eq, "study_evidence": ev}
@@ -393,8 +397,26 @@ def virtual_corpus(n_studies=30, seed=2026, scenario="E", prefix="VS"):
     return pd.concat(dfs, ignore_index=True), mats
 
 
+STUDY_DESIGN = {
+    "SBET, pHpzc": ("m2/g, -", "uniform within family ranges: " + "; ".join(
+        f"{f}: SBET {a}-{b}, pHpzc {c}-{d}" for f, ((a, b), (c, d)) in FAMILIES.items())),
+    "Vp, dp": ("cm3/g, nm", "Vp = SBET/1000 U(0.35, 0.75); dp ~ U(1.6, 6.0)"),
+    "affinity": ("-", "K = K0 (f_base + f[HCrO4- + Cr2O7-2]) (e_base + 1/(1 + exp((pH - pHpzc)/w_elec))); "
+                      "f_base 0.05, e_base 0.1, w_elec 0.8 (fixed)"),
+    "evidence class of a study": ("-", "C 0.40, B 0.35, A 0.25; B: total Cr on isotherm, pH-edge and dose series; "
+                                       "A: total Cr everywhere + XPS on 3 solids + final pH"),
+    "I": ("mol/L", "one of 0.001, 0.005, 0.01, 0.05, 0.1; reported always (A), 50% (B), 30% (C)"),
+    "T": ("K", "one of 293.15-313.15 in 5 K steps"),
+    "D": ("g/L", "one of 0.5, 1, 2, 4 (dose series: 0.5, 1, 2, 4, 6, 8 at C0 = 20 mg/L)"),
+    "pH_opt": ("-", "U(1.8, 3.5): pH of isotherm, kinetic and dose series"),
+    "t_eq": ("min", "one of 360, 720, 1440"),
+    "series": ("-", "isotherm 8 x C0 5-300 mg/L (log-spaced); pH edge 6 x pH 2-8 at 50 mg/L; kinetics 8 x t 5-t_eq; dose 6"),
+}
+
+
 def parameter_table() -> pd.DataFrame:
     rows = [{"parameter": k, "unit": u, "distribution": d} for k, (u, d) in PARAMETERS.items()]
+    rows += [{"parameter": k, "unit": u, "distribution": d} for k, (u, d) in STUDY_DESIGN.items()]
     rows += [{"parameter": k, "unit": "-", "distribution": v} for k, v in MEASUREMENT.items()]
     rows += [{"parameter": "numerical", "unit": "-",
               "distribution": "LSODA (scipy odeint), rtol 1e-6, atol 1e-8, mxstep 20000; y0 = [C0, 0, 0, 0, 0, 0, R0, 0, 0, pH0]"}]

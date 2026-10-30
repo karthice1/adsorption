@@ -4,3 +4,4 @@ __pycache__/
 cassia/results/virtual_corpus.csv.gz
 results/run_log.txt
 results/*.npz
+results/v2_run_part*.log

@@ -1,0 +1,14 @@
+
+Name                        Stmts   Miss  Cover
+-----------------------------------------------
+cassia/__init__.py              3      0   100%
+cassia/chemistry.py           241     46    81%
+cassia/dataset.py              48      3    94%
+cassia/fitting.py             108      7    94%
+cassia/identifiability.py     210     63    70%
+cassia/pores.py                20      0   100%
+cassia/simulate.py            252     10    96%
+cassia/validation.py          194     29    85%
+-----------------------------------------------
+TOTAL                        1076    158    85%
+34 passed in 49.74s
