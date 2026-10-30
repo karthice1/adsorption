@@ -128,7 +128,11 @@ In scenario E the removed chromium was distributed as follows (medians): 0.62 ad
 - Residual Cr(VI) data therefore usually cannot exclude the hypothesis 'adsorption only', even when most of the Cr(VI) was reduced. The Cr(III) observations of Classes B and A usually can.
 - Kinetic Cr(VI) data (D2) add little, because conventional kinetic models are fitted with their own free equilibrium uptake.
 
-**Profile likelihood (Fig. 3d).** [PROFILE TEXT]
+**Profile likelihood (Fig. 3d).** All profile points converged; the minimum −2 log L was consistent with the number of observations (3.4 for n = 14 under D1; 21–79 for n = 44–61 under D3/D4).
+
+- *Low-reduction study (true share 0.15).* The reductant capacity R₀ was practically non-identifiable. The 95% profile region extended from at least 16-fold below to 1.6-fold above the true value under every design. The implied reduction share nevertheless stayed within 0.13–0.14 (D1) and 0.17–0.18 (D3, D4). A share can be well determined while the parameter that generates it is not, *provided the model structure is correct*.
+- *High-reduction study (true share 0.60).* R₀ was sharply identified, within one grid step of 0.2 log units, under all designs. The share at the minimum was 0.601 in each case.
+- *Caveat.* The profiles use the known model structure and include the true parameters among the optimiser starts. They therefore show identifiability under the correct model, not the ease of estimation. The equivalence test removes that assumption, and under it Class C data lose most of their discriminating power.
 
 **Misreported metadata.**
 - Analysing the data at a pH 0.5 units above the true value biased the inferred reduction share by a median of 0.032 (90th percentile 0.157) under D1, and by 0.024 (0.092) under D3.
@@ -137,4 +141,4 @@ In scenario E the removed chromium was distributed as follows (medians): 0.62 ad
 
 ![Fig. 3](figures/fig3_identifiability.png)
 
-**Fig. 3.** Mechanism identifiability by measurement design (synthetic). (a) Laplace-posterior SD of the reduction share assuming the true model structure (median per bin; dotted: prior). (b) Detection rates of three model-free diagnostics. (c) Fraction of studies in which a flexible adsorption-only model is not rejected (χ² p > 0.05), for paired pure-adsorption controls and for studies with moderate or high reduction, at 3% and 10% analytical noise. (d) Profile likelihood of the reductant capacity for one low-reduction and one high-reduction study; the legend gives the true reduction share and the share at the profile minimum.
+**Fig. 3.** Mechanism identifiability by measurement design (synthetic). (a) Laplace-posterior SD of the reduction share assuming the true model structure (median per bin; dotted: prior). (b) Detection rates of three model-free diagnostics. (c) Fraction of studies in which a flexible adsorption-only model is not rejected (χ² p > 0.05), for paired pure-adsorption controls and for studies with moderate or high reduction, at 3% and 10% analytical noise. (d) Profile likelihood of the reductant capacity for one low-reduction (dashed; non-monotone, with a secondary basin above 6× R₀) and one high-reduction (solid) study under D1, D3 and D4. The legend gives the true reduction share and the share at the profile minimum; dotted line, 95% threshold (3.84).

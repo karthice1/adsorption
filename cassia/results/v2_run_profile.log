@@ -1,0 +1,4 @@
+  Y, info = odeint(_rhs_factory(m, D, T, I, pH0), y0, tt, rtol=1e-6, atol=1e-8, full_output=True, mxstep=20000)
+profile done
+[profile] 1038.4 s
+total 1038 s
