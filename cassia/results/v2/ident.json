@@ -1,0 +1,218 @@
+{
+  "n_fim_studies": {
+    "B": 6,
+    "C": 6,
+    "D": 6,
+    "E": 12
+  },
+  "post_sd_median_by_design": {
+    "D1": 0.0523057454026947,
+    "D2": 0.046756530002423795,
+    "D3": 0.02397408345372131,
+    "D4": 0.01786370930120977
+  },
+  "post_sd_p90_by_design": {
+    "D1": 0.22337679598046353,
+    "D2": 0.2052765667957381,
+    "D3": 0.15233964169917108,
+    "D4": 0.10075910268510095
+  },
+  "sd_ratio_median_by_design": {
+    "D1": 0.4162685372571743,
+    "D2": 0.3808365861830613,
+    "D3": 0.17945808014727643,
+    "D4": 0.12593703179856308
+  },
+  "post_sd_by_redbin": {
+    "D1": [
+      0.0129,
+      0.0482,
+      0.1226,
+      0.088
+    ],
+    "D2": [
+      0.0128,
+      0.0453,
+      0.1132,
+      0.0843
+    ],
+    "D3": [
+      0.006,
+      0.0238,
+      0.0777,
+      0.0432
+    ],
+    "D4": [
+      0.0051,
+      0.0162,
+      0.0384,
+      0.0247
+    ]
+  },
+  "detection_power_by_redbin": {
+    "lack_of_fit": [
+      0.35,
+      0.61,
+      0.638,
+      0.638
+    ],
+    "dissolved_cr3": [
+      0.0,
+      0.225,
+      0.312,
+      0.671
+    ],
+    "xps_cr3": [
+      0.025,
+      0.435,
+      0.8,
+      0.6
+    ]
+  },
+  "red_bins": [
+    "(-0.001, 0.05]",
+    "(0.05, 0.2]",
+    "(0.2, 0.4]",
+    "(0.4, 1.0]"
+  ],
+  "metadata_bias_pH0.5": {
+    "D1": [
+      0.0282,
+      0.0691
+    ],
+    "D3": [
+      0.017,
+      0.0698
+    ]
+  },
+  "metadata_bias_Ix10": {
+    "D1": [
+      0.003,
+      0.0232
+    ],
+    "D3": [
+      0.0007,
+      0.0126
+    ]
+  },
+  "equivalence": {
+    "control_A|sd=0.03|D1": {
+      "n": 3,
+      "frac_indistinguishable": 1.0
+    },
+    "control_A|sd=0.03|D2": {
+      "n": 3,
+      "frac_indistinguishable": 0.6666666666666666
+    },
+    "control_A|sd=0.03|D3": {
+      "n": 3,
+      "frac_indistinguishable": 0.6666666666666666
+    },
+    "control_A|sd=0.03|D4": {
+      "n": 3,
+      "frac_indistinguishable": 0.6666666666666666
+    },
+    "control_A|sd=0.1|D1": {
+      "n": 3,
+      "frac_indistinguishable": 1.0
+    },
+    "control_A|sd=0.1|D2": {
+      "n": 3,
+      "frac_indistinguishable": 0.6666666666666666
+    },
+    "control_A|sd=0.1|D3": {
+      "n": 3,
+      "frac_indistinguishable": 0.6666666666666666
+    },
+    "control_A|sd=0.1|D4": {
+      "n": 3,
+      "frac_indistinguishable": 0.6666666666666666
+    },
+    "true|sd=0.03|D1": {
+      "n": 3,
+      "frac_indistinguishable": 0.3333333333333333
+    },
+    "true|sd=0.03|D2": {
+      "n": 3,
+      "frac_indistinguishable": 0.3333333333333333
+    },
+    "true|sd=0.03|D3": {
+      "n": 3,
+      "frac_indistinguishable": 0.0
+    },
+    "true|sd=0.03|D4": {
+      "n": 3,
+      "frac_indistinguishable": 0.0
+    },
+    "true|sd=0.1|D1": {
+      "n": 3,
+      "frac_indistinguishable": 1.0
+    },
+    "true|sd=0.1|D2": {
+      "n": 3,
+      "frac_indistinguishable": 0.6666666666666666
+    },
+    "true|sd=0.1|D3": {
+      "n": 3,
+      "frac_indistinguishable": 0.0
+    },
+    "true|sd=0.1|D4": {
+      "n": 3,
+      "frac_indistinguishable": 0.0
+    }
+  },
+  "equivalence_red_gt_0.3": {
+    "0.03|D1": 0.0,
+    "0.03|D2": 0.0,
+    "0.03|D3": 0.0,
+    "0.03|D4": 0.0,
+    "0.1|D1": 1.0,
+    "0.1|D2": 1.0,
+    "0.1|D3": 0.0,
+    "0.1|D4": 0.0
+  },
+  "profiles": {
+    "VS000|D1": {
+      "true_share": 0.15432434992752067,
+      "share_range_within_delta_3.84": [
+        0.15446675175959027,
+        0.15446675175959027
+      ]
+    },
+    "VS000|D3": {
+      "true_share": 0.15432434992752067,
+      "share_range_within_delta_3.84": [
+        0.1643973575489636,
+        0.1643973575489636
+      ]
+    },
+    "VS000|D4": {
+      "true_share": 0.15432434992752067,
+      "share_range_within_delta_3.84": [
+        0.18404171502509944,
+        0.18404171502509944
+      ]
+    },
+    "VS005|D1": {
+      "true_share": 0.5995210663122594,
+      "share_range_within_delta_3.84": [
+        0.4788587331841735,
+        0.4788587331841735
+      ]
+    },
+    "VS005|D3": {
+      "true_share": 0.5995210663122594,
+      "share_range_within_delta_3.84": [
+        0.5318179663373866,
+        0.5318179663373866
+      ]
+    },
+    "VS005|D4": {
+      "true_share": 0.5995210663122594,
+      "share_range_within_delta_3.84": [
+        0.5340195634190725,
+        0.5340195634190725
+      ]
+    }
+  }
+}

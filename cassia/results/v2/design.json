@@ -1,0 +1,108 @@
+{
+  "n_cohorts": 2,
+  "n_materials_per_cohort": 4,
+  "S1|joint90_bonf": {
+    "n_materials": 8,
+    "n_feasible": 0,
+    "success": null,
+    "wilson95": [
+      null,
+      null
+    ],
+    "cohort_mean": null,
+    "cohort_sd": null,
+    "median_dose": null,
+    "fail_VI": 0,
+    "fail_tot": 0,
+    "joint_bound_holds": null,
+    "median_pH": null
+  },
+  "S1|marginal90": {
+    "n_materials": 8,
+    "n_feasible": 0,
+    "success": null,
+    "wilson95": [
+      null,
+      null
+    ],
+    "cohort_mean": null,
+    "cohort_sd": null,
+    "median_dose": null,
+    "fail_VI": 0,
+    "fail_tot": 0,
+    "joint_bound_holds": null,
+    "median_pH": null
+  },
+  "S1|nominal": {
+    "n_materials": 8,
+    "n_feasible": 8,
+    "success": 0.0,
+    "wilson95": [
+      0.0,
+      0.3244156195108769
+    ],
+    "cohort_mean": 0.0,
+    "cohort_sd": 0.0,
+    "median_dose": 3.0,
+    "fail_VI": 5,
+    "fail_tot": 8,
+    "joint_bound_holds": 0.0,
+    "median_pH": 2.5
+  },
+  "S2|joint90_bonf": {
+    "n_materials": 8,
+    "n_feasible": 0,
+    "success": null,
+    "wilson95": [
+      null,
+      null
+    ],
+    "cohort_mean": null,
+    "cohort_sd": null,
+    "median_dose": null,
+    "fail_VI": 0,
+    "fail_tot": 0,
+    "joint_bound_holds": null,
+    "median_pH": null
+  },
+  "S2|marginal90": {
+    "n_materials": 8,
+    "n_feasible": 0,
+    "success": null,
+    "wilson95": [
+      null,
+      null
+    ],
+    "cohort_mean": null,
+    "cohort_sd": null,
+    "median_dose": null,
+    "fail_VI": 0,
+    "fail_tot": 0,
+    "joint_bound_holds": null,
+    "median_pH": null
+  },
+  "S2|nominal": {
+    "n_materials": 8,
+    "n_feasible": 8,
+    "success": 0.0,
+    "wilson95": [
+      0.0,
+      0.3244156195108769
+    ],
+    "cohort_mean": 0.0,
+    "cohort_sd": 0.0,
+    "median_dose": 2.0,
+    "fail_VI": 7,
+    "fail_tot": 7,
+    "joint_bound_holds": 0.0,
+    "median_pH": 4.25
+  },
+  "pred_vs_true_Ce6_log10": {
+    "spearman": 0.7465291259996696,
+    "median_abs_err_log10": 2.296910381909697
+  },
+  "pred_vs_true_Cet_log10": {
+    "spearman": 0.6329616164638052,
+    "median_abs_err_log10": 2.4624020444483867
+  }
+}

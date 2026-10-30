@@ -1,0 +1,240 @@
+{
+  "n_replicates_per_scenario": 4,
+  "n_studies_per_corpus": 12,
+  "n_bootstrap_corpora": 2,
+  "n_study_fits": 240,
+  "A": {
+    "n": 48,
+    "share_red_quantiles": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "share_precip_quantiles": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "share_cr3_aq_quantiles": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "share_cr3_surface_quantiles": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "frac_R2best_ge_0.95": 0.4583333333333333,
+    "frac_R2best_ge_0.95_mcse": 0.04166666666666667,
+    "n_red_gt_0.2": 0,
+    "frac_of_red_gt_0.2_with_R2_ge_0.95": null,
+    "pub_median_qmax_ratio": 1.0424256620463872,
+    "pub_qmax_ratio_IQR": [
+      0.9807938468367362,
+      1.7008019528603087
+    ],
+    "pub_median_qmax_ratio_red_gt_0.3": null,
+    "pub_median_qmax_ratio_red_lt_0.05": 1.0424256620463872,
+    "spearman_red_vs_qmax_ratio_mean_sd": [
+      null,
+      null
+    ],
+    "runs_flag_rate": 0.16666666666666666,
+    "best_kin_PSO_rate": 0.22916666666666666,
+    "bootstrap_ci_coverage_of_true_qmax_pub": 0.16666666666666666,
+    "n_bootstrap_pub": 12,
+    "aq_index_spearman": null,
+    "aq_index_over_true_median": null
+  },
+  "B": {
+    "n": 48,
+    "share_red_quantiles": [
+      0.0198,
+      0.0419,
+      0.2412,
+      0.6399,
+      0.9271
+    ],
+    "share_precip_quantiles": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "share_cr3_aq_quantiles": [
+      0.0089,
+      0.2309,
+      0.9235
+    ],
+    "share_cr3_surface_quantiles": [
+      0.0004,
+      0.0052,
+      0.0575
+    ],
+    "frac_R2best_ge_0.95": 0.7291666666666666,
+    "frac_R2best_ge_0.95_mcse": 0.07115938031916387,
+    "n_red_gt_0.2": 25,
+    "frac_of_red_gt_0.2_with_R2_ge_0.95": 0.68,
+    "pub_median_qmax_ratio": 1.4120430457293887,
+    "pub_qmax_ratio_IQR": [
+      1.0987187449931264,
+      3.923010969805676
+    ],
+    "pub_median_qmax_ratio_red_gt_0.3": 12.057816934698664,
+    "pub_median_qmax_ratio_red_lt_0.05": 1.0610205010758815,
+    "spearman_red_vs_qmax_ratio_mean_sd": [
+      0.7430069930069931,
+      0.05487765672258077
+    ],
+    "runs_flag_rate": 0.0625,
+    "best_kin_PSO_rate": 0.4375,
+    "bootstrap_ci_coverage_of_true_qmax_pub": 0.05555555555555555,
+    "n_bootstrap_pub": 18,
+    "aq_index_spearman": 0.7260869565217389,
+    "aq_index_over_true_median": 0.9539896848374874
+  },
+  "C": {
+    "n": 48,
+    "share_red_quantiles": [
+      0.0265,
+      0.096,
+      0.1802,
+      0.3338,
+      0.6437
+    ],
+    "share_precip_quantiles": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "share_cr3_aq_quantiles": [
+      0.011,
+      0.1502,
+      0.5122
+    ],
+    "share_cr3_surface_quantiles": [
+      0.0065,
+      0.0355,
+      0.1533
+    ],
+    "frac_R2best_ge_0.95": 0.5208333333333334,
+    "frac_R2best_ge_0.95_mcse": 0.052429405800491304,
+    "n_red_gt_0.2": 21,
+    "frac_of_red_gt_0.2_with_R2_ge_0.95": 0.3333333333333333,
+    "pub_median_qmax_ratio": 1.0904689378540111,
+    "pub_qmax_ratio_IQR": [
+      1.0573471409513657,
+      1.684588149754849
+    ],
+    "pub_median_qmax_ratio_red_gt_0.3": 2.05694352893358,
+    "pub_median_qmax_ratio_red_lt_0.05": 1.1947651923300824,
+    "spearman_red_vs_qmax_ratio_mean_sd": [
+      0.1958041958041958,
+      0.14009304616612325
+    ],
+    "runs_flag_rate": 0.041666666666666664,
+    "best_kin_PSO_rate": 0.2708333333333333,
+    "bootstrap_ci_coverage_of_true_qmax_pub": 0.0,
+    "n_bootstrap_pub": 12,
+    "aq_index_spearman": 0.1961038961038961,
+    "aq_index_over_true_median": 0.8681389025820909
+  },
+  "D": {
+    "n": 48,
+    "share_red_quantiles": [
+      0.0049,
+      0.0113,
+      0.0361,
+      0.1013,
+      0.5597
+    ],
+    "share_precip_quantiles": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "share_cr3_aq_quantiles": [
+      0.0007,
+      0.0234,
+      0.5571
+    ],
+    "share_cr3_surface_quantiles": [
+      0.0003,
+      0.0032,
+      0.0248
+    ],
+    "frac_R2best_ge_0.95": 0.5625,
+    "frac_R2best_ge_0.95_mcse": 0.03989279615651408,
+    "n_red_gt_0.2": 9,
+    "frac_of_red_gt_0.2_with_R2_ge_0.95": 0.1111111111111111,
+    "pub_median_qmax_ratio": 1.0451071734353594,
+    "pub_qmax_ratio_IQR": [
+      0.9624533242473259,
+      1.2028025582911277
+    ],
+    "pub_median_qmax_ratio_red_gt_0.3": null,
+    "pub_median_qmax_ratio_red_lt_0.05": 0.9971797856678307,
+    "spearman_red_vs_qmax_ratio_mean_sd": [
+      0.2290209790209791,
+      0.2730184925355241
+    ],
+    "runs_flag_rate": 0.08333333333333333,
+    "best_kin_PSO_rate": 0.16666666666666666,
+    "bootstrap_ci_coverage_of_true_qmax_pub": 0.0,
+    "n_bootstrap_pub": 13,
+    "aq_index_spearman": -0.049999999999999996,
+    "aq_index_over_true_median": 0.6818228482004308
+  },
+  "E": {
+    "n": 48,
+    "share_red_quantiles": [
+      0.0427,
+      0.1574,
+      0.3618,
+      0.715,
+      0.9095
+    ],
+    "share_precip_quantiles": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "share_cr3_aq_quantiles": [
+      0.0125,
+      0.2525,
+      0.8869
+    ],
+    "share_cr3_surface_quantiles": [
+      0.003,
+      0.047,
+      0.209
+    ],
+    "frac_R2best_ge_0.95": 0.5833333333333334,
+    "frac_R2best_ge_0.95_mcse": 0.05892556509887896,
+    "n_red_gt_0.2": 34,
+    "frac_of_red_gt_0.2_with_R2_ge_0.95": 0.5,
+    "pub_median_qmax_ratio": 1.2482741612450683,
+    "pub_qmax_ratio_IQR": [
+      1.0636821498822364,
+      1.673813837641101
+    ],
+    "pub_median_qmax_ratio_red_gt_0.3": 1.608347184968783,
+    "pub_median_qmax_ratio_red_lt_0.05": 1.106103687166249,
+    "spearman_red_vs_qmax_ratio_mean_sd": [
+      0.6573426573426574,
+      0.16340309714053042
+    ],
+    "runs_flag_rate": 0.08333333333333333,
+    "best_kin_PSO_rate": 0.2708333333333333,
+    "bootstrap_ci_coverage_of_true_qmax_pub": 0.26666666666666666,
+    "n_bootstrap_pub": 15,
+    "aq_index_spearman": 0.8093596059113298,
+    "aq_index_over_true_median": 0.7766388608870389
+  },
+  "E_most_reductive_family_counts": {
+    "hydrochar": 3,
+    "biochar_wood": 1
+  }
+}

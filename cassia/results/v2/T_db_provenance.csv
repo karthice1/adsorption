@@ -1,0 +1,4 @@
+database,sha256,bytes,revision,source
+minteq.v4.dat,4a48bf5c357b3da3084606a5e322426c3ab1e969dd1c86f9c62a3a7995836ca3,508554,$Id: minteq.v4.dat 11091 2016-04-21 15:20:05Z dlpark $,https://github.com/usgs-coupled/phreeqc3/tree/master/database
+minteq.dat,0858232d8126f95cda1c8edbb2e50fa4c06055a1bcbb1aed154cc89cf61d168d,145129,$Id: minteq.dat 11091 2016-04-21 15:20:05Z dlpark $,https://github.com/usgs-coupled/phreeqc3/tree/master/database
+llnl.dat,1324b807f0f864806fc42df308f6ca7c5e8ce2ed8060d76351452f76beeb819b,702804,$Id: llnl.dat 12758 2017-08-01 22:09:36Z dlpark $,https://github.com/usgs-coupled/phreeqc3/tree/master/database

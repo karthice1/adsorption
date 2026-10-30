@@ -1,0 +1,411 @@
+{
+  "n_corpora": 3,
+  "n_corpora_gpr": 1,
+  "summary": [
+    {
+      "model": "GPR",
+      "features": "base",
+      "scheme": "LOSO",
+      "R2_mean": -0.1821,
+      "R2_sd": null,
+      "R2_q025": -0.1821,
+      "R2_q975": -0.1821,
+      "RMSE_mean": 18.3647,
+      "RMSE_sd": null,
+      "R2_cb_lo": -0.6094,
+      "R2_cb_hi": 0.0485,
+      "n": 1
+    },
+    {
+      "model": "GPR",
+      "features": "base",
+      "scheme": "random",
+      "R2_mean": 0.5158,
+      "R2_sd": null,
+      "R2_q025": 0.5158,
+      "R2_q975": 0.5158,
+      "RMSE_mean": 11.7537,
+      "RMSE_sd": null,
+      "R2_cb_lo": 0.2361,
+      "R2_cb_hi": 0.7126,
+      "n": 1
+    },
+    {
+      "model": "GPR",
+      "features": "chem",
+      "scheme": "LOSO",
+      "R2_mean": -0.1969,
+      "R2_sd": null,
+      "R2_q025": -0.1969,
+      "R2_q975": -0.1969,
+      "RMSE_mean": 18.4789,
+      "RMSE_sd": null,
+      "R2_cb_lo": -0.6319,
+      "R2_cb_hi": 0.0306,
+      "n": 1
+    },
+    {
+      "model": "GPR",
+      "features": "chem",
+      "scheme": "random",
+      "R2_mean": 0.5338,
+      "R2_sd": null,
+      "R2_q025": 0.5338,
+      "R2_q975": 0.5338,
+      "RMSE_mean": 11.5324,
+      "RMSE_sd": null,
+      "R2_cb_lo": 0.2295,
+      "R2_cb_hi": 0.737,
+      "n": 1
+    },
+    {
+      "model": "RF",
+      "features": "base",
+      "scheme": "LOFO",
+      "R2_mean": 0.0478,
+      "R2_sd": 0.2317,
+      "R2_q025": -0.1761,
+      "R2_q975": 0.2638,
+      "RMSE_mean": 15.0961,
+      "RMSE_sd": 3.1117,
+      "R2_cb_lo": -0.442,
+      "R2_cb_hi": 0.4544,
+      "n": 3
+    },
+    {
+      "model": "RF",
+      "features": "base",
+      "scheme": "LOSO",
+      "R2_mean": 0.3081,
+      "R2_sd": 0.2106,
+      "R2_q025": 0.115,
+      "R2_q975": 0.5143,
+      "RMSE_mean": 12.8121,
+      "RMSE_sd": 2.8688,
+      "R2_cb_lo": -0.2785,
+      "R2_cb_hi": 0.5581,
+      "n": 3
+    },
+    {
+      "model": "RF",
+      "features": "base",
+      "scheme": "external",
+      "R2_mean": 0.5314,
+      "R2_sd": 0.0719,
+      "R2_q025": 0.4591,
+      "R2_q975": 0.5946,
+      "RMSE_mean": 11.3522,
+      "RMSE_sd": 1.5751,
+      "R2_cb_lo": -0.0203,
+      "R2_cb_hi": 0.7202,
+      "n": 3
+    },
+    {
+      "model": "RF",
+      "features": "base",
+      "scheme": "grouped5",
+      "R2_mean": 0.2886,
+      "R2_sd": 0.1675,
+      "R2_q025": 0.1122,
+      "R2_q975": 0.4159,
+      "RMSE_mean": 13.0421,
+      "RMSE_sd": 2.5847,
+      "R2_cb_lo": -0.2872,
+      "R2_cb_hi": 0.5544,
+      "n": 3
+    },
+    {
+      "model": "RF",
+      "features": "base",
+      "scheme": "random",
+      "R2_mean": 0.8421,
+      "R2_sd": 0.0489,
+      "R2_q025": 0.79,
+      "R2_q975": 0.8753,
+      "RMSE_mean": 6.0844,
+      "RMSE_sd": 0.9602,
+      "R2_cb_lo": 0.72,
+      "R2_cb_hi": 0.9021,
+      "n": 3
+    },
+    {
+      "model": "RF",
+      "features": "chem",
+      "scheme": "LOFO",
+      "R2_mean": 0.0212,
+      "R2_sd": 0.2147,
+      "R2_q025": -0.1833,
+      "R2_q975": 0.2246,
+      "RMSE_mean": 15.3088,
+      "RMSE_sd": 2.9651,
+      "R2_cb_lo": -0.489,
+      "R2_cb_hi": 0.4338,
+      "n": 3
+    },
+    {
+      "model": "RF",
+      "features": "chem",
+      "scheme": "LOSO",
+      "R2_mean": 0.2345,
+      "R2_sd": 0.1959,
+      "R2_q025": 0.0315,
+      "R2_q975": 0.3941,
+      "RMSE_mean": 13.5205,
+      "RMSE_sd": 2.7958,
+      "R2_cb_lo": -0.378,
+      "R2_cb_hi": 0.4946,
+      "n": 3
+    },
+    {
+      "model": "RF",
+      "features": "chem",
+      "scheme": "external",
+      "R2_mean": 0.4956,
+      "R2_sd": 0.0901,
+      "R2_q025": 0.4156,
+      "R2_q975": 0.5857,
+      "RMSE_mean": 11.7764,
+      "RMSE_sd": 1.7925,
+      "R2_cb_lo": -0.125,
+      "R2_cb_hi": 0.6822,
+      "n": 3
+    },
+    {
+      "model": "RF",
+      "features": "chem",
+      "scheme": "grouped5",
+      "R2_mean": 0.2056,
+      "R2_sd": 0.2003,
+      "R2_q025": -0.0079,
+      "R2_q975": 0.3419,
+      "RMSE_mean": 13.7899,
+      "RMSE_sd": 2.903,
+      "R2_cb_lo": -0.4249,
+      "R2_cb_hi": 0.4699,
+      "n": 3
+    },
+    {
+      "model": "RF",
+      "features": "chem",
+      "scheme": "random",
+      "R2_mean": 0.8232,
+      "R2_sd": 0.0558,
+      "R2_q025": 0.7635,
+      "R2_q975": 0.8577,
+      "RMSE_mean": 6.4332,
+      "RMSE_sd": 0.9932,
+      "R2_cb_lo": 0.7016,
+      "R2_cb_hi": 0.886,
+      "n": 3
+    },
+    {
+      "model": "XGB",
+      "features": "base",
+      "scheme": "LOFO",
+      "R2_mean": 0.0537,
+      "R2_sd": 0.0984,
+      "R2_q025": -0.0514,
+      "R2_q975": 0.1179,
+      "RMSE_mean": 15.0537,
+      "RMSE_sd": 2.058,
+      "R2_cb_lo": -0.6147,
+      "R2_cb_hi": 0.4075,
+      "n": 3
+    },
+    {
+      "model": "XGB",
+      "features": "base",
+      "scheme": "LOSO",
+      "R2_mean": 0.2394,
+      "R2_sd": 0.0688,
+      "R2_q025": 0.1659,
+      "R2_q975": 0.2793,
+      "RMSE_mean": 13.4363,
+      "RMSE_sd": 0.8041,
+      "R2_cb_lo": -0.2512,
+      "R2_cb_hi": 0.5343,
+      "n": 3
+    },
+    {
+      "model": "XGB",
+      "features": "base",
+      "scheme": "external",
+      "R2_mean": 0.399,
+      "R2_sd": 0.0586,
+      "R2_q025": 0.3447,
+      "R2_q975": 0.4559,
+      "RMSE_mean": 12.847,
+      "RMSE_sd": 1.2721,
+      "R2_cb_lo": -0.0092,
+      "R2_cb_hi": 0.5778,
+      "n": 3
+    },
+    {
+      "model": "XGB",
+      "features": "base",
+      "scheme": "grouped5",
+      "R2_mean": 0.2047,
+      "R2_sd": 0.1428,
+      "R2_q025": 0.0958,
+      "R2_q975": 0.355,
+      "RMSE_mean": 13.6709,
+      "RMSE_sd": 0.6054,
+      "R2_cb_lo": -0.2658,
+      "R2_cb_hi": 0.4411,
+      "n": 3
+    },
+    {
+      "model": "XGB",
+      "features": "base",
+      "scheme": "random",
+      "R2_mean": 0.0988,
+      "R2_sd": 1.2509,
+      "R2_q025": -1.2387,
+      "R2_q975": 0.8706,
+      "RMSE_mean": 12.1104,
+      "RMSE_sd": 9.6228,
+      "R2_cb_lo": -0.7669,
+      "R2_cb_hi": 0.8904,
+      "n": 3
+    },
+    {
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "LOFO",
+      "R2_mean": 0.0528,
+      "R2_sd": 0.1311,
+      "R2_q025": -0.0755,
+      "R2_q975": 0.1731,
+      "RMSE_mean": 15.0645,
+      "RMSE_sd": 2.3123,
+      "R2_cb_lo": -0.4704,
+      "R2_cb_hi": 0.4378,
+      "n": 3
+    },
+    {
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "LOSO",
+      "R2_mean": 0.2328,
+      "R2_sd": 0.0201,
+      "R2_q025": 0.2121,
+      "R2_q975": 0.2494,
+      "RMSE_mean": 13.5222,
+      "RMSE_sd": 1.0706,
+      "R2_cb_lo": -0.1568,
+      "R2_cb_hi": 0.5186,
+      "n": 3
+    },
+    {
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "external",
+      "R2_mean": 0.3729,
+      "R2_sd": 0.0311,
+      "R2_q025": 0.3413,
+      "R2_q975": 0.3997,
+      "RMSE_mean": 13.127,
+      "RMSE_sd": 1.1471,
+      "R2_cb_lo": -0.2058,
+      "R2_cb_hi": 0.5911,
+      "n": 3
+    },
+    {
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "grouped5",
+      "R2_mean": 0.2697,
+      "R2_sd": 0.117,
+      "R2_q025": 0.1512,
+      "R2_q975": 0.3712,
+      "RMSE_mean": 13.1353,
+      "RMSE_sd": 0.9326,
+      "R2_cb_lo": -0.0503,
+      "R2_cb_hi": 0.4908,
+      "n": 3
+    },
+    {
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "random",
+      "R2_mean": 0.7535,
+      "R2_sd": 0.1186,
+      "R2_q025": 0.6313,
+      "R2_q975": 0.8519,
+      "RMSE_mean": 7.5342,
+      "RMSE_sd": 1.9189,
+      "R2_cb_lo": 0.5887,
+      "R2_cb_hi": 0.8733,
+      "n": 3
+    }
+  ],
+  "RF_minus_XGB_LOSO_R2_chem": {
+    "mean": 0.001629916713199675,
+    "sd": 0.1951889396308704,
+    "frac_RF_better": 0.6666666666666666,
+    "n": 3,
+    "sign_test_p": 1.0
+  },
+  "RF_chem_minus_base_LOSO_R2": {
+    "mean": -0.07367767362475082,
+    "sd": 0.06050858194870065,
+    "frac_positive": 0.0,
+    "n": 3
+  },
+  "XGB_chem_minus_base_LOSO_R2": {
+    "mean": -0.006577568930958362,
+    "sd": 0.050103353764048904,
+    "frac_positive": 0.3333333333333333,
+    "n": 3
+  },
+  "GPR_chem_minus_base_LOSO_R2": {
+    "mean": -0.014753245912207724,
+    "sd": null,
+    "frac_positive": 0.0,
+    "n": 1
+  },
+  "ICC_RF_chem_LOSO": {
+    "mean": 0.4936384446673248,
+    "sd": 0.07944713804701299
+  },
+  "retransform_bias_mg_g": {
+    "naive_mean": -3.2194081338935874,
+    "smear_mean": -2.4229564730631084
+  },
+  "n_censored_mean": 20.285714285714285,
+  "per_study_RMSE_RF_chem": [
+    2.675,
+    11.963,
+    22.93
+  ],
+  "per_study_RMSE_by_family": {
+    "AC_chemical": 11.525,
+    "AC_physical": 10.734,
+    "biochar_manure": 7.986,
+    "biochar_wood": 10.638,
+    "hydrochar": 3.385,
+    "porous_carbon": 19.722
+  },
+  "tuning_delta_R2": {
+    "RF": 0.19078921782702019,
+    "XGB": 0.02505855039417859
+  },
+  "learning_curve": {
+    "('R2_LOSO', 'mean')": {
+      "12": 0.5184,
+      "24": 0.6176
+    },
+    "('R2_LOSO', 'std')": {
+      "12": 0.0534,
+      "24": 0.0762
+    },
+    "('R2_random', 'mean')": {
+      "12": 0.8669,
+      "24": 0.8737
+    },
+    "('R2_random', 'std')": {
+      "12": 0.0039,
+      "24": 0.019
+    }
+  }
+}

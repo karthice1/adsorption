@@ -1,173 +1,401 @@
-"""Known-truth virtual batch experiments for Cr(VI) on carbon.
+"""Known-truth, multi-mechanism virtual batch experiments for Cr(VI) on carbon (CASSIA v0.2).
 
-The generator couples (i) PHREEQC Cr(VI) speciation, (ii) electrostatically
-modulated Langmuir uptake of Cr(VI) with linear-driving-force kinetics,
-(iii) acid-promoted reduction of Cr(VI) by a finite pool of surface
-reductant, and (iv) partitioning of the Cr(III) produced between solution,
-surface binding and Cr(OH)3(am) precipitation (PHREEQC solubility). Every
-virtual observation therefore carries the *true* split between adsorbed
-Cr(VI), reduced chromium and dissolved Cr(III), which no published study
-provides for every data point. It is used only to test whether methods can
-recover that split; it is not a substitute for published data.
+One general kinetic model contains five removal pathways; the benchmark scenarios
+switch pathways on or off:
+
+  A  adsorption only (negative control)
+  B  direct surface-mediated reduction of dissolved Cr(VI) (electron transfer at the
+     surface without a prior adsorbed state), product partly released
+  C  adsorption-coupled reduction: adsorbed Cr(VI) is reduced in place, Cr(III) is
+     released kinetically
+  D  dissolved-phase reduction by reductants leached from the carbon, followed by
+     Cr(III) partitioning
+  E  all pathways + Cr(III) re-adsorption + Cr(OH)3(am) precipitation/dissolution +
+     proton-balance pH drift
+
+States (per litre of suspension unless stated): Cv dissolved Cr(VI) [mg/L]; q6 adsorbed
+Cr(VI) [mg/g]; q3s Cr(III) formed on the surface [mg/g]; q3r Cr(III) re-adsorbed from
+solution [mg/g]; C3 dissolved Cr(III) [mg/L]; P3 precipitated Cr(III) [mg/L]; Rs surface
+reductant [mmol e-/g]; L dissolved reductant [mmol e-/L]; Lrel reductant leached so far
+[mmol e-/L]; pH.
+
+Conservation (unit-tested): Cv + D(q6 + q3s + q3r) + C3 + P3 = C0, and
+3 * (Cr reduced, mmol/L) = D (R0 - Rs) + (Lrel - L).
+
+Speciation (pH, current Cr(VI), I, T) and Cr(III) solubility (pH, I) come from PHREEQC
+(minteq.v4.dat) through look-up grids. Every parameter and its distribution is listed in
+``PARAMETERS`` (exported to the supplementary table). Family-level means of the
+reduction-related parameters are drawn per corpus from a common hyper-prior, so which
+carbon family is most reductive is itself random across replicates.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 
 import numpy as np
 import pandas as pd
-from scipy.integrate import solve_ivp
 
 from . import chemistry as ch
 
-_PH_GRID = np.round(np.arange(1.5, 10.01, 0.25), 2)
+MW = ch.CR_MW
+SCENARIOS = ("A", "B", "C", "D", "E")
+
+FAMILIES = {
+    # family: (SBET range m2/g, pHpzc range) - physical plausibility only
+    "AC_chemical": ((800, 1800), (2.5, 6.0)),
+    "AC_physical": ((400, 1200), (6.0, 9.5)),
+    "biochar_wood": ((50, 500), (6.5, 9.5)),
+    "biochar_manure": ((20, 200), (7.0, 10.0)),
+    "hydrochar": ((5, 60), (4.0, 7.0)),
+    "porous_carbon": ((800, 2500), (3.0, 8.0)),
+}
+
+# name: (unit, distribution text, sampler) - sampler(rng, fam_hyper) -> value
+PARAMETERS = {
+    "qmax": ("mg/g", "q_f * SBET/1000 * LN(0, 0.35); q_f ~ LN(ln 35, 0.3) per family and corpus"),
+    "K0": ("L/mg", "10^U(-1.3, 0)"),
+    "ka": ("1/min", "10^U(-2.3, -1.3)"),
+    "R0": ("mmol e-/g", "10^(mu_R,f + N(0, 0.3)); mu_R,f ~ U(-1.3, 0.3) per family and corpus"),
+    "kB": ("L/(g min)", "10^U(-4.0, -2.3) (scenarios B, E)"),
+    "kC": ("1/min", "10^U(-3.5, -1.8) (scenarios C, E)"),
+    "L0": ("mmol e-/g", "10^(mu_L,f + N(0, 0.3)); mu_L,f ~ U(-2.5, -0.8) per family and corpus (D, E)"),
+    "kl": ("1/min", "10^U(-3.0, -1.5)"),
+    "kD": ("L/(mmol e- min)", "10^U(-2.0, 0.0) (scenarios D, E)"),
+    "pH50_red": ("-", "U(2.0, 4.0); acid promotion h(pH) = 1/(1 + 10^(pH - pH50_red))"),
+    "Ea_red": ("kJ/mol", "U(25, 50)"),
+    "pH50_cr3": ("-", "U(3.5, 5.0); Cr(III) surface affinity theta3(pH) = 1/(1 + exp(-(pH - pH50_cr3)/0.5))"),
+    "krel": ("1/min", "10^U(-3.0, -1.5); release of surface Cr(III) at rate krel (1 - theta3) q3s"),
+    "q3max": ("mg/g", "0.5 qmax LN(0, 0.3)"),
+    "K3": ("L/mg", "10^U(-1.0, 0.5)"),
+    "k3": ("1/min", "10^U(-2.5, -1.0)"),
+    "kp": ("1/min", "0.05 (fixed); precipitation/dissolution toward PHREEQC Cr(OH)3(am) solubility"),
+    "nH": ("mol H+/mol Cr", "U(3, 5) net protons consumed per Cr reduced (E only)"),
+    "beta": ("mmol/(L pH)", "10^U(0, 1) buffer capacity (E only)"),
+    "kbuf": ("1/min", "10^U(-4.5, -3.0); proton exchange with the carbon, flux kbuf*beta*(pHpzc - pH), buffered by beta + 2.303[H+] (E only)"),
+    "Ea_ads": ("kJ/mol", "15 (fixed)"),
+}
+
+MEASUREMENT = {
+    "Ce_VI": "DPC: x(1 + N(0, 0.03)) * study bias; LOD 0.01 mg/L, values < LOD reported as LOD/2 and flagged",
+    "Ce_total": "AAS/ICP: (Cv + C3)(1 + N(0, 0.03)) * study bias; LOD 0.02 mg/L",
+    "xps_cr3_frac": "XPS Cr(III)/(Cr(III)+Cr(VI)) on solid: true + N(0, 0.05), clipped to [0, 1]",
+    "pH_final": "true final pH + N(0, 0.05)",
+    "study bias": "exp(N(0, 0.05)), shared by Cr(VI) and total-Cr analyses within a study",
+}
 
 
-class _Tables:
-    """PHREEQC look-up tables (built once) used inside the ODE right-hand side."""
-    _cache = {}
+# ---------------------------------------------------------------------------
+# PHREEQC look-ups
+# ---------------------------------------------------------------------------
+class _Sol:
+    pH = np.round(np.arange(1.5, 11.01, 0.25), 2)
+    I = np.array([0.001, 0.01, 0.1])
+    _logS = None
 
     @classmethod
-    def get(cls, database="minteq.v4.dat"):
-        if database not in cls._cache:
-            fr = [ch.speciate_cr6(p, 50.0, database=database).fractions for p in _PH_GRID]
-            fH = np.array([f.get("HCrO4-", 0) for f in fr])
-            fD = np.array([f.get("Cr2O7-2", 0) for f in fr])
-            S = np.array([ch.cr3_solubility_mgL(p) for p in _PH_GRID])
-            S = np.where(np.isfinite(S), S, 1e6)
-            cls._cache[database] = (fH, fD, np.log10(S))
-        return cls._cache[database]
+    def logS(cls):
+        if cls._logS is None:
+            f = ch.DB_DIR.parent / "results" / "cr3_solubility_grid.npz"
+            if f.exists():
+                cls._logS = np.load(f)["logS"]
+            else:
+                S = np.array([[ch.cr3_solubility_si(p, ionic_strength=i)["S_mgL"] for i in cls.I] for p in cls.pH])
+                S = np.where(np.isfinite(S), S, 1e5)   # 'undersaturated_to_cmax' -> no constraint
+                S = np.where(np.isnan(S), 1e5, S)
+                cls._logS = np.log10(S)
+                f.parent.mkdir(exist_ok=True)
+                np.savez_compressed(f, logS=cls._logS, pH=cls.pH, I=cls.I)
+        return cls._logS
 
 
-def f_hcro4(pH, database="minteq.v4.dat"):
-    fH, fD, _ = _Tables.get(database)
-    return np.interp(pH, _PH_GRID, fH + fD)  # monovalent/dimer anions: the low-pH, high-affinity forms
+def cr3_solubility(pH, I=0.01):
+    logS = _Sol.logS()
+    li = np.interp(np.log10(I), np.log10(_Sol.I), np.arange(len(_Sol.I)))
+    j = int(min(np.floor(li), len(_Sol.I) - 2)); w = li - j
+    col = (1 - w) * logS[:, j] + w * logS[:, j + 1]
+    return 10 ** np.interp(pH, _Sol.pH, col)
 
 
-def cr3_solubility(pH):
-    _, _, logS = _Tables.get()
-    return 10 ** np.interp(pH, _PH_GRID, logS)
+def _spec(pH, C, I, T):
+    f = ch.grid()(pH, C, I, T)[0]
+    return f[0] + f[2]  # HCrO4- + Cr2O7-2: the high-affinity, low-pH anions (per Cr atom)
 
 
+# ---------------------------------------------------------------------------
+# Materials, hyper-priors and scenarios
+# ---------------------------------------------------------------------------
 @dataclass
 class Material:
     material_id: str
     family: str
-    SBET: float      # m2/g
-    Vp: float        # cm3/g
-    dp: float        # nm
+    SBET: float
+    Vp: float
+    dp: float
     pHpzc: float
-    qmax: float      # mg Cr(VI)/g true adsorption capacity
-    K0: float        # L/mg affinity scale
-    R0: float        # mg Cr(VI)/g reducible by the surface
-    kred: float      # L g-1 min-1 reduction rate constant at full acid promotion
-    pH50_red: float  # pH of half-maximal acid promotion of reduction
-    pH50_cr3: float  # pH of half-maximal Cr(III) surface binding
-    ka: float = 0.02  # 1/min LDF adsorption rate
+    qmax: float
+    K0: float
+    ka: float
+    R0: float
+    kB: float
+    kC: float
+    L0: float
+    kl: float
+    kD: float
+    pH50_red: float
+    Ea_red: float
+    pH50_cr3: float
+    krel: float
+    q3max: float
+    K3: float
+    k3: float
+    nH: float
+    beta: float
+    kbuf: float
+    kp: float = 0.05
+    Ea_ads: float = 15.0
+    w_elec: float = 0.8   # electrostatic switch width (pH units)
+    f_base: float = 0.05  # affinity floor of CrO4-2-dominated solutions
+    e_base: float = 0.1   # affinity floor above pHpzc
+    scenario: str = "E"
 
 
-FAMILIES = {
-    # family: (SBET range, reductant scale, qmax per 1000 m2/g)
-    "activated_carbon": ((600, 1800), 0.4, 45.0),
-    "biochar": ((50, 500), 1.6, 25.0),
-    "biomass_porous_carbon": ((800, 2500), 0.8, 40.0),
-}
+def corpus_hyperpriors(rng) -> dict:
+    """Family-level means drawn per corpus: no family is reductive by construction."""
+    return {f: {"q_f": np.exp(rng.normal(np.log(35), 0.3)), "mu_R": rng.uniform(-1.3, 0.3),
+                "mu_L": rng.uniform(-2.5, -0.8)} for f in FAMILIES}
 
 
-def random_material(rng, family, idx) -> Material:
-    (lo, hi), red_scale, q_per = FAMILIES[family]
-    S = rng.uniform(lo, hi)
-    pzc = rng.uniform(2.5, 8.5) if family != "biochar" else rng.uniform(6.0, 9.5)
-    qmax = q_per * S / 1000 * np.exp(rng.normal(0, 0.35))
-    R0 = red_scale * qmax * np.exp(rng.normal(0, 0.5))
-    return Material(
-        material_id=f"{family[:2].upper()}{idx:03d}", family=family, SBET=S,
-        Vp=S / 1000 * rng.uniform(0.35, 0.75), dp=rng.uniform(1.6, 6.0), pHpzc=pzc,
-        qmax=qmax, K0=10 ** rng.uniform(-1.3, 0.0), R0=R0,
-        kred=10 ** rng.uniform(-4.0, -2.3) * red_scale, pH50_red=rng.uniform(2.0, 3.5),
-        pH50_cr3=rng.uniform(3.5, 5.0))
+def random_material(rng, family, idx, hyper, scenario="E") -> Material:
+    (s_lo, s_hi), (z_lo, z_hi) = FAMILIES[family]
+    h = hyper[family]
+    S = rng.uniform(s_lo, s_hi)
+    qmax = h["q_f"] * S / 1000 * np.exp(rng.normal(0, 0.35))
+    m = Material(
+        material_id=f"{family[:3].upper()}{idx:04d}", family=family, SBET=S,
+        Vp=S / 1000 * rng.uniform(0.35, 0.75), dp=rng.uniform(1.6, 6.0), pHpzc=rng.uniform(z_lo, z_hi),
+        qmax=qmax, K0=10 ** rng.uniform(-1.3, 0), ka=10 ** rng.uniform(-2.3, -1.3),
+        R0=10 ** (h["mu_R"] + rng.normal(0, 0.3)), kB=10 ** rng.uniform(-4.0, -2.3),
+        kC=10 ** rng.uniform(-3.5, -1.8), L0=10 ** (h["mu_L"] + rng.normal(0, 0.3)),
+        kl=10 ** rng.uniform(-3.0, -1.5), kD=10 ** rng.uniform(-2.0, 0.0),
+        pH50_red=rng.uniform(2.0, 4.0), Ea_red=rng.uniform(25, 50), pH50_cr3=rng.uniform(3.5, 5.0),
+        krel=10 ** rng.uniform(-3.0, -1.5), q3max=0.5 * qmax * np.exp(rng.normal(0, 0.3)),
+        K3=10 ** rng.uniform(-1.0, 0.5), k3=10 ** rng.uniform(-2.5, -1.0),
+        nH=rng.uniform(3, 5), beta=10 ** rng.uniform(0, 1), kbuf=10 ** rng.uniform(-4.5, -3.0),
+        scenario=scenario)
+    return apply_scenario(m, scenario)
 
 
-def _affinity(m: Material, pH):
-    elec = 1.0 / (1.0 + np.exp((pH - m.pHpzc) / 0.8))      # net positive surface below pHpzc
-    return m.K0 * (0.05 + f_hcro4(pH)) * (0.1 + elec)
+def apply_scenario(m: Material, scenario: str) -> Material:
+    d = asdict(m)
+    d["scenario"] = scenario
+    if scenario in ("A", "C", "D"):
+        d["kB"] = 0.0
+    if scenario in ("A", "B", "D"):
+        d["kC"] = 0.0
+    if scenario in ("A", "B", "C"):
+        d["kD"] = 0.0
+    return Material(**d)
 
 
-def run_batch(m: Material, C0, pH, D, t_end, T=298.15, n_t=None):
-    """Integrate one batch; returns dict of true end-state (or time series if n_t)."""
-    K = _affinity(m, pH)
-    h = 1.0 / (1.0 + 10 ** (pH - m.pH50_red))               # acid promotion of reduction
-    arr = np.exp(-35000 / 8.314 * (1 / T - 1 / 298.15))       # Ea = 35 kJ/mol for reduction
-    arr_a = np.exp(-15000 / 8.314 * (1 / T - 1 / 298.15))
-    phi = 1.0 / (1.0 + np.exp(-(pH - m.pH50_cr3) / 0.5))    # Cr(III) bound fraction
-
-    def rhs(_, y):
-        Cv, q6, Rs, red = y
-        Cv = max(Cv, 0.0)
-        qeq = m.qmax * K * Cv / (1 + K * Cv)
-        r_ads = m.ka * arr_a * (qeq - q6)                        # mg/g/min
-        r_red = m.kred * arr * h * max(Rs, 0) / m.R0 * Cv         # mg/g/min (per g carbon)
-        return [-D * (r_ads + r_red), r_ads, -r_red, r_red]
-
-    t_eval = np.linspace(0, t_end, n_t) if n_t else [t_end]
-    sol = solve_ivp(rhs, (0, t_end), [C0, 0.0, m.R0, 0.0], t_eval=t_eval, method="LSODA",
-                    rtol=1e-7, atol=1e-9)
-    Cv, q6, _, red = sol.y
-    red_mgL = red * D                                          # Cr reduced, mg/L of solution
-    c3_unbound = (1 - phi) * red_mgL
-    c3_aq = np.minimum(c3_unbound, cr3_solubility(pH))
-    precip = c3_unbound - c3_aq
-    out = {"t": sol.t, "Ce_VI_true": Cv, "q_adsVI_true": q6, "reduced_mgL": red_mgL,
-           "Cr3_aq_true": c3_aq, "Cr3_bound_mgL": phi * red_mgL, "Cr3_precip_mgL": precip}
-    if not n_t:
-        out = {k: float(v[-1]) if np.ndim(v) else v for k, v in out.items()}
-    return out
+# ---------------------------------------------------------------------------
+# Kinetic model
+# ---------------------------------------------------------------------------
+def _tables(pH_fixed, I, T, drift):
+    """Per-batch speciation/solubility tables so the ODE right-hand side avoids grid look-ups."""
+    g = ch.grid()
+    lc = g.axes[1]
+    C = 10 ** lc
+    pHax = _Sol.pH
+    logS_pH = np.log10(cr3_solubility(pHax, I))
+    if drift:
+        pg = g.axes[0]
+        F = g(pg[:, None], C[None, :], I, T)
+        F = F[..., 0] + F[..., 2]
+        return lc, pg, F, pHax, logS_pH
+    f = g(np.full_like(C, pH_fixed), C, I, T)
+    return lc, None, f[:, 0] + f[:, 2], None, float(np.interp(pH_fixed, pHax, logS_pH))
 
 
-def measure(rng, true, sd_rel=0.03, lod=0.02, bias=1.0):
-    """Analytical model: DPC for Cr(VI), AAS/ICP for total Cr, multiplicative lab bias."""
-    cv = true["Ce_VI_true"] * bias * (1 + rng.normal(0, sd_rel))
-    ct = (true["Ce_VI_true"] + true["Cr3_aq_true"]) * bias * (1 + rng.normal(0, sd_rel))
-    return max(cv, lod / 2), max(ct, lod / 2)
+def _rhs_factory(m: Material, D, T, I, pH_fixed):
+    import math
+    from bisect import bisect_right
+    R = 8.314e-3
+    arr_r = math.exp(-m.Ea_red / R * (1 / T - 1 / 298.15))
+    arr_a = math.exp(-m.Ea_ads / R * (1 / T - 1 / 298.15))
+    drift = m.scenario == "E"
+    k_mmol = 1.0 / MW
+    lc, pg, F, pHax, logS = _tables(pH_fixed, I, T, drift)
+    lc_l = lc.tolist(); nC = len(lc_l)
+    if drift:
+        pg_l = pg.tolist(); npg = len(pg_l); F_l = F.tolist(); pHax_l = pHax.tolist(); logS_l = logS.tolist()
+    else:
+        F_l = F.tolist(); S_fixed = 10 ** logS
+    qmax, K0, ka, kB, kC, kD = m.qmax, m.K0, m.ka, m.kB, m.kC, m.kD
+    R0, pzc, pH50r, pH50c = m.R0, m.pHpzc, m.pH50_red, m.pH50_cr3
+    krel, q3max, K3, k3, kp, kl, L0 = m.krel, m.q3max, m.K3, m.k3, m.kp, m.kl, m.L0
+    nH, beta, kbuf = m.nH, m.beta, m.kbuf
+    w_el, f_b, e_b = m.w_elec, m.f_base, m.e_base
+
+    def interp1(xs, ys, x, n):
+        if x <= xs[0]:
+            return ys[0]
+        if x >= xs[-1]:
+            return ys[-1]
+        i = bisect_right(xs, x) - 1
+        w = (x - xs[i]) / (xs[i + 1] - xs[i])
+        return ys[i] * (1 - w) + ys[i + 1] * w
+
+    def spec(pH, Cv):
+        x = math.log10(max(Cv, 1e-3))
+        if not drift:
+            return interp1(lc_l, F_l, x, nC)
+        p = min(max(pH, pg_l[0]), pg_l[-1])
+        i = min(bisect_right(pg_l, p) - 1, npg - 2)
+        w = (p - pg_l[i]) / (pg_l[i + 1] - pg_l[i])
+        return (1 - w) * interp1(lc_l, F_l[i], x, nC) + w * interp1(lc_l, F_l[i + 1], x, nC)
+
+    def rhs(y, _):
+        Cv, q6, q3s, q3r, C3, P3, Rs, L, Lrel, pH = y
+        Cv = Cv if Cv > 0 else 0.0; q6 = q6 if q6 > 0 else 0.0; q3s = q3s if q3s > 0 else 0.0
+        C3 = C3 if C3 > 0 else 0.0; P3 = P3 if P3 > 0 else 0.0; Rs = Rs if Rs > 0 else 0.0
+        L = L if L > 0 else 0.0
+        if not drift:
+            pH = pH_fixed
+        f = spec(pH, Cv)
+        ze = (pH - pzc) / w_el
+        elec = 1.0 / (1.0 + math.exp(ze)) if ze < 700 else 0.0
+        K = K0 * (f_b + f) * (e_b + elec)
+        qeq = qmax * K * Cv / (1 + K * Cv)
+        r_ads = ka * arr_a * (qeq - q6)
+        h = arr_r / (1.0 + 10 ** (pH - pH50r))
+        sfrac = Rs / R0 if R0 > 0 else 0.0
+        r_B = kB * h * sfrac * Cv
+        r_C = kC * h * sfrac * q6
+        r_D = kD * h * L * Cv
+        z = -(pH - pH50c) / 0.5
+        th3 = 1.0 / (1.0 + math.exp(z)) if z < 700 else 0.0
+        r_rel = krel * (1 - th3) * q3s
+        q3eq = q3max * th3 * K3 * C3 / (1 + K3 * C3)
+        r_3 = k3 * (q3eq - q3r)
+        S = 10 ** interp1(pHax_l, logS_l, pH, 0) if drift else S_fixed
+        if C3 > S:
+            r_p = kp * (C3 - S)
+        elif P3 > 0:
+            r_p = max(kp * (C3 - S), -kp * P3)
+        else:
+            r_p = 0.0
+        r_leach = kl * (D * L0 - Lrel)
+        dCv = -D * (r_ads + r_B) - r_D
+        dq6 = r_ads - r_C
+        dq3s = th3 * r_B + r_C - r_rel
+        dC3 = D * (1 - th3) * r_B + D * r_rel + r_D - D * r_3 - r_p
+        dRs = -3 * k_mmol * (r_B + r_C)
+        dL = r_leach - 3 * k_mmol * r_D
+        if drift:
+            red_mmol = k_mmol * (D * (r_B + r_C) + r_D)
+            beta_tot = beta + 2303.0 * 10 ** (-pH)          # carbon + free-proton buffering, mmol/(L pH)
+            dpH = (nH * red_mmol - 3 * k_mmol * r_p + kbuf * beta * (pzc - pH)) / beta_tot
+        else:
+            dpH = 0.0
+        return [dCv, dq6, dq3s, r_3, dC3, r_p, dRs, dL, r_leach, dpH]
+
+    return rhs
 
 
-def virtual_study(rng, study_idx, family=None, n_iso=8, n_edge=6, n_kin=8):
-    family = family or rng.choice(list(FAMILIES))
-    m = random_material(rng, family, study_idx)
-    sid = f"VS{study_idx:02d}"
+def run_batch(m: Material, C0, pH0, D, t_points, T=298.15, I=0.01):
+    """Integrate one batch; returns a dict of arrays at ``t_points`` (min)."""
+    from scipy.integrate import odeint
+    t_points = np.atleast_1d(np.asarray(t_points, float))
+    y0 = [C0, 0, 0, 0, 0, 0, m.R0, 0, 0, pH0]
+    tt = np.concatenate([[0.0], t_points])
+    Y, info = odeint(_rhs_factory(m, D, T, I, pH0), y0, tt, rtol=1e-6, atol=1e-8, full_output=True, mxstep=20000)
+    if info["message"] != "Integration successful.":
+        raise RuntimeError(info["message"])
+    Cv, q6, q3s, q3r, C3, P3, Rs, L, Lrel, pH = Y[1:].T
+    Cv, C3, P3 = np.maximum(Cv, 0), np.maximum(C3, 0), np.maximum(P3, 0)
+    removed = np.maximum(C0 - Cv, 1e-12)
+    reduced = D * (q3s + q3r) + C3 + P3
+    solid = D * (q6 + q3s + q3r) + P3
+    return {"t": t_points, "Ce_VI_true": Cv, "q_adsVI_true": q6, "Cr3_surface_true": D * (q3s + q3r),
+            "Cr3_aq_true": C3, "Cr3_precip_true": P3, "reduced_mgL": reduced,
+            "Rs": Rs, "L": L, "Lrel": Lrel, "pH_true": pH if m.scenario == "E" else np.full_like(Cv, pH0),
+            "share_ads": D * q6 / removed, "share_red": reduced / removed,
+            "share_precip": P3 / removed, "share_cr3_aq": C3 / removed,
+            "xps_cr3_true": np.where(solid > 0, (solid - D * q6) / np.maximum(solid, 1e-12), 0.0)}
+
+
+# ---------------------------------------------------------------------------
+# Virtual studies and corpora
+# ---------------------------------------------------------------------------
+EVIDENCE_MIX = {"C": 0.40, "B": 0.35, "A": 0.25}
+
+
+def virtual_study(rng, study_idx, family, hyper, scenario="E", n_iso=8, n_edge=6, n_kin=8, prefix="VS"):
+    m = random_material(rng, family, study_idx, hyper, scenario)
+    sid = f"{prefix}{study_idx:03d}"
+    ev = rng.choice(list(EVIDENCE_MIX), p=list(EVIDENCE_MIX.values()))
     bias = np.exp(rng.normal(0, 0.05))
-    I = float(rng.choice([0.001, 0.01, 0.05, 0.1]))
-    T = float(rng.choice([298.15, 303.15, 308.15]))
-    D = float(rng.choice([1.0, 2.0, 4.0]))
+    I = float(rng.choice([0.001, 0.005, 0.01, 0.05, 0.1]))
+    T = float(rng.choice([293.15, 298.15, 303.15, 308.15, 313.15]))
+    D = float(rng.choice([0.5, 1.0, 2.0, 4.0]))
     pH_opt = float(rng.uniform(1.8, 3.5))
     t_eq = float(rng.choice([360, 720, 1440]))
+    reports_I = True if ev == "A" else bool(rng.random() < {"B": 0.5, "C": 0.3}[ev])
+    reports_final_pH = ev == "A" or (ev == "B" and rng.random() < 0.5)
     rows = []
 
-    def add(kind, C0, pH, t, **extra):
-        tr = run_batch(m, C0, pH, D, t, T)
-        cv, ct = measure(rng, tr, bias=bias)
-        rows.append({"study_id": sid, "material_id": m.material_id, "material_family": family,
-                     "series": kind, "C0": C0, "pH": pH, "D": D, "t": t, "T": T, "I": I,
-                     "SBET": m.SBET, "Vp": m.Vp, "dp": m.dp, "pHpzc": m.pHpzc,
-                     "Ce_VI": cv, "Ce_total": ct, **tr, **extra})
+    def add(series, C0, pH0, t_arr, total_meas, xps_meas):
+        tr = run_batch(m, C0, pH0, D, t_arr, T, I)
+        for k in range(len(tr["t"])):
+            one = {key: (v[k] if np.ndim(v) else v) for key, v in tr.items()}
+            cv = one["Ce_VI_true"] * bias * (1 + rng.normal(0, 0.03))
+            below = cv < 0.01
+            row = {"study_id": sid, "material_id": m.material_id, "material_family": family,
+                   "scenario": scenario, "study_evidence": ev, "series": series, "C0": C0, "pH": pH0,
+                   "D": D, "t": float(one["t"]), "T": T, "I": I if reports_I else np.nan, "I_true": I,
+                   "SBET": m.SBET, "Vp": m.Vp, "dp": m.dp, "pHpzc": m.pHpzc,
+                   "Ce_VI": 0.005 if below else cv, "Ce_VI_below_LOD": below}
+            if total_meas:
+                ct = (one["Ce_VI_true"] + one["Cr3_aq_true"]) * bias * (1 + rng.normal(0, 0.03))
+                row["Ce_total"] = max(ct, 0.01)
+            if xps_meas:
+                row["xps_cr3_frac"] = float(np.clip(one["xps_cr3_true"] + rng.normal(0, 0.05), 0, 1))
+            row["pH_final"] = one["pH_true"] + rng.normal(0, 0.05) if reports_final_pH else np.nan
+            row.update({k2: one[k2] for k2 in ("Ce_VI_true", "q_adsVI_true", "Cr3_surface_true", "Cr3_aq_true",
+                                               "Cr3_precip_true", "reduced_mgL", "share_ads", "share_red",
+                                               "share_precip", "share_cr3_aq", "pH_true", "xps_cr3_true")})
+            rows.append(row)
 
-    for C0 in np.geomspace(10, 400, n_iso):
-        add("isotherm", float(C0), pH_opt, t_eq)
-    for pH in np.linspace(2.0, 8.0, n_edge):
-        add("pH_edge", 100.0, float(pH), t_eq)
-    for t in np.geomspace(5, t_eq, n_kin):
-        add("kinetic", 100.0, pH_opt, float(t))
+    iso_C0 = np.geomspace(5, 300, n_iso)
+    for j, C0 in enumerate(iso_C0):
+        add("isotherm", float(C0), pH_opt, [t_eq], ev in ("A", "B"), ev == "A" and j in (0, n_iso - 1))
+    for j, pH in enumerate(np.linspace(2.0, 8.0, n_edge)):
+        add("pH_edge", 50.0, float(pH), [t_eq], ev in ("A", "B"), ev == "A" and j == 0)
+    add("kinetic", 50.0, pH_opt, np.geomspace(5, t_eq, n_kin), ev == "A", False)
     df = pd.DataFrame(rows)
-    df["frac_removal_by_reduction"] = df["reduced_mgL"] / (df["C0"] - df["Ce_VI_true"]).clip(lower=1e-9)
-    return df, asdict(m) | {"study_id": sid, "I": I, "T": T, "D": D, "pH_opt": pH_opt, "bias": bias}
+    meta = asdict(m) | {"study_id": sid, "I": I, "T": T, "D": D, "pH_opt": pH_opt, "bias": bias,
+                        "t_eq": t_eq, "study_evidence": ev}
+    return df, meta
 
 
-def virtual_corpus(n_studies=24, seed=2026):
+def virtual_corpus(n_studies=30, seed=2026, scenario="E", prefix="VS"):
     rng = np.random.default_rng(seed)
+    hyper = corpus_hyperpriors(rng)
     fams = list(FAMILIES)
     dfs, mats = [], []
     for i in range(n_studies):
-        df, meta = virtual_study(rng, i, family=fams[i % len(fams)])
+        df, meta = virtual_study(rng, i, fams[i % len(fams)], hyper, scenario, prefix=prefix)
         dfs.append(df)
         mats.append(meta)
-    return pd.concat(dfs, ignore_index=True), pd.DataFrame(mats)
+    mats = pd.DataFrame(mats)
+    for f, h in hyper.items():
+        mats.loc[mats.family == f, "mu_R_family"] = h["mu_R"]
+    return pd.concat(dfs, ignore_index=True), mats
+
+
+def parameter_table() -> pd.DataFrame:
+    rows = [{"parameter": k, "unit": u, "distribution": d} for k, (u, d) in PARAMETERS.items()]
+    rows += [{"parameter": k, "unit": "-", "distribution": v} for k, v in MEASUREMENT.items()]
+    rows += [{"parameter": "numerical", "unit": "-",
+              "distribution": "LSODA (scipy odeint), rtol 1e-6, atol 1e-8, mxstep 20000; y0 = [C0, 0, 0, 0, 0, 0, R0, 0, 0, pH0]"}]
+    return pd.DataFrame(rows)

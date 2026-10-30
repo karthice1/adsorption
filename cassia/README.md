@@ -1,44 +1,79 @@
-# CASSIA
+# CASSIA 0.2
 
-**C**hromium **A**dsorption, **S**peciation and **S**urface-reduction **I**dentifiability **A**nalysis:
-a data-provenance-aware, speciation-constrained computational framework for telling
-genuine Cr(VI) adsorption apart from apparent removal by reduction or precipitation on
-carbonaceous adsorbents.
+**CASSIA** (*Chromium Adsorption, Speciation and Surface-reduction Identifiability Analysis*) is an
+open Python framework for **evidence-constrained** analysis of Cr(VI) removal by carbonaceous
+materials. It keeps apparent Cr(VI) disappearance, total-aqueous-Cr disappearance and adsorption
+apart, tells you which removal mechanisms a given set of measurements can and cannot identify, and
+gives study-level calibrated prediction intervals and treatment designs.
 
-The manuscript is in [`manuscript/CASSIA_manuscript.md`](manuscript/CASSIA_manuscript.md).
+The revised manuscript is `manuscript/CASSIA_manuscript.md` (Word version `CASSIA_manuscript.docx`);
+the point-by-point reply to the reviewer is `manuscript/Response_to_Reviewer.md`.
 
-## Layout
+## Architecture
 
-| Path | Content |
-|---|---|
-| `cassia/chemistry.py` | phreeqpython/PHREEQC Cr adapter: Cr(VI) speciation, redox scenarios, Cr(III) solubility, ML speciation features |
-| `cassia/fitting.py` | Nonlinear isotherm/kinetic fits (equations from `adsorption.models`), AICc/BIC, Akaike weights, residual diagnostics, bootstrap CIs |
-| `cassia/dataset.py` | Master-dataset schema, validation, endpoint definitions, evidence classes A/B/C |
-| `cassia/simulate.py` | Known-truth virtual batch experiments (adsorption + reduction + Cr(III) partition) |
-| `cassia/validation.py` | Random / grouped / leave-one-study-out / leave-one-family-out CV, ablation, conformal intervals, between-study variance |
-| `cassia/pores.py` | pyGAPS adapter for published N2 isotherms (BET with Rouquerol criteria) |
-| `databases/` | `minteq.v4.dat` and `llnl.dat` from the USGS PHREEQC distribution (the two Cr-bearing databases validated here) |
-| `data/` | Empty master-dataset template, schema, study registry, extraction protocol |
-| `scripts/run_all.py` | Regenerates every table, figure and number in the manuscript |
-| `results/` | Outputs of `run_all.py` |
+| Layer | Module | What it does |
+|---|---|---|
+| 1 Data | `cassia.dataset` | 34-field schema with DOI/source provenance, validation and QC flags, endpoints (`q_app_VI`, `q_tot_aq`), **observation-level** evidence classes A/B/C |
+| 2 Chemistry | `cassia.chemistry` | phreeqpython/PHREEQC adapter for three Cr-bearing databases: Cr(VI) speciation, `SpeciationGrid` over pH x Cr(VI) x I x T, redox scenarios, Cr(III) saturation by direct SI bisection, database provenance |
+| 3 Simulator | `cassia.simulate` | Known-truth multi-mechanism batch model (scenarios A-E), mass and electron balances, six material families with per-corpus hyper-priors, measurement model |
+| 4 Identifiability | `cassia.identifiability` | Fisher information / Laplace posterior per measurement design, model-free detection tests, adsorption-only equivalence test, profile likelihood, metadata-bias propagation |
+| 5A Models | `cassia.fitting`, `cassia.validation` | Nonlinear isotherm/kinetic selection (AICc, diagnostics, bootstrap); RF/XGBoost/GPR with random, grouped, leave-one-study-out and leave-one-family-out validation, cluster bootstrap CIs |
+| 5B Uncertainty | `cassia.validation.StudyCVPlus` | Study-level CV+ conformal intervals (M1, M2) and the pooled-residual baseline (M0) |
+| 6 Design | `scripts/run_v2.py` (`stage_design`) | Two-endpoint (Cr(VI), total Cr) dose/pH design with point, marginal and joint rules |
+| aux | `cassia.pores` | pyGAPS adapter: BET (Rouquerol criteria) from published N2 isotherms |
 
-## Reproduce
+## Install
 
 ```bash
-pip install -e ..            # the adsorption package (repository root)
-pip install -e .[ml,pores,dev]
-pytest -q tests
-python scripts/run_all.py    # full run; --quick for a smoke test
+git clone https://github.com/karthice1/adsorption && cd adsorption
+git checkout claude/exciting-hawking-ayadsw
+pip install -e .                      # the 'adsorption' equation package (repository root)
+pip install -e cassia[ml,pores,dev]   # CASSIA, xgboost, pyGAPS, pytest
+pytest -q cassia/tests                # 30 tests
 ```
 
-## What is and is not in this release
+Python 3.10+; the exact environment used for the paper is pinned in `requirements-lock.txt`
+(Python 3.13.17). PHREEQC databases ship in `databases/` with checksums (`sha256sum -c databases/SHA256SUMS`).
 
-- All chemistry results come from PHREEQC with the two bundled databases.
-- All model-benchmarking results come from a **simulated** corpus with known ground
-  truth (`cassia/simulate.py`). They test whether the methods can recover the
-  adsorption/reduction split. They are not empirical findings about real carbons.
-- The published multi-study dataset (target: 20-30 studies) has **not** been extracted
-  yet. `data/cassia_master_dataset.csv` is an empty template. The seed dataset
-  (Ramirez et al., 2020, doi:10.1016/j.dib.2020.105292) is registered in
-  `data/study_registry.csv` but not transcribed.
-- RASPA3 is not used in this release (see the manuscript, Section 4.4).
+## Minimal API
+
+```python
+from cassia import chemistry as ch, dataset as ds, fitting as fit, validation as val
+
+ch.speciate_cr6(pH=3.0, cr_mgL=100, database="minteq.v4.dat").fractions   # Cr(VI) species per Cr atom
+ch.cr3_solubility_si(pH=6.0)            # {'S_mgL': 0.0225, 'status': 'bracketed', ...}
+df = ds.classify(ds.endpoints(df))      # endpoints + observation-level evidence classes
+df = ch.speciation_features(df)         # PHREEQC features at each row's pH, C0, I, T
+fits = fit.fit_isotherms(Ce, q, T=298.15); fit.selection_table(fits)
+cp = val.StudyCVPlus("RF", val.CHEM).fit(train_df, "q_app_VI")
+lo, hi, centre = cp.interval(new_df, alpha=0.1, method="M1")   # log10 scale; val.from_target() to mg/g
+```
+
+A complete workflow for user data in the schema is `examples/user_data_workflow.py`
+(`--demo` runs it on a clearly labelled synthetic file).
+
+## Reproduce the paper
+
+```bash
+cd cassia
+python scripts/run_v2.py --stage all      # ~2 h on 4 cores; --quick for a smoke test
+```
+
+Stages `chem, bench, ident, ml, uq, design, missing, figures` can be run separately. Outputs go to
+`results/v2/` (tables `T_*.csv`, per-stage JSON summaries) and `manuscript/figures/`.
+
+## Scope and status
+
+- Results in the paper are (i) PHREEQC thermodynamic calculations and (ii) known-truth simulation
+  benchmarks. **No empirical literature data have been processed yet**: the publisher and data-repository
+  hosts were not reachable from the build environment. `data/cassia_master_dataset.csv` is the empty
+  template, `data/study_registry.csv` lists the seed study (Ramirez et al., 2020), and
+  `data/PROTOCOL.md` the registered extraction protocol.
+- RASPA3 is not used (manuscript Section 4.6).
+
+## Release checklist (for the author)
+
+1. Fill in author name/ORCID in `CITATION.cff` and `LICENSE`.
+2. Tag the release commit `cassia-v0.2.0` and create a GitHub release.
+3. Enable the repository in Zenodo (GitHub integration) so the release receives a DOI; put the DOI in
+   `CITATION.cff` and in the manuscript's Data availability section.

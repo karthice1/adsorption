@@ -2,9 +2,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from cassia import chemistry as ch, dataset as ds, fitting as fit, simulate as sim
+from cassia import chemistry as ch, dataset as ds, fitting as fit, identifiability as idf, simulate as sim
+from cassia import validation as val
 
 
+# ----------------------------------------------------------------- chemistry
 @pytest.mark.parametrize("db", ch.DATABASES)
 def test_cr6_fractions_sum_to_one(db):
     for pH in (2.0, 5.0, 6.5, 9.0):
@@ -26,8 +28,7 @@ def test_dimer_grows_with_concentration():
 
 
 def test_high_concentration_high_pH_converges():
-    f = ch.speciate_cr6(9.0, 500.0).fractions
-    assert f["CrO4-2"] > 0.9
+    assert ch.speciate_cr6(9.0, 500.0).fractions["CrO4-2"] > 0.9
 
 
 def test_redox_scenario_monotone_in_pe():
@@ -35,9 +36,30 @@ def test_redox_scenario_monotone_in_pe():
     assert all(np.diff(f) >= -1e-12) and f[0] < 1e-3 and f[-1] > 0.99
 
 
-def test_cr3_solubility_decreases_from_pH5_to_8():
-    s = [ch.cr3_solubility_mgL(p) for p in (5.0, 6.0, 7.0, 8.0)]
-    assert all(np.diff(s) < 0)
+def test_cr3_solubility_by_direct_si():
+    r3 = ch.cr3_solubility_si(3.0)
+    assert r3["status"] == "undersaturated_to_cmax" and r3["SI_at_cmax"] < 0
+    r6 = ch.cr3_solubility_si(6.0)
+    assert r6["status"] == "bracketed" and abs(r6["SI_at_S"]) < 0.02
+    s = [ch.cr3_solubility_si(p)["S_mgL"] for p in (5.0, 6.0, 7.0)]
+    assert s[0] > s[1] > s[2]
+
+
+def test_llnl_has_no_cr3_hydroxide():
+    v, ok = ch.si_cr3(6.0, 1.0, database="llnl.dat")
+    assert not ok
+
+
+def test_speciation_grid_matches_phreeqc_at_node_and_interior():
+    g = ch.grid()
+    direct = ch.speciate_cr6(3.0, 100.0, ionic_strength=0.01, temperature_C=25.0).fractions
+    assert g(3.0, 100.0, 0.01, 298.15)[0][0] == pytest.approx(direct["HCrO4-"], abs=1e-6)
+    assert g.validate(n=20, seed=3)["max_abs_err"] < 0.03
+
+
+def test_database_provenance_checksums():
+    p = ch.database_provenance()
+    assert set(p.database) == set(ch.DATABASES) and p.sha256.str.len().eq(64).all()
 
 
 def test_unvalidated_database_rejected():
@@ -45,6 +67,7 @@ def test_unvalidated_database_rejected():
         ch.engine("phreeqc.dat")
 
 
+# ----------------------------------------------------------------- fitting
 def test_langmuir_recovery():
     rng = np.random.default_rng(0)
     Ce = np.geomspace(0.5, 200, 10)
@@ -52,19 +75,18 @@ def test_langmuir_recovery():
     fits = fit.fit_isotherms(Ce, q)
     k, qm = fits["Langmuir"].params
     assert qm == pytest.approx(50, rel=0.05) and k == pytest.approx(0.1, rel=0.15)
-    tab = fit.selection_table(fits)
-    assert tab["Akaike_w"].sum() == pytest.approx(1.0)
+    assert fit.selection_table(fits)["Akaike_w"].sum() == pytest.approx(1.0)
 
 
-def test_endpoints_and_classes():
-    df = pd.DataFrame({"C0": [100, 100], "Ce_VI": [20, 20], "Ce_total": [30, np.nan], "D": [2, 2],
-                       "solid_phase_cr_speciation": ["XPS", "none"], "pH_basis": ["final", ""],
-                       "I": [0.01, np.nan]})
+# ----------------------------------------------------------------- dataset
+def test_endpoints_and_observation_level_classes():
+    df = pd.DataFrame({"study_id": ["s1", "s1"], "C0": [100, 100], "Ce_VI": [20, 20], "Ce_total": [30, np.nan],
+                       "D": [2, 2], "xps_cr3_frac": [0.4, np.nan], "pH_final": [3.1, np.nan], "I": [0.01, 0.01]})
     e = ds.endpoints(df)
-    assert e["q_app_VI"].tolist() == [40, 40]
-    assert e.loc[0, "q_total"] == 35 and e.loc[0, "reduction_index"] == pytest.approx(10 / 80)
+    assert e["q_app_VI"].tolist() == [40, 40] and e.loc[0, "q_tot_aq"] == 35
     c = ds.classify(df)
     assert c["evidence_class"].tolist() == ["A", "C"]
+    assert c["study_best_class"].tolist() == ["A", "A"]
     assert c.loc[1, "endpoint_label"] == "apparent_CrVI_disappearance"
 
 
@@ -76,16 +98,91 @@ def test_validate_flags_celsius_and_inconsistency():
     assert any("Celsius" in p for p in probs) and any("Ce_VI > Ce_total" in p for p in probs)
 
 
-def test_simulator_mass_balance():
+# ----------------------------------------------------------------- simulator
+@pytest.mark.parametrize("scen", sim.SCENARIOS)
+def test_mass_and_electron_balance(scen):
     rng = np.random.default_rng(1)
-    m = sim.random_material(rng, "biochar", 0)
-    tr = sim.run_batch(m, 100.0, 2.5, 2.0, 1440.0)
-    removed = 100.0 - tr["Ce_VI_true"]
-    accounted = tr["q_adsVI_true"] * 2.0 + tr["reduced_mgL"]
-    assert removed == pytest.approx(accounted, rel=1e-4)
-    assert tr["Cr3_aq_true"] + tr["Cr3_bound_mgL"] + tr["Cr3_precip_mgL"] == pytest.approx(tr["reduced_mgL"], rel=1e-6)
+    hyper = sim.corpus_hyperpriors(rng)
+    m = sim.random_material(rng, "biochar_wood", 0, hyper, scen)
+    D, C0 = 2.0, 100.0
+    tr = sim.run_batch(m, C0, 2.5, D, [30.0, 1440.0], T=303.15, I=0.01)
+    total = tr["Ce_VI_true"] + D * tr["q_adsVI_true"] + tr["Cr3_surface_true"] + tr["Cr3_aq_true"] + tr["Cr3_precip_true"]
+    assert np.allclose(total, C0, rtol=1e-5)
+    electrons = D * (m.R0 - tr["Rs"]) + (tr["Lrel"] - tr["L"])
+    assert np.allclose(3 * tr["reduced_mgL"] / ch.CR_MW, electrons, atol=1e-6)
+    if scen == "A":
+        assert np.all(tr["reduced_mgL"] < 1e-9)
 
 
+def test_family_reductance_not_fixed_by_construction():
+    tops = set()
+    for seed in range(12):
+        h = sim.corpus_hyperpriors(np.random.default_rng(seed))
+        tops.add(max(h, key=lambda f: h[f]["mu_R"]))
+    assert len(tops) >= 3
+
+
+def test_parameter_table_complete():
+    t = sim.parameter_table()
+    assert set(sim.PARAMETERS) <= set(t.parameter)
+
+
+# ----------------------------------------------------------------- identifiability
+def _one_study(scen="E", seed=4):
+    _, mats = sim.virtual_corpus(2, seed=seed, scenario=scen)
+    meta = mats.iloc[0].to_dict()
+    return sim.Material(**{k: meta[k] for k in sim.Material.__dataclass_fields__}), meta
+
+
+def test_posterior_sd_not_larger_than_prior_and_more_data_helps():
+    m, meta = _one_study()
+    fs = idf.fisher_study(m, meta)
+    r1, r4 = idf.posterior_share_sd(fs, "D1"), idf.posterior_share_sd(fs, "D4")
+    assert r1["post_sd_share"] <= r1["prior_sd_share"] + 1e-9
+    assert r4["post_sd_share"] <= r1["post_sd_share"] + 1e-9
+
+
+def test_equivalence_negative_control_passes():
+    m, meta = _one_study()
+    r = idf.equivalence_test(sim.apply_scenario(m, "A"), meta, "D3", sd_rel=0.10, seed=1, n_starts=2)
+    assert r["share_red"] < 1e-9 and r["p_adsorption_only"] > 0.01
+
+
+# ----------------------------------------------------------------- validation / conformal
+def _toy(n_st=12, seed=0):
+    rng = np.random.default_rng(seed)
+    rows = []
+    for s in range(n_st):
+        off = rng.normal(0, 0.2)
+        for _ in range(10):
+            x = rng.uniform(0, 1)
+            rows.append({"study_id": f"s{s}", "material_family": f"f{s % 3}", "x": x,
+                         "q": 10 ** (1 + x + off + rng.normal(0, 0.05)) - 0.1})
+    return pd.DataFrame(rows)
+
+
+def test_study_cvplus_intervals_and_coverage():
+    d = _toy()
+    cp = val.StudyCVPlus("RF", ["x"], K=5).fit(d[d.study_id != "s0"], "q")
+    test = d[d.study_id == "s0"]
+    for meth in ("M0", "M1", "M2"):
+        lo, hi, c = cp.interval(test, 0.2, meth)
+        assert np.all(lo <= c + 1e-9) and np.all(c <= hi + 1e-9)
+
+
+def test_m2_is_infinite_with_too_few_studies():
+    d = _toy(n_st=5)
+    cp = val.StudyCVPlus("RF", ["x"], K=4).fit(d[d.study_id != "s0"], "q")
+    lo, hi, _ = cp.interval(d[d.study_id == "s0"], 0.05, "M2")
+    assert np.isinf(hi).all()
+
+
+def test_target_censoring_and_smearing():
+    assert val.to_target(np.array([-5.0]))[0] == pytest.approx(np.log10(0.1))
+    assert val.duan_smear(np.zeros(10)) == pytest.approx(1.0)
+
+
+# ----------------------------------------------------------------- pores
 def test_pygaps_bet_adapter_recovers_analytic_area():
     from cassia.pores import bet_from_published_isotherm
     p = np.linspace(0.01, 0.3, 25)

@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use CASSIA, please cite the software and the accompanying article."
+title: "CASSIA: provenance-aware, evidence-constrained analysis of Cr(VI) removal by carbonaceous materials"
+version: 0.2.0
+date-released: 2026-10-30
+license: MIT
+repository-code: "https://github.com/karthice1/adsorption/tree/claude/exciting-hawking-ayadsw/cassia"
+authors:
+  - family-names: "[Surname]"
+    given-names: "Karthik"
+    email: karthikresearchworks@gmail.com
+    orcid: "https://orcid.org/0000-0000-0000-0000"  # replace before release
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.0000000"  # replace with the Zenodo DOI minted for the v0.2.0 release
+keywords: [hexavalent chromium, PHREEQC, adsorption, identifiability, conformal prediction, provenance]

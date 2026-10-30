@@ -3,3 +3,4 @@ __pycache__/
 .pytest_cache/
 cassia/results/virtual_corpus.csv.gz
 results/run_log.txt
+results/*.npz
