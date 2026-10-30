@@ -201,7 +201,7 @@ def profile_likelihood(m: sim.Material, meta: dict, design: str, grid_log_R0, se
     free = [i for i in range(len(th_true)) if act[i] and i != iR]
     prior = np.array([PRIOR_SD[PARAMS[i]] for i in free])
     rows = []
-    x0 = th_true[free] + rng.normal(0, 0.1, len(free))
+    x_prev = th_true[free] + rng.normal(0, 0.1, len(free))
     for lr in grid_log_R0:
         def resid(x):
             th = th_true.copy(); th[free] = x; th[iR] = lr
@@ -210,11 +210,17 @@ def profile_likelihood(m: sim.Material, meta: dict, design: str, grid_log_R0, se
             except RuntimeError:
                 return np.full(y.size + len(free), 1e3)
             return np.concatenate([(y - yy) / sd, (x - th_true[free]) / prior])
-        r = least_squares(resid, x0, max_nfev=max_nfev, x_scale=0.3)
-        th = th_true.copy(); th[free] = r.x; th[iR] = lr
+        # two starts (previous profile point, true parameters); keep the better optimum
+        best = None
+        for x0 in (x_prev, th_true[free]):
+            r = least_squares(resid, x0, max_nfev=max_nfev, x_scale=0.3)
+            if best is None or r.cost < best.cost:
+                best = r
+        th = th_true.copy(); th[free] = best.x; th[iR] = lr
         share = observe(_with(m, th), meta)["share_red"]
-        rows.append({"design": design, "log10_R0": lr, "m2logL": float(2 * r.cost), "share_red": share})
-        x0 = r.x
+        rows.append({"design": design, "log10_R0": lr, "m2logL": float(2 * best.cost), "share_red": share,
+                     "n_obs": int(y.size), "nfev": int(best.nfev), "converged": bool(best.status > 0)})
+        x_prev = best.x
     df = pd.DataFrame(rows)
     df["delta"] = df["m2logL"] - df["m2logL"].min()
     return df

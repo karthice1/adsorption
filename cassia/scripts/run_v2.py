@@ -321,11 +321,44 @@ def _equiv_worker(args):
 def _profile_worker(args):
     meta, design, grid = args
     m = material_from(meta)
-    df = idf.profile_likelihood(m, meta, design, grid, seed=1, max_nfev=40)
+    df = idf.profile_likelihood(m, meta, design, grid, seed=1, max_nfev=PROFILE_NFEV)
     df["study_id"] = meta["study_id"]
     df["true_log10_R0"] = np.log10(meta["R0"])
     df["true_share"] = idf.observe(m, meta)["share_red"]
     return df
+
+
+PROFILE_NFEV = 150
+
+
+def stage_profile(quick=False):
+    """Profiles only (re-run with a larger optimisation budget and two starts per point)."""
+    F = pd.read_csv(RES / "ident_fim_detection.csv")
+    n_st = 6 if quick else 25
+    E = F[F.scenario == "E"]
+    picks = [E.iloc[(E.share_red - 0.15).abs().argmin()], E.iloc[(E.share_red - 0.6).abs().argmin()]]
+    pj = []
+    for pk in picks:
+        _, mats = sim.virtual_corpus(n_st, seed=SEEDS["ident"] + 1000 * sim.SCENARIOS.index("E") + int(pk.rep), scenario="E")
+        meta = mats.set_index("study_id").loc[pk.study_id].to_dict() | {"study_id": pk.study_id}
+        lr0 = np.log10(meta["R0"])
+        for d in ("D1", "D3", "D4"):
+            pj.append((meta, d, np.linspace(lr0 - 1.2, lr0 + 1.2, 5 if quick else 13)))
+    with Pool(2) as pool:
+        P = pd.concat(pool.map(_profile_worker, pj), ignore_index=True)
+    P.to_csv(RES / "ident_profiles.csv", index=False)
+    summ = json.loads((RES / "ident.json").read_text())
+    summ["profiles"] = {}
+    for (s_, d), g in P.groupby(["study_id", "design"]):
+        ok = g[g.delta <= 3.84]
+        summ["profiles"][f"{s_}|{d}"] = {
+            "true_share": float(g.true_share.iloc[0]), "n_obs": int(g.n_obs.iloc[0]),
+            "min_m2logL": float(g.m2logL.min()), "share_at_min": float(g.loc[g.delta.idxmin(), "share_red"]),
+            "share_range_within_95": [float(ok.share_red.min()), float(ok.share_red.max())],
+            "log10R0_range_within_95_rel_true": [float((ok.log10_R0 - ok.true_log10_R0).min()), float((ok.log10_R0 - ok.true_log10_R0).max())],
+            "frac_points_converged": float(g.converged.mean())}
+    dump("ident", summ)
+    print("profile done")
 
 
 def stage_ident(quick=False):
@@ -886,7 +919,7 @@ def figures():
     ax[0, 0].plot(mids, F.groupby(cut, observed=False)["prior_sd_D1"].median().values, ":", color=MUTED, label="prior")
     ax[0, 0].set(yscale="log", xlabel="True reduction share", ylabel="Posterior SD of reduction share",
                  title="Local (Fisher) identifiability, model known")
-    ax[0, 0].legend(fontsize=7)
+    ax[0, 0].legend(fontsize=6.5, loc="lower right")
     panel(ax[0, 0], "a")
     labs = {"lack_of_fit": "isotherm lack of fit (C)", "dissolved_cr3": "dissolved Cr(III) z-test (B)", "xps_cr3": "XPS Cr(III) > 0.15 (A)"}
     for i, (k, l) in enumerate(labs.items()):
@@ -906,20 +939,22 @@ def figures():
                          alpha=0.9 if hatch is None else 0.5, label=f"{grp}, {int(sd*100)}% noise")
             k += 1
     ax[1, 0].set_xticks(x, idf.DESIGNS)
-    ax[1, 0].set(ylabel="Adsorption-only model not rejected", ylim=(0, 1.05), title="Equivalence test (p > 0.05)")
-    ax[1, 0].legend(fontsize=6.3, ncol=2, loc="upper right")
+    ax[1, 0].set(ylabel="Adsorption-only model not rejected", ylim=(0, 1.42), title="Equivalence test (p > 0.05)")
+    ax[1, 0].set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1.0])
+    ax[1, 0].legend(fontsize=6.0, ncol=2, loc="upper center")
     panel(ax[1, 0], "c")
     for i, ((sid, dsn), g) in enumerate(P.groupby(["study_id", "design"])):
         col = C[["D1", "D3", "D4"].index(dsn)]
-        ls = "-" if g.true_share.iloc[0] > 0.4 else "--"
-        g = g.sort_values("share_red")
-        ax[1, 1].plot(g.share_red, g.delta, ls, marker="o", ms=3, color=col,
-                      label=f"{dsn}, true share {g.true_share.iloc[0]:.2f}")
-        ax[1, 1].axvline(g.true_share.iloc[0], color=MUTED, lw=0.8, ls=ls)
+        hi_ = g.true_share.iloc[0] > 0.4
+        g = g.sort_values("log10_R0")
+        smin = g.loc[g.delta.idxmin(), "share_red"]
+        ax[1, 1].plot(g.log10_R0 - g.true_log10_R0, g.delta, "-" if hi_ else "--", marker="o", ms=3, color=col,
+                      label=f"{dsn}, true {g.true_share.iloc[0]:.2f}, at min {smin:.2f}")
     ax[1, 1].axhline(3.84, color=MUTED, lw=1, ls=":")
-    ax[1, 1].set(xlabel="Reduction share implied along the R$_0$ profile", ylabel="Δ(−2 log L)",
-                 ylim=(-1, 40), title="Profile likelihood, two studies")
-    ax[1, 1].legend(fontsize=6.5)
+    ax[1, 1].axvline(0, color=MUTED, lw=0.8)
+    ax[1, 1].set(xlabel="log$_{10}$(R$_0$ / true R$_0$)", ylabel="Δ(−2 log L)", ylim=(-1, 60),
+                 title="Profile likelihood of reductant capacity")
+    ax[1, 1].legend(fontsize=6.3, title="reduction share", title_fontsize=6.5)
     panel(ax[1, 1], "d")
     fig.savefig(FIG / "fig3_identifiability.png"); plt.close(fig)
 
@@ -1061,7 +1096,7 @@ def figures():
     print("figures done")
 
 
-STAGES = {"chem": stage_chem, "bench": stage_bench, "ident": stage_ident, "ml": stage_ml, "uq": stage_uq,
+STAGES = {"chem": stage_chem, "bench": stage_bench, "ident": stage_ident, "profile": stage_profile, "ml": stage_ml, "uq": stage_uq,
           "design": stage_design, "missing": stage_missing}
 
 if __name__ == "__main__":
