@@ -44,7 +44,8 @@ SC_COL = {"A": MUTED, "B": C[0], "C": C[2], "D": C[3], "E": C[1]}
 
 
 def panel(ax, letter):
-    ax.text(-0.14, 1.04, f"({letter})", transform=ax.transAxes, fontweight="bold", fontsize=11, va="bottom")
+    ax.set_title(f"({letter})  " + ax.get_title(), loc="left", fontsize=10)
+    ax.set_title("")
 
 
 def _clean(o):
@@ -830,10 +831,11 @@ def figures():
     B = pd.read_csv(RES / "bench_studies.csv.gz")
     fig, ax = plt.subplots(2, 2, figsize=(7.4, 5.8), constrained_layout=True)
     data = [B[B.scenario == s].share_red.values for s in sim.SCENARIOS]
-    bp = ax[0, 0].boxplot(data, tick_labels=list(sim.SCENARIOS), showfliers=False, patch_artist=True, widths=0.55)
+    bp = ax[0, 0].boxplot(data, tick_labels=list(sim.SCENARIOS), showfliers=False, patch_artist=True, widths=0.55,
+                          medianprops={"color": INK})
     for patch, s in zip(bp["boxes"], sim.SCENARIOS):
         patch.set_facecolor(SC_COL[s]); patch.set_alpha(0.55); patch.set_edgecolor(SC_COL[s])
-    ax[0, 0].set(xlabel="Synthetic scenario", ylabel="True reduction share of Cr(VI) loss", title="Mechanism mix (isotherm series)")
+    ax[0, 0].set(xlabel="Synthetic scenario", ylabel="True reduction share", title="Mechanism mix (synthetic)")
     panel(ax[0, 0], "a")
     bins = np.array([0, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5, 0.7, 1.0])
     mids = 0.5 * (bins[1:] + bins[:-1])
@@ -842,7 +844,7 @@ def figures():
         cut = pd.cut(g.share_red, bins)
         fr = g.groupby(cut, observed=False).R2_best.apply(lambda x: (x >= 0.95).mean() if len(x) >= 20 else np.nan)
         ax[0, 1].plot(mids, fr.values, "-o", ms=3.5, color=SC_COL[s], label=s)
-        pub = g[g.R2_best >= 0.95]
+        pub = g[(g.R2_best >= 0.95) & (g.qmax_L < 0.99e5)]
         cutp = pd.cut(pub.share_red, bins)
         med = pub.groupby(cutp, observed=False).qmax_ratio.median()
         q1 = pub.groupby(cutp, observed=False).qmax_ratio.quantile(0.25)
@@ -853,19 +855,20 @@ def figures():
         ax[1, 0].fill_between(mids[ok], q1.values[ok], q3.values[ok], color=SC_COL[s], alpha=0.15, lw=0)
     gA = B[B.scenario == "A"]
     ax[1, 0].axhline(gA[gA.R2_best >= 0.95].qmax_ratio.median(), color=MUTED, ls=":", lw=1.2, label="A (control)")
-    ax[0, 1].set(xlabel="True reduction share", ylabel="Fraction with best-isotherm R$^2$ ≥ 0.95", ylim=(0, 1.02),
-                 title="Goodness of fit vs mechanism")
+    ax[0, 1].axhline((gA.R2_best >= 0.95).mean(), color=MUTED, ls=":", lw=1.2, label="A (control)")
+    ax[0, 1].set(xlabel="True reduction share", ylabel="Share of fits with R$^2$ ≥ 0.95", ylim=(0, 1.02),
+                 title="Fit quality vs mechanism")
     ax[0, 1].legend(title="Scenario", ncol=2)
     panel(ax[0, 1], "b")
-    ax[1, 0].set(xlabel="True reduction share", ylabel="Langmuir q$_{max}$ / true q$_{max}$",
-                 title="Capacity bias, fits with R$^2$ ≥ 0.95 (median, IQR)")
+    ax[1, 0].set(xlabel="True reduction share", ylabel="Fitted / true q$_{max}$", yscale="log", ylim=(0.7, 30),
+                 title="q$_{max}$ bias, fits with R$^2$ ≥ 0.95")
     ax[1, 0].legend(ncol=2)
     panel(ax[1, 0], "c")
     E = B[B.scenario == "E"]
-    parts = [("share_ads", "adsorbed Cr(VI)"), ("share_cr3_surface", "Cr(III) on solid"),
-             ("share_cr3_aq", "dissolved Cr(III)"), ("share_precip", "Cr(OH)$_3$ precipitate")]
-    ax[1, 1].boxplot([E[p].values for p, _ in parts], tick_labels=[l for _, l in parts], showfliers=False, widths=0.55)
-    ax[1, 1].tick_params(axis="x", labelrotation=20)
+    parts = [("share_ads", "adsorbed\nCr(VI)"), ("share_cr3_surface", "Cr(III)\non solid"),
+             ("share_cr3_aq", "dissolved\nCr(III)"), ("share_precip", "Cr(OH)$_3$\nprecip.")]
+    ax[1, 1].boxplot([E[p].values for p, _ in parts], tick_labels=[l for _, l in parts], showfliers=False, widths=0.55,
+                     medianprops={"color": INK})
     ax[1, 1].set(ylabel="Share of Cr(VI) loss", title="Fate of removed Cr(VI), scenario E")
     panel(ax[1, 1], "d")
     fig.savefig(FIG / "fig2_benchmark.png"); plt.close(fig)
@@ -989,7 +992,7 @@ def figures():
 
     # Fig 6: design
     O = pd.read_csv(RES / "design_outcomes.csv")
-    SN = pd.read_csv(RES / "design_sensitivity.csv")
+    SN = pd.read_csv(RES / "design_sensitivity.csv") if (RES / "design_sensitivity.csv").stat().st_size > 2 else pd.DataFrame()
     fig, ax = plt.subplots(1, 3, figsize=(7.6, 2.9), constrained_layout=True)
     rules = list(RULES)
     rl = {"nominal": "point", "marginal90": "marginal 90%", "joint90_bonf": "joint 90% (Bonf.)"}
