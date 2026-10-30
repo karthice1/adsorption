@@ -52,7 +52,7 @@ HYPER = {
     "RF": {"n_estimators": 300, "min_samples_leaf": 2, "max_features": 1.0},
     "XGB": {"n_estimators": 500, "max_depth": 4, "learning_rate": 0.05, "subsample": 0.8, "colsample_bytree": 0.8},
     "GPR": {"kernel": "Constant * Matern(nu=2.5, ARD) + White", "n_restarts_optimizer": 0, "normalize_y": True,
-            "hyperparameters": "optimised on a seeded 300-row subsample of each training fold, then fixed"},
+            "hyperparameters": "optimised on a seeded 250-row subsample of each training fold, then fixed"},
 }
 TUNE_GRID = {
     "RF": [{"min_samples_leaf": a, "max_features": b} for a in (1, 3, 5) for b in (0.33, 0.66, 1.0)],
@@ -77,7 +77,7 @@ class _ARDGPR(GaussianProcessRegressor):
     def __init__(self, kernel=None):
         super().__init__(kernel=kernel, normalize_y=True, n_restarts_optimizer=0, random_state=0)
 
-    N_HYPER = 300  # rows used to optimise kernel hyperparameters (training data only)
+    N_HYPER = 250  # rows used to optimise kernel hyperparameters (training data only)
 
     def fit(self, X, y):
         self.kernel = ConstantKernel(1.0) * Matern(length_scale=np.ones(X.shape[1]), nu=2.5,

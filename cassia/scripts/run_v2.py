@@ -8,6 +8,10 @@ All randomness is seeded; stage seeds are listed in SEEDS.
 """
 from __future__ import annotations
 
+import os
+for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):  # one BLAS thread per worker
+    os.environ.setdefault(_v, "1")
+
 import argparse
 import json
 import time
@@ -494,7 +498,7 @@ def _lc_worker(args):
 
 def stage_ml(quick=False):
     n_c = 3 if quick else 20
-    n_gpr = 1 if quick else 5
+    n_gpr = 1 if quick else 3
     jobs = [(k, quick, k < n_gpr) for k in range(n_c)]
     with Pool(NPROC) as pool:  # GPR jobs first, one job per dispatch
         res = pool.map(_ml_worker, jobs, chunksize=1)
