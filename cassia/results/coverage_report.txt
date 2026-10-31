@@ -1,14 +1,18 @@
+.......................................                                  [100%]
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.13.17-final-0 _______________
 
 Name                        Stmts   Miss  Cover
 -----------------------------------------------
 cassia/__init__.py              3      0   100%
-cassia/chemistry.py           241     46    81%
-cassia/dataset.py              48      3    94%
+cassia/chemistry.py           246     50    80%
+cassia/dataset.py              52      3    94%
 cassia/fitting.py             108      7    94%
-cassia/identifiability.py     214     67    69%
+cassia/identifiability.py     362    132    64%
+cassia/measurement.py          24      2    92%
 cassia/pores.py                20      0   100%
-cassia/simulate.py            254     10    96%
-cassia/validation.py          216     38    82%
+cassia/simulate.py            262     12    95%
+cassia/validation.py          244     40    84%
 -----------------------------------------------
-TOTAL                        1104    171    85%
-35 passed in 55.52s
+TOTAL                        1321    246    81%
+39 passed in 55.27s

@@ -107,44 +107,66 @@ In scenario E the removed chromium was distributed as follows (medians): 0.62 ad
 
 ### 3.3 Identifiability: which measurements establish the mechanism (synthetic)
 
-**If the model were known (Fig. 3a).**
-- With the mechanistic model structure assumed known, residual Cr(VI) at equilibrium (D1) already constrained the reduction share. The median Laplace posterior SD was 0.014, 0.024, 0.032 and 0.065 for true shares of < 0.05, 0.05–0.2, 0.2–0.4 and > 0.4, against prior SDs of 0.04–0.28.
-- Adding total Cr (D3) roughly halved these values, to 0.008–0.035, and adding XPS and final pH (D4) reduced them to 0.007–0.021.
-- This analysis is deliberately optimistic. It assumes that the analyst knows the exact rate laws, which no analyst of real data does.
+**If the model were known (Fig. 3a).** With the mechanistic model structure assumed known, the median Laplace posterior SD of the reduction share fell with each added measurement (high-reduction studies, share > 0.4):
 
-**Model-free diagnostics (Fig. 3b).**
-- *Lack of isotherm fit* is not specific. It flagged 35% of studies with < 5% reduction and 58% of studies with > 40%.
-- *The dissolved-Cr(III) z-test* had a 8% detection rate at < 5% reduction, rising to 40%, 64% and 66% in the higher bins.
-- *XPS* had rates of 12%, 51%, 59% and 75%.
-- The two Cr(III)-based diagnostics are complementary. The z-test misses Cr(III) that stays on the solid; XPS misses Cr(III) released to solution.
+| Design | D1 | D2 | D3 | D4x | D4n | D5 |
+|---|---|---|---|---|---|---|
+| Posterior SD of reduction share | 0.061 | 0.053 | 0.033 | 0.026 | 0.020 | 0.011 |
 
-**Structural equivalence: an adsorption-only model explains most Class C data (Fig. 3c, Table 4).** This is the decisive result.
+The prior SD was 0.04–0.28.
+- *Precipitation share.* Only the A2 design constrained it well: posterior SD 0.026 under D5, against 0.037 (D4n), 0.077 (D3) and 0.14 (D1). This rests on only 11 studies with a precipitated share above 0.02, because Cr(OH)₃ is undersaturated at the isotherm pH.
+- *Caveat.* The Fisher analysis assumes the exact rate laws are known, so it is an optimistic bound.
 
-**Table 4.** Structural equivalence test: share of studies in which a flexible adsorption-only model is not rejected (χ² p > 0.05).
+**Model-free diagnostics carry technique-specific false alarms (Fig. 3b).** All three diagnostics gained detection with the reduction share (shares < 0.05, 0.05–0.2, 0.2–0.4 and > 0.4), but their false-alarm rates in pure-adsorption controls differed:
 
-| Design | Studies with reduction share > 0.3 where the adsorption-only model is *not* rejected, 10% noise | Same, 3% noise | False-rejection rate of paired pure-adsorption controls |
-|---|---|---|---|
-| D1 | 79% | 67% | 3.4% |
-| D2 | 72% | 65% | 10–13% |
-| D3 | 32% | 7% | 10–13% |
-| D4 | 12.5% | 3% | 10–13% |
+| Diagnostic | Detection rate by reduction share | False-alarm rate in controls |
+|---|---|---|
+| Dissolved-Cr(III) z-test (B) | 10%, 36%, 72%, 71% | 0.9% |
+| XPS Cr(III) > 0.20 (A1) | 17%, 57%, 78%, 80% | 7.1% |
+| XANES Cr(III) > 0.10 (A1) | 11%, 65%, 85%, 85% | 1.0% |
 
-- The flexible adsorption-only model was fitted to data generated with the full mechanism (n = 175 studies plus 175 paired pure-adsorption controls).
-- The control false-rejection rates for D2–D4 are slightly above nominal. This reflects imperfect flexibility of the empirical kinetic model.
-- Residual Cr(VI) data therefore usually cannot exclude the hypothesis 'adsorption only', even when most of the Cr(VI) was reduced. The Cr(III) observations of Classes B and A usually can.
-- Kinetic Cr(VI) data (D2) add little, because conventional kinetic models are fitted with their own free equilibrium uptake.
+- XPS false-alarms seven times as often as XANES because of the assumed beam/vacuum reduction and surface enrichment.
+- An XPS Cr(III) signal on its own is therefore weaker evidence of reduction than the same signal from XANES.
 
-**Profile likelihood (Fig. 3d).** All profile points converged; the minimum −2 log L was consistent with the number of observations (3.4 for n = 14 under D1; 21–79 for n = 44–61 under D3/D4).
+**Adsorption-only fits: rejection, equivalence or neither (Table 4, Fig. 3c,d; Appendix B).** For 120 studies, each paired with a pure-adsorption control:
+- *The nominal χ² test over-rejects.* Its type-I error was 6.7–15%, because the empirical model only approximates the generating adsorption model.
+- *Calibration fixes this.* With thresholds calibrated on the controls, the cross-validated type-I error was 3.3–12.5%, mostly 3–7%. With 120 controls the Monte Carlo SE of these estimates is about 2 percentage points.
+- *Power with Class C data is low.* For high-reduction studies (share > 0.3), the calibrated test rejected adsorption-only in only 37% (D1) and 35% (D2) at 3% analytical noise, and 26% and 24% at 10% noise.
+- *Cr(III) measurements raise power.* Adding total Cr (D3) raised power to 80–88%. Adding solid-phase evidence (D4x, D4n, D5) raised it to 90–96%.
+
+**Non-rejection under Class C reflects genuine structural equivalence.** Because the simulator gives noise-free data, the true misfit of the best adsorption-only approximation is known for every study.
+- *Ground truth.* For 77% of high-reduction studies, adsorption only reproduced the noise-free Class C observations (D1) within a 5% systematic discrepancy, and for 90% within 10%. With total Cr (D3), only 22% and 39% did; with solid-phase evidence (D4x–D5), only 12–16% and 24–29%.
+- *The test recovers this truth.* At 3% noise, the equivalence test declared 'equivalent within 5%' for 59% (D1) and 65% (D2) of high-reduction studies, but only 4–12% under D3–D5.
+- *Its false-equivalence rate stayed within α.* It was 0–4.3% across all designs, noise levels and margins, i.e. at most α = 0.05. Its power to declare equivalence when the true misfit was within the margin was 96–99% at 3% noise for all designs.
+- *More noise means more inconclusive outcomes.* At 10% analytical noise, equivalence could be demonstrated less often: under D1, 4% of high-reduction studies at ε = 5% and 43% at ε = 10%. The share of inconclusive outcomes rose to 31–71%.
+- *Conclusion.* In this benchmark, residual-Cr(VI) data from strongly reducing systems are typically *demonstrably* compatible with adsorption only within 5–10%, not merely 'not rejected'. Total-Cr and solid-phase data usually break that equivalence.
+
+**Table 4.** Adsorption-only model, high-reduction studies (true share > 0.3; n = 51): calibrated rejection, equivalence within ε = 10% and true within-margin status (synthetic).
+
+| Design | Rejected, 3% noise | Rejected, 10% | Equivalent (ε = 10%), 3% | Equivalent, 10% | Truly within ε = 10% (noise-free) | Calibrated type-I, 3% / 10% |
+|---|---|---|---|---|---|---|
+| D1 (C) | 0.37 | 0.26 | 0.63 | 0.43 | 0.90 / 0.84 | 0.067 / 0.058 |
+| D2 (C) | 0.35 | 0.24 | 0.65 | 0.63 | 0.92 / 0.86 | 0.100 / 0.083 |
+| D3 (B) | 0.88 | 0.80 | 0.12 | 0.20 | 0.39 / 0.39 | 0.050 / 0.033 |
+| D4x (A1, XPS) | 0.96 | 0.90 | 0.04 | 0.10 | 0.29 / 0.20 | 0.058 / 0.067 |
+| D4n (A1, XANES) | 0.94 | 0.92 | 0.06 | 0.08 | 0.28 / 0.16 | 0.125 / 0.033 |
+| D5 (A2) | 0.96 | 0.92 | 0.04 | 0.08 | 0.24 / 0.18 | 0.067 / 0.067 |
+
+'Truly within' depends on the noise level because the margin is expressed in units of the analytical SD.
+
+**These statements are conditional on the benchmark.** They hold under the assumed measurement models (§2.4), in particular the XPS and XANES bias distributions. They do not establish that total-Cr or solid-phase data make mechanisms distinguishable in every real carbonaceous system.
+
+**Profile likelihood (Supplementary Fig. S1; v0.2 designs).** All profile points met the optimiser convergence criterion, but some profiles are not smooth (e.g. a peak at +0.6 log units for study VS002), indicating local optima at those points; the true profile lies at or below the plotted curve, so these profiles are indicative only; the minimum −2 log L was consistent with the number of observations (3.4 for n = 14 under D1; 21–79 for n = 44–61 under D3/D4).
 
 - *Low-reduction study (true share 0.15).* The reductant capacity R₀ was practically non-identifiable. The 95% profile region extended from at least 16-fold below to 1.6-fold above the true value under every design. The implied reduction share nevertheless stayed within 0.13–0.14 (D1) and 0.17–0.18 (D3, D4). A share can be well determined while the parameter that generates it is not, *provided the model structure is correct*.
 - *High-reduction study (true share 0.60).* R₀ was sharply identified, within one grid step of 0.2 log units, under all designs. The share at the minimum was 0.601 in each case.
 - *Caveat.* The profiles use the known model structure and include the true parameters among the optimiser starts. They therefore show identifiability under the correct model, not the ease of estimation. The equivalence test removes that assumption, and under it Class C data lose most of their discriminating power.
 
-**Misreported metadata.**
+**Misreported metadata (v0.2 designs D1, D3).**
 - Analysing the data at a pH 0.5 units above the true value biased the inferred reduction share by a median of 0.032 (90th percentile 0.157) under D1, and by 0.024 (0.092) under D3.
 - A ten-fold error in ionic strength caused much smaller biases: medians of 0.003 and 0.001, 90th percentiles of 0.025 and 0.015.
 - The pH basis (initial vs final) is therefore the reporting omission that matters most for mechanism inference.
 
 ![Fig. 3](figures/fig3_identifiability.png)
 
-**Fig. 3.** Mechanism identifiability by measurement design (synthetic). (a) Laplace-posterior SD of the reduction share assuming the true model structure (median per bin; dotted: prior). (b) Detection rates of three model-free diagnostics. (c) Fraction of studies in which a flexible adsorption-only model is not rejected (χ² p > 0.05), for paired pure-adsorption controls and for studies with moderate or high reduction, at 3% and 10% analytical noise. (d) Profile likelihood of the reductant capacity for one low-reduction (dashed; non-monotone, with a secondary basin above 6× R₀) and one high-reduction (solid) study under D1, D3 and D4. The legend gives the true reduction share and the share at the profile minimum; dotted line, 95% threshold (3.84).
+**Fig. 3.** Mechanism identifiability by measurement design (synthetic). (a) Laplace-posterior SD of the reduction share assuming the true model structure (median per bin; dotted: prior). (b) Detection rates of three model-free diagnostics; false-alarm rates in pure-adsorption controls are given in the legend. (c) Outcome of the adsorption-only test at 10% analytical noise and ε = 10% (rejected by the calibrated χ² test; equivalent within ε by the noncentral-χ² equivalence test; inconclusive), for studies with reduction share > 0.3 (solid) and 5–30% (hatched). (d) Power of the calibrated rejection test against the true reduction share, by design.
