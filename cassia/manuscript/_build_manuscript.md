@@ -886,7 +886,7 @@ Existing adsorption databases and ML studies of Cr(VI) removal typically pool re
 **Location.** All code, the three PHREEQC databases (with checksums and provenance), the virtual corpora, the result tables and the figure scripts are in the `cassia/` directory of the repository `karthice1/adsorption` (CASSIA 0.3.0).
 
 **Fixed snapshot.** The content of this release is identified by `release/MANIFEST.sha256`: SHA-256 checksums of every code, database, data, result and figure file. `release/RELEASE.md` records:
-- the code commit `[COMMIT]`;
+- the code commit `9d5a37bd6012b6abf2cacbca284a97aada468f68`;
 - the environment (`requirements-lock.txt`, Python 3.13.17);
 - the test log and coverage report;
 - the exact commands: `python scripts/run_v2.py --stage all` and `python scripts/run_v3.py --stage all`;
