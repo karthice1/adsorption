@@ -476,11 +476,11 @@ def equivalence_test_v3(m: sim.Material, meta: dict, design: str, sd_rel=0.03, s
     hi = np.array([3.0, 3.0, 2.0, 6.0, 10.0, np.log10(5.0), 0.0, 0.15, 1.0, 3.0, 2.5, max(beam_max, 1e-6)])
     n_free = 8 + (0 if design == "D1" else 3) - (1 if design not in TECH_OF else 0) + (1 if tech else 0)
 
-    def fit_to(target, sdv, inits=()):
+    def fit_to(target, sdv, inits=(), n_random=None):
         """Bounded WLS from random starts plus warm starts; returns (chi2, x)."""
         f = lambda x: (target - _empirical_predict_v3(x, meta, base, design)) / sdv
         starts = []
-        for k in range(n_starts):
+        for k in range(n_starts if n_random is None else n_random):
             x0 = lo + (hi - lo) * rng.uniform(0.2, 0.8, lo.size)
             x0[0] = np.log10(max(m.qmax, 0.1)); x0[7] = 0.0
             starts.append(x0)
@@ -493,10 +493,12 @@ def equivalence_test_v3(m: sim.Material, meta: dict, design: str, sd_rel=0.03, s
         return float(2 * best.cost), best.x
 
     chi2, x_noisy = fit_to(yobs, sd_fit, (x_init,))
-    lam_true, x_true = fit_to(y_true_obs, sd, (x_noisy, x_init))      # noise-free misfit of the best fit
-    chi2_b, x_b = fit_to(yobs, sd_fit, (x_true,))                      # cross-seeded refit of the noisy data
-    if chi2_b < chi2:
-        chi2, x_noisy = chi2_b, x_b
+    lam_true, x_true = fit_to(y_true_obs, sd, (x_noisy, x_init), n_random=1)   # noise-free misfit of the best fit
+    dof_ = max(y.size - n_free, 1)
+    if chi2 > lam_true + 2 * dof_:                                         # cross-seeded refit only if suspicious
+        chi2_b, x_b = fit_to(yobs, sd_fit, (x_true,), n_random=0)
+        if chi2_b < chi2:
+            chi2, x_noisy = chi2_b, x_b
     dof = max(y.size - n_free, 1)
     out = {"design": design, "sd_rel": sd_rel, "n_obs": int(y.size), "n_free": int(n_free), "dof": int(dof),
            "chi2": chi2, "lambda_true": lam_true, "p_gof": float(stats.chi2.sf(chi2, dof)),

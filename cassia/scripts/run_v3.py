@@ -128,11 +128,13 @@ def stage_ident3(quick=False):
 
 # ============================================================================= equiv3
 def _equiv3_worker(args):
-    scen, rep, n_st = args
+    scen, rep, n_st, i0, i1 = args
     seed = SEEDS3["equiv"] + 1000 * sim.SCENARIOS.index(scen) + rep
     _, mats = sim.virtual_corpus(n_st, seed=seed, scenario=scen)
     out = []
     for k, (_, meta) in enumerate(mats.iterrows()):
+        if not (i0 <= k < i1):
+            continue
         meta = meta.to_dict()
         m = v2.material_from(meta)
         for arm, mm in (("true", m), ("control_A", sim.apply_scenario(m, "A"))):
@@ -148,11 +150,28 @@ def _equiv3_worker(args):
     return out
 
 
-def stage_equiv3(quick=False):
+EQUIV_PARTS = {1: {"E": [0, 1, 2]}, 2: {"B": [0], "C": [0], "D": [0]}}
+
+
+def stage_equiv3(quick=False, part=None):
+    """Run in parts (EQUIV_PART=1 / 2 environment variable) to fit the 2-h job limit, then summarise."""
     n_st = 3 if quick else 20
-    reps = {"E": 1 if quick else 3, "B": 0 if quick else 1, "C": 0 if quick else 1, "D": 0 if quick else 1}
-    with Pool(NPROC) as pool:
-        Q = pd.DataFrame([x for c in pool.imap_unordered(_equiv3_worker, [(s, r, n_st) for s, n in reps.items() for r in range(n)]) for x in c])
+    part = part or int(os.environ.get("EQUIV_PART", "0"))
+    if quick:
+        jobs = [("E", 0, n_st, 0, n_st)]
+    elif part:
+        jobs = [(s, r, n_st, i, i + 5) for s, rs in EQUIV_PARTS[part].items() for r in rs for i in range(0, n_st, 5)]
+    else:
+        jobs = []
+    if jobs:
+        with Pool(NPROC) as pool:
+            Qp = pd.DataFrame([x for c in pool.imap_unordered(_equiv3_worker, jobs, chunksize=1) for x in c])
+        Qp.to_csv(RES / f"equiv3_part{part or 0}.csv.gz", index=False)
+        if part:
+            print(f"equiv3 part {part} written", len(Qp))
+            return
+    parts = sorted(RES.glob("equiv3_part*.csv.gz"))
+    Q = pd.concat([pd.read_csv(f) for f in parts], ignore_index=True)
     Q.to_csv(RES / "equiv3.csv.gz", index=False)
     rng = np.random.default_rng(1)
     summ = {"n_studies": int(Q[Q.arm == "true"].groupby(["scenario", "rep", "study_id"]).ngroups)}
