@@ -3,8 +3,8 @@
     {
       "target": "Ce_VI",
       "nominal_1-alpha": 0.95,
-      "n_test_studies": 24,
-      "n_cal_mean": 6.0,
+      "n_test_studies": 300,
+      "n_cal_mean": 14.0,
       "frac_unbounded": 1.0,
       "frac_studies_cov_ge_0.9": 1.0,
       "mean_cov": 1.0,
@@ -14,162 +14,162 @@
     {
       "target": "Ce_VI",
       "nominal_1-alpha": 0.9,
-      "n_test_studies": 24,
-      "n_cal_mean": 6.0,
-      "frac_unbounded": 1.0,
-      "frac_studies_cov_ge_0.9": 1.0,
-      "mean_cov": 1.0,
-      "worst_cov": 1.0,
-      "mean_width_log10_bounded": null
+      "n_test_studies": 300,
+      "n_cal_mean": 14.0,
+      "frac_unbounded": 0.0,
+      "frac_studies_cov_ge_0.9": 0.9467,
+      "mean_cov": 0.9854,
+      "worst_cov": 0.4643,
+      "mean_width_log10_bounded": 3.9428
     },
     {
       "target": "Ce_VI",
       "nominal_1-alpha": 0.8,
-      "n_test_studies": 24,
-      "n_cal_mean": 6.0,
+      "n_test_studies": 300,
+      "n_cal_mean": 14.0,
       "frac_unbounded": 0.0,
-      "frac_studies_cov_ge_0.9": 0.7083,
-      "mean_cov": 0.8914,
-      "worst_cov": 0.2143,
-      "mean_width_log10_bounded": 2.8734
-    },
-    {
-      "target": "Ce_VI",
-      "nominal_1-alpha": 0.7,
-      "n_test_studies": 24,
-      "n_cal_mean": 6.0,
-      "frac_unbounded": 0.0,
-      "frac_studies_cov_ge_0.9": 0.6667,
-      "mean_cov": 0.8497,
+      "frac_studies_cov_ge_0.9": 0.8067,
+      "mean_cov": 0.9375,
       "worst_cov": 0.1071,
-      "mean_width_log10_bounded": 2.3527
+      "mean_width_log10_bounded": 2.5017
+    },
+    {
+      "target": "Ce_VI",
+      "nominal_1-alpha": 0.7,
+      "n_test_studies": 300,
+      "n_cal_mean": 14.0,
+      "frac_unbounded": 0.0,
+      "frac_studies_cov_ge_0.9": 0.7633,
+      "mean_cov": 0.9174,
+      "worst_cov": 0.1071,
+      "mean_width_log10_bounded": 2.1347
     },
     {
       "target": "Ce_VI",
       "nominal_1-alpha": 0.5,
-      "n_test_studies": 24,
-      "n_cal_mean": 6.0,
+      "n_test_studies": 300,
+      "n_cal_mean": 14.0,
       "frac_unbounded": 0.0,
-      "frac_studies_cov_ge_0.9": 0.4583,
-      "mean_cov": 0.7872,
+      "frac_studies_cov_ge_0.9": 0.5667,
+      "mean_cov": 0.8475,
+      "worst_cov": 0.0357,
+      "mean_width_log10_bounded": 1.5475
+    },
+    {
+      "target": "Ce_total",
+      "nominal_1-alpha": 0.95,
+      "n_test_studies": 179,
+      "n_cal_mean": 8.6313,
+      "frac_unbounded": 1.0,
+      "frac_studies_cov_ge_0.9": 1.0,
+      "mean_cov": 1.0,
+      "worst_cov": 1.0,
+      "mean_width_log10_bounded": null
+    },
+    {
+      "target": "Ce_total",
+      "nominal_1-alpha": 0.9,
+      "n_test_studies": 179,
+      "n_cal_mean": 8.6313,
+      "frac_unbounded": 0.6257,
+      "frac_studies_cov_ge_0.9": 0.9777,
+      "mean_cov": 0.9935,
+      "worst_cov": 0.75,
+      "mean_width_log10_bounded": 2.1764
+    },
+    {
+      "target": "Ce_total",
+      "nominal_1-alpha": 0.8,
+      "n_test_studies": 179,
+      "n_cal_mean": 8.6313,
+      "frac_unbounded": 0.0,
+      "frac_studies_cov_ge_0.9": 0.8659,
+      "mean_cov": 0.962,
+      "worst_cov": 0.3929,
+      "mean_width_log10_bounded": 2.1858
+    },
+    {
+      "target": "Ce_total",
+      "nominal_1-alpha": 0.7,
+      "n_test_studies": 179,
+      "n_cal_mean": 8.6313,
+      "frac_unbounded": 0.0,
+      "frac_studies_cov_ge_0.9": 0.7207,
+      "mean_cov": 0.91,
+      "worst_cov": 0.2,
+      "mean_width_log10_bounded": 1.54
+    },
+    {
+      "target": "Ce_total",
+      "nominal_1-alpha": 0.5,
+      "n_test_studies": 179,
+      "n_cal_mean": 8.6313,
+      "frac_unbounded": 0.0,
+      "frac_studies_cov_ge_0.9": 0.5196,
+      "mean_cov": 0.7816,
+      "worst_cov": 0.0,
+      "mean_width_log10_bounded": 0.9615
+    },
+    {
+      "target": "q_app_VI",
+      "nominal_1-alpha": 0.95,
+      "n_test_studies": 300,
+      "n_cal_mean": 14.0,
+      "frac_unbounded": 1.0,
+      "frac_studies_cov_ge_0.9": 1.0,
+      "mean_cov": 1.0,
+      "worst_cov": 1.0,
+      "mean_width_log10_bounded": null
+    },
+    {
+      "target": "q_app_VI",
+      "nominal_1-alpha": 0.9,
+      "n_test_studies": 300,
+      "n_cal_mean": 14.0,
+      "frac_unbounded": 0.0,
+      "frac_studies_cov_ge_0.9": 0.9267,
+      "mean_cov": 0.9776,
+      "worst_cov": 0.4286,
+      "mean_width_log10_bounded": 3.2839
+    },
+    {
+      "target": "q_app_VI",
+      "nominal_1-alpha": 0.8,
+      "n_test_studies": 300,
+      "n_cal_mean": 14.0,
+      "frac_unbounded": 0.0,
+      "frac_studies_cov_ge_0.9": 0.8,
+      "mean_cov": 0.9365,
+      "worst_cov": 0.3929,
+      "mean_width_log10_bounded": 2.4083
+    },
+    {
+      "target": "q_app_VI",
+      "nominal_1-alpha": 0.7,
+      "n_test_studies": 300,
+      "n_cal_mean": 14.0,
+      "frac_unbounded": 0.0,
+      "frac_studies_cov_ge_0.9": 0.72,
+      "mean_cov": 0.9099,
       "worst_cov": 0.1071,
-      "mean_width_log10_bounded": 1.9546
-    },
-    {
-      "target": "Ce_total",
-      "nominal_1-alpha": 0.95,
-      "n_test_studies": 16,
-      "n_cal_mean": 3.5625,
-      "frac_unbounded": 1.0,
-      "frac_studies_cov_ge_0.9": 1.0,
-      "mean_cov": 1.0,
-      "worst_cov": 1.0,
-      "mean_width_log10_bounded": null
-    },
-    {
-      "target": "Ce_total",
-      "nominal_1-alpha": 0.9,
-      "n_test_studies": 16,
-      "n_cal_mean": 3.5625,
-      "frac_unbounded": 1.0,
-      "frac_studies_cov_ge_0.9": 1.0,
-      "mean_cov": 1.0,
-      "worst_cov": 1.0,
-      "mean_width_log10_bounded": null
-    },
-    {
-      "target": "Ce_total",
-      "nominal_1-alpha": 0.8,
-      "n_test_studies": 16,
-      "n_cal_mean": 3.5625,
-      "frac_unbounded": 0.4375,
-      "frac_studies_cov_ge_0.9": 0.9375,
-      "mean_cov": 0.9754,
-      "worst_cov": 0.6071,
-      "mean_width_log10_bounded": 3.0133
-    },
-    {
-      "target": "Ce_total",
-      "nominal_1-alpha": 0.7,
-      "n_test_studies": 16,
-      "n_cal_mean": 3.5625,
-      "frac_unbounded": 0.0,
-      "frac_studies_cov_ge_0.9": 0.875,
-      "mean_cov": 0.95,
-      "worst_cov": 0.6071,
-      "mean_width_log10_bounded": 2.4348
-    },
-    {
-      "target": "Ce_total",
-      "nominal_1-alpha": 0.5,
-      "n_test_studies": 16,
-      "n_cal_mean": 3.5625,
-      "frac_unbounded": 0.0,
-      "frac_studies_cov_ge_0.9": 0.5625,
-      "mean_cov": 0.7982,
-      "worst_cov": 0.1,
-      "mean_width_log10_bounded": 1.6895
-    },
-    {
-      "target": "q_app_VI",
-      "nominal_1-alpha": 0.95,
-      "n_test_studies": 24,
-      "n_cal_mean": 6.0,
-      "frac_unbounded": 1.0,
-      "frac_studies_cov_ge_0.9": 1.0,
-      "mean_cov": 1.0,
-      "worst_cov": 1.0,
-      "mean_width_log10_bounded": null
-    },
-    {
-      "target": "q_app_VI",
-      "nominal_1-alpha": 0.9,
-      "n_test_studies": 24,
-      "n_cal_mean": 6.0,
-      "frac_unbounded": 1.0,
-      "frac_studies_cov_ge_0.9": 1.0,
-      "mean_cov": 1.0,
-      "worst_cov": 1.0,
-      "mean_width_log10_bounded": null
-    },
-    {
-      "target": "q_app_VI",
-      "nominal_1-alpha": 0.8,
-      "n_test_studies": 24,
-      "n_cal_mean": 6.0,
-      "frac_unbounded": 0.0,
-      "frac_studies_cov_ge_0.9": 0.7083,
-      "mean_cov": 0.933,
-      "worst_cov": 0.6071,
-      "mean_width_log10_bounded": 1.9448
-    },
-    {
-      "target": "q_app_VI",
-      "nominal_1-alpha": 0.7,
-      "n_test_studies": 24,
-      "n_cal_mean": 6.0,
-      "frac_unbounded": 0.0,
-      "frac_studies_cov_ge_0.9": 0.5833,
-      "mean_cov": 0.8676,
-      "worst_cov": 0.3571,
-      "mean_width_log10_bounded": 1.1625
+      "mean_width_log10_bounded": 2.0227
     },
     {
       "target": "q_app_VI",
       "nominal_1-alpha": 0.5,
-      "n_test_studies": 24,
-      "n_cal_mean": 6.0,
+      "n_test_studies": 300,
+      "n_cal_mean": 14.0,
       "frac_unbounded": 0.0,
-      "frac_studies_cov_ge_0.9": 0.5,
-      "mean_cov": 0.8348,
-      "worst_cov": 0.3214,
-      "mean_width_log10_bounded": 1.0107
+      "frac_studies_cov_ge_0.9": 0.5033,
+      "mean_cov": 0.8261,
+      "worst_cov": 0.0357,
+      "mean_width_log10_bounded": 1.1953
     },
     {
       "target": "q_tot_aq",
       "nominal_1-alpha": 0.95,
-      "n_test_studies": 16,
-      "n_cal_mean": 3.5625,
+      "n_test_studies": 179,
+      "n_cal_mean": 8.6313,
       "frac_unbounded": 1.0,
       "frac_studies_cov_ge_0.9": 1.0,
       "mean_cov": 1.0,
@@ -179,84 +179,84 @@
     {
       "target": "q_tot_aq",
       "nominal_1-alpha": 0.9,
-      "n_test_studies": 16,
-      "n_cal_mean": 3.5625,
-      "frac_unbounded": 1.0,
-      "frac_studies_cov_ge_0.9": 1.0,
-      "mean_cov": 1.0,
-      "worst_cov": 1.0,
-      "mean_width_log10_bounded": null
+      "n_test_studies": 179,
+      "n_cal_mean": 8.6313,
+      "frac_unbounded": 0.6257,
+      "frac_studies_cov_ge_0.9": 0.9665,
+      "mean_cov": 0.9919,
+      "worst_cov": 0.6,
+      "mean_width_log10_bounded": 3.8136
     },
     {
       "target": "q_tot_aq",
       "nominal_1-alpha": 0.8,
-      "n_test_studies": 16,
-      "n_cal_mean": 3.5625,
-      "frac_unbounded": 0.4375,
-      "frac_studies_cov_ge_0.9": 0.9375,
-      "mean_cov": 0.9438,
-      "worst_cov": 0.1,
-      "mean_width_log10_bounded": 3.4274
+      "n_test_studies": 179,
+      "n_cal_mean": 8.6313,
+      "frac_unbounded": 0.0,
+      "frac_studies_cov_ge_0.9": 0.8827,
+      "mean_cov": 0.9557,
+      "worst_cov": 0.0,
+      "mean_width_log10_bounded": 3.2126
     },
     {
       "target": "q_tot_aq",
       "nominal_1-alpha": 0.7,
-      "n_test_studies": 16,
-      "n_cal_mean": 3.5625,
+      "n_test_studies": 179,
+      "n_cal_mean": 8.6313,
       "frac_unbounded": 0.0,
-      "frac_studies_cov_ge_0.9": 0.875,
-      "mean_cov": 0.9281,
-      "worst_cov": 0.1,
-      "mean_width_log10_bounded": 2.6313
+      "frac_studies_cov_ge_0.9": 0.7821,
+      "mean_cov": 0.9184,
+      "worst_cov": 0.0,
+      "mean_width_log10_bounded": 2.1705
     },
     {
       "target": "q_tot_aq",
       "nominal_1-alpha": 0.5,
-      "n_test_studies": 16,
-      "n_cal_mean": 3.5625,
+      "n_test_studies": 179,
+      "n_cal_mean": 8.6313,
       "frac_unbounded": 0.0,
-      "frac_studies_cov_ge_0.9": 0.75,
-      "mean_cov": 0.8897,
-      "worst_cov": 0.05,
-      "mean_width_log10_bounded": 1.1977
+      "frac_studies_cov_ge_0.9": 0.5196,
+      "mean_cov": 0.8153,
+      "worst_cov": 0.0,
+      "mean_width_log10_bounded": 1.4344
     }
   ],
   "family_frac_ge_0.9": {
     "AC_chemical": {
-      "Ce_VI": 1.0,
+      "Ce_VI": 0.96,
       "Ce_total": 1.0,
-      "q_app_VI": 1.0,
+      "q_app_VI": 0.98,
       "q_tot_aq": 1.0
     },
     "AC_physical": {
       "Ce_VI": 1.0,
-      "Ce_total": 1.0,
-      "q_app_VI": 1.0,
-      "q_tot_aq": 1.0
+      "Ce_total": 0.931,
+      "q_app_VI": 0.96,
+      "q_tot_aq": 0.966
     },
     "biochar_manure": {
-      "Ce_VI": 1.0,
-      "Ce_total": 1.0,
-      "q_app_VI": 1.0,
-      "q_tot_aq": 1.0
+      "Ce_VI": 0.96,
+      "Ce_total": 0.968,
+      "q_app_VI": 0.9,
+      "q_tot_aq": 0.968
     },
     "biochar_wood": {
-      "Ce_VI": 1.0,
+      "Ce_VI": 0.92,
       "Ce_total": 1.0,
-      "q_app_VI": 1.0,
+      "q_app_VI": 0.9,
       "q_tot_aq": 1.0
     },
     "hydrochar": {
-      "Ce_VI": 1.0,
+      "Ce_VI": 0.94,
       "Ce_total": 1.0,
-      "q_app_VI": 1.0,
-      "q_tot_aq": 1.0
+      "q_app_VI": 0.84,
+      "q_tot_aq": 0.903
     },
     "porous_carbon": {
-      "Ce_VI": 1.0,
-      "Ce_total": 1.0,
-      "q_app_VI": 1.0,
-      "q_tot_aq": 1.0
+      "Ce_VI": 0.9,
+      "Ce_total": 0.967,
+      "q_app_VI": 0.98,
+      "q_tot_aq": 0.967
     }
   }
 }
