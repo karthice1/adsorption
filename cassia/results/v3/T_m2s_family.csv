@@ -1,0 +1,5 @@
+target,AC_chemical,AC_physical,biochar_manure,biochar_wood,hydrochar,porous_carbon
+Ce_VI,1.0,1.0,1.0,1.0,1.0,1.0
+Ce_total,1.0,1.0,1.0,1.0,1.0,1.0
+q_app_VI,1.0,1.0,1.0,1.0,1.0,1.0
+q_tot_aq,1.0,1.0,1.0,1.0,1.0,1.0

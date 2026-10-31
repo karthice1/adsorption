@@ -1,0 +1,40 @@
+{
+  "summary": [
+    {
+      "variant": "asinh_keep_negative",
+      "R2": 0.3806,
+      "RMSE": 11.6002,
+      "bias": -2.9085,
+      "M1_mean_cov": 0.9836,
+      "M1_frac_ge_0.9": 0.9583,
+      "n_censored": 5.5
+    },
+    {
+      "variant": "log_LOD_full",
+      "R2": 0.452,
+      "RMSE": 10.8795,
+      "bias": -2.0107,
+      "M1_mean_cov": 0.9851,
+      "M1_frac_ge_0.9": 0.9583,
+      "n_censored": 5.5
+    },
+    {
+      "variant": "log_censor_LODhalf",
+      "R2": 0.4557,
+      "RMSE": 10.841,
+      "bias": -2.0048,
+      "M1_mean_cov": 0.9851,
+      "M1_frac_ge_0.9": 0.9583,
+      "n_censored": 5.5
+    },
+    {
+      "variant": "log_drop_censored",
+      "R2": 0.4587,
+      "RMSE": 10.8413,
+      "bias": -2.1805,
+      "M1_mean_cov": 0.9856,
+      "M1_frac_ge_0.9": 0.9583,
+      "n_censored": 5.5
+    }
+  ]
+}

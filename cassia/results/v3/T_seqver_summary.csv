@@ -1,0 +1,9 @@
+target,rule,bias_model,n_materials,mean_p_false_accept_all,mean_p_false_accept_risky,max_p_false_accept,n_risky,frac_materials_pfa_gt_0.05,mean_p_accept,mean_batches
+S1,ucb_n3_bonf,bias_independent,8,0.0,0.0,0.0,6,0.0,0.2575,4.125
+S1,ucb_n3_bonf,bias_shared,8,0.0,0.0,0.0,6,0.0,0.25875000000000004,4.125
+S1,v2_ratio_n2,bias_independent,8,0.0,0.0,0.0,6,0.0,0.27125,2.75
+S1,v2_ratio_n2,bias_shared,8,0.0,0.0,0.0,6,0.0,0.27375,2.75
+S2,ucb_n3_bonf,bias_independent,8,0.0,0.0,0.0,4,0.0,0.38375000000000004,3.75
+S2,ucb_n3_bonf,bias_shared,8,0.0,0.0,0.0,4,0.0,0.39125,3.75
+S2,v2_ratio_n2,bias_independent,8,0.0,0.0,0.0,4,0.0,0.405,2.5
+S2,v2_ratio_n2,bias_shared,8,0.0,0.0,0.0,4,0.0,0.41375,2.5

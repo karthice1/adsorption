@@ -1,9 +1,9 @@
 {
   "n": {
-    "B": 6,
-    "C": 6,
-    "D": 6,
-    "E": 12
+    "B": 50,
+    "C": 50,
+    "D": 50,
+    "E": 200
   },
   "red_bins": [
     "(-0.001, 0.05]",
@@ -12,67 +12,67 @@
     "(0.4, 1.0]"
   ],
   "post_sd_red_by_bin|D1": [
-    0.0066,
-    0.0292,
-    0.0282,
-    0.0689
+    0.0138,
+    0.0259,
+    0.0284,
+    0.0612
   ],
-  "post_sd_precip_median_precip>0.02|D1": 0.14179143464238328,
+  "post_sd_precip_median_precip>0.02|D1": 0.14343128063869853,
   "post_sd_red_by_bin|D2": [
-    0.0065,
-    0.0266,
-    0.0208,
-    0.06
+    0.0131,
+    0.0217,
+    0.026,
+    0.0531
   ],
-  "post_sd_precip_median_precip>0.02|D2": 0.13965123325003334,
+  "post_sd_precip_median_precip>0.02|D2": 0.1364524444518863,
   "post_sd_red_by_bin|D3": [
-    0.0042,
+    0.0073,
     0.0125,
-    0.0148,
-    0.0288
+    0.0139,
+    0.033
   ],
-  "post_sd_precip_median_precip>0.02|D3": 0.10860935099998673,
+  "post_sd_precip_median_precip>0.02|D3": 0.07698265972192064,
   "post_sd_red_by_bin|D4x": [
-    0.004,
-    0.0125,
-    0.0126,
-    0.0254
+    0.007,
+    0.011,
+    0.0122,
+    0.0256
   ],
-  "post_sd_precip_median_precip>0.02|D4x": 0.07443994855813957,
+  "post_sd_precip_median_precip>0.02|D4x": 0.040709512670580844,
   "post_sd_red_by_bin|D4n": [
-    0.0035,
-    0.0124,
-    0.0116,
-    0.0214
+    0.0066,
+    0.0098,
+    0.0108,
+    0.0201
   ],
-  "post_sd_precip_median_precip>0.02|D4n": 0.054120162554928825,
+  "post_sd_precip_median_precip>0.02|D4n": 0.036944498518237355,
   "post_sd_red_by_bin|D5": [
-    0.0035,
-    0.0112,
-    0.0115,
-    0.0133
+    0.0066,
+    0.0097,
+    0.01,
+    0.0112
   ],
-  "post_sd_precip_median_precip>0.02|D5": 0.03561003254944665,
-  "n_precip>0.02": 2,
+  "post_sd_precip_median_precip>0.02|D5": 0.0257904461623638,
+  "n_precip>0.02": 11,
   "detect_by_bin|dissolved_cr3": [
-    0.012,
-    0.367,
-    0.77,
-    0.583
+    0.097,
+    0.364,
+    0.716,
+    0.707
   ],
-  "false_alarm_controls|dissolved_cr3": 0.006666666666666667,
+  "false_alarm_controls|dissolved_cr3": 0.009142857142857144,
   "detect_by_bin|xps_cr3": [
-    0.15,
-    0.361,
-    0.89,
-    0.871
+    0.165,
+    0.574,
+    0.783,
+    0.803
   ],
-  "false_alarm_controls|xps_cr3": 0.085,
+  "false_alarm_controls|xps_cr3": 0.07114285714285715,
   "detect_by_bin|xanes_cr3": [
-    0.038,
-    0.339,
-    1.0,
-    0.892
+    0.112,
+    0.648,
+    0.849,
+    0.853
   ],
-  "false_alarm_controls|xanes_cr3": 0.0033333333333333335
+  "false_alarm_controls|xanes_cr3": 0.009571428571428573
 }

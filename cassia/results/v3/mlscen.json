@@ -1,0 +1,765 @@
+{
+  "summary": [
+    {
+      "scenario": "A",
+      "model": "RF",
+      "features": "base",
+      "scheme": "LOFO",
+      "mean": 0.5736,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "A",
+      "model": "RF",
+      "features": "base",
+      "scheme": "LOSO",
+      "mean": 0.6675,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "A",
+      "model": "RF",
+      "features": "base",
+      "scheme": "random",
+      "mean": 0.8254,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "A",
+      "model": "RF",
+      "features": "chem",
+      "scheme": "LOFO",
+      "mean": 0.5771,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "A",
+      "model": "RF",
+      "features": "chem",
+      "scheme": "LOSO",
+      "mean": 0.6615,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "A",
+      "model": "RF",
+      "features": "chem",
+      "scheme": "random",
+      "mean": 0.835,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "A",
+      "model": "RF",
+      "features": "chem",
+      "scheme": "transfer_from_E",
+      "mean": -0.3443,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "A",
+      "model": "XGB",
+      "features": "base",
+      "scheme": "LOFO",
+      "mean": 0.5487,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "A",
+      "model": "XGB",
+      "features": "base",
+      "scheme": "LOSO",
+      "mean": 0.5408,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "A",
+      "model": "XGB",
+      "features": "base",
+      "scheme": "random",
+      "mean": 0.8295,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "A",
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "LOFO",
+      "mean": 0.5242,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "A",
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "LOSO",
+      "mean": 0.5325,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "A",
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "random",
+      "mean": 0.7909,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "A",
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "transfer_from_E",
+      "mean": 0.1487,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "B",
+      "model": "RF",
+      "features": "base",
+      "scheme": "LOFO",
+      "mean": 0.1518,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "B",
+      "model": "RF",
+      "features": "base",
+      "scheme": "LOSO",
+      "mean": 0.2867,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "B",
+      "model": "RF",
+      "features": "base",
+      "scheme": "random",
+      "mean": 0.9131,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "B",
+      "model": "RF",
+      "features": "chem",
+      "scheme": "LOFO",
+      "mean": 0.2211,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "B",
+      "model": "RF",
+      "features": "chem",
+      "scheme": "LOSO",
+      "mean": 0.3129,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "B",
+      "model": "RF",
+      "features": "chem",
+      "scheme": "random",
+      "mean": 0.8911,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "B",
+      "model": "RF",
+      "features": "chem",
+      "scheme": "transfer_from_E",
+      "mean": -0.0392,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "B",
+      "model": "XGB",
+      "features": "base",
+      "scheme": "LOFO",
+      "mean": 0.2464,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "B",
+      "model": "XGB",
+      "features": "base",
+      "scheme": "LOSO",
+      "mean": 0.3511,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "B",
+      "model": "XGB",
+      "features": "base",
+      "scheme": "random",
+      "mean": 0.9225,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "B",
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "LOFO",
+      "mean": 0.2737,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "B",
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "LOSO",
+      "mean": 0.2524,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "B",
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "random",
+      "mean": 0.8704,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "B",
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "transfer_from_E",
+      "mean": 0.0724,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "C",
+      "model": "RF",
+      "features": "base",
+      "scheme": "LOFO",
+      "mean": 0.336,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "C",
+      "model": "RF",
+      "features": "base",
+      "scheme": "LOSO",
+      "mean": 0.3233,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "C",
+      "model": "RF",
+      "features": "base",
+      "scheme": "random",
+      "mean": 0.7197,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "C",
+      "model": "RF",
+      "features": "chem",
+      "scheme": "LOFO",
+      "mean": 0.3301,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "C",
+      "model": "RF",
+      "features": "chem",
+      "scheme": "LOSO",
+      "mean": 0.3163,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "C",
+      "model": "RF",
+      "features": "chem",
+      "scheme": "random",
+      "mean": 0.7298,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "C",
+      "model": "RF",
+      "features": "chem",
+      "scheme": "transfer_from_E",
+      "mean": -0.5851,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "C",
+      "model": "XGB",
+      "features": "base",
+      "scheme": "LOFO",
+      "mean": 0.2042,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "C",
+      "model": "XGB",
+      "features": "base",
+      "scheme": "LOSO",
+      "mean": 0.1503,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "C",
+      "model": "XGB",
+      "features": "base",
+      "scheme": "random",
+      "mean": 0.614,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "C",
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "LOFO",
+      "mean": 0.2908,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "C",
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "LOSO",
+      "mean": 0.2197,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "C",
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "random",
+      "mean": 0.7121,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "C",
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "transfer_from_E",
+      "mean": 0.401,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "D",
+      "model": "RF",
+      "features": "base",
+      "scheme": "LOFO",
+      "mean": 0.7788,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "D",
+      "model": "RF",
+      "features": "base",
+      "scheme": "LOSO",
+      "mean": 0.6851,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "D",
+      "model": "RF",
+      "features": "base",
+      "scheme": "random",
+      "mean": 0.9253,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "D",
+      "model": "RF",
+      "features": "chem",
+      "scheme": "LOFO",
+      "mean": 0.6436,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "D",
+      "model": "RF",
+      "features": "chem",
+      "scheme": "LOSO",
+      "mean": 0.6514,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "D",
+      "model": "RF",
+      "features": "chem",
+      "scheme": "random",
+      "mean": 0.9243,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "D",
+      "model": "RF",
+      "features": "chem",
+      "scheme": "transfer_from_E",
+      "mean": 0.2536,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "D",
+      "model": "XGB",
+      "features": "base",
+      "scheme": "LOFO",
+      "mean": 0.3157,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "D",
+      "model": "XGB",
+      "features": "base",
+      "scheme": "LOSO",
+      "mean": 0.5522,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "D",
+      "model": "XGB",
+      "features": "base",
+      "scheme": "random",
+      "mean": 0.8785,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "D",
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "LOFO",
+      "mean": 0.1875,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "D",
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "LOSO",
+      "mean": 0.4218,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "D",
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "random",
+      "mean": 0.8907,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "D",
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "transfer_from_E",
+      "mean": 0.3885,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "E",
+      "model": "RF",
+      "features": "base",
+      "scheme": "LOFO",
+      "mean": 0.2516,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "E",
+      "model": "RF",
+      "features": "base",
+      "scheme": "LOSO",
+      "mean": 0.3519,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "E",
+      "model": "RF",
+      "features": "base",
+      "scheme": "random",
+      "mean": 0.89,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "E",
+      "model": "RF",
+      "features": "chem",
+      "scheme": "LOFO",
+      "mean": 0.1657,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "E",
+      "model": "RF",
+      "features": "chem",
+      "scheme": "LOSO",
+      "mean": 0.2986,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "E",
+      "model": "RF",
+      "features": "chem",
+      "scheme": "random",
+      "mean": 0.8813,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "E",
+      "model": "XGB",
+      "features": "base",
+      "scheme": "LOFO",
+      "mean": 0.4455,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "E",
+      "model": "XGB",
+      "features": "base",
+      "scheme": "LOSO",
+      "mean": 0.519,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "E",
+      "model": "XGB",
+      "features": "base",
+      "scheme": "random",
+      "mean": 0.9223,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "E",
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "LOFO",
+      "mean": 0.3366,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "E",
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "LOSO",
+      "mean": 0.3943,
+      "std": null,
+      "count": 1
+    },
+    {
+      "scenario": "E",
+      "model": "XGB",
+      "features": "chem",
+      "scheme": "random",
+      "mean": 0.9313,
+      "std": null,
+      "count": 1
+    }
+  ],
+  "uq": [
+    {
+      "scenario": "A",
+      "method": "M0",
+      "mean_cov": 0.917,
+      "frac_ge_0.9": 0.667,
+      "width": 1.977
+    },
+    {
+      "scenario": "A",
+      "method": "M1",
+      "mean_cov": 0.994,
+      "frac_ge_0.9": 1.0,
+      "width": 2.904
+    },
+    {
+      "scenario": "A",
+      "method": "M2",
+      "mean_cov": 0.994,
+      "frac_ge_0.9": 1.0,
+      "width": 2.955
+    },
+    {
+      "scenario": "A",
+      "method": "M2s",
+      "mean_cov": 1.0,
+      "frac_ge_0.9": 1.0,
+      "width": 10.0
+    },
+    {
+      "scenario": "B",
+      "method": "M0",
+      "mean_cov": 0.902,
+      "frac_ge_0.9": 0.583,
+      "width": 1.405
+    },
+    {
+      "scenario": "B",
+      "method": "M1",
+      "mean_cov": 0.988,
+      "frac_ge_0.9": 1.0,
+      "width": 2.13
+    },
+    {
+      "scenario": "B",
+      "method": "M2",
+      "mean_cov": 0.985,
+      "frac_ge_0.9": 1.0,
+      "width": 1.987
+    },
+    {
+      "scenario": "B",
+      "method": "M2s",
+      "mean_cov": 1.0,
+      "frac_ge_0.9": 1.0,
+      "width": 10.0
+    },
+    {
+      "scenario": "C",
+      "method": "M0",
+      "mean_cov": 0.932,
+      "frac_ge_0.9": 0.75,
+      "width": 2.023
+    },
+    {
+      "scenario": "C",
+      "method": "M1",
+      "mean_cov": 0.982,
+      "frac_ge_0.9": 0.917,
+      "width": 3.512
+    },
+    {
+      "scenario": "C",
+      "method": "M2",
+      "mean_cov": 0.985,
+      "frac_ge_0.9": 0.917,
+      "width": 4.092
+    },
+    {
+      "scenario": "C",
+      "method": "M2s",
+      "mean_cov": 1.0,
+      "frac_ge_0.9": 1.0,
+      "width": 10.0
+    },
+    {
+      "scenario": "D",
+      "method": "M0",
+      "mean_cov": 0.899,
+      "frac_ge_0.9": 0.583,
+      "width": 1.583
+    },
+    {
+      "scenario": "D",
+      "method": "M1",
+      "mean_cov": 0.988,
+      "frac_ge_0.9": 1.0,
+      "width": 2.237
+    },
+    {
+      "scenario": "D",
+      "method": "M2",
+      "mean_cov": 0.988,
+      "frac_ge_0.9": 1.0,
+      "width": 2.209
+    },
+    {
+      "scenario": "D",
+      "method": "M2s",
+      "mean_cov": 1.0,
+      "frac_ge_0.9": 1.0,
+      "width": 10.0
+    },
+    {
+      "scenario": "E",
+      "method": "M0",
+      "mean_cov": 0.881,
+      "frac_ge_0.9": 0.583,
+      "width": 1.327
+    },
+    {
+      "scenario": "E",
+      "method": "M1",
+      "mean_cov": 0.991,
+      "frac_ge_0.9": 1.0,
+      "width": 2.178
+    },
+    {
+      "scenario": "E",
+      "method": "M2",
+      "mean_cov": 0.988,
+      "frac_ge_0.9": 0.917,
+      "width": 2.077
+    },
+    {
+      "scenario": "E",
+      "method": "M2s",
+      "mean_cov": 1.0,
+      "frac_ge_0.9": 1.0,
+      "width": 10.0
+    }
+  ],
+  "RF_chem_minus_base_LOSO_by_scenario": {
+    "A": -0.00594671208068287,
+    "B": 0.026205863461415957,
+    "C": -0.007053334977049519,
+    "D": -0.03368882647334681,
+    "E": -0.05331908691455656
+  }
+}

@@ -1,5 +1,5 @@
 """CASSIA: data-provenance-aware, speciation-constrained analysis of Cr(VI) removal by carbons."""
 from . import chemistry, dataset, fitting, identifiability, simulate, validation
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 __all__ = ["chemistry", "dataset", "fitting", "identifiability", "simulate", "validation"]

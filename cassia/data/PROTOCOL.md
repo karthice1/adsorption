@@ -59,13 +59,18 @@ in `study_registry.csv`. Report the counts in a PRISMA 2020 flow diagram.
    imputed into the data file.
 6. Each row carries `doi` and `source_location`.
 
-## 5. Evidence classes (computed by `cassia.dataset.classify`)
+## 5. Evidence classes (computed per observation by `cassia.dataset.classify`)
 
 | Class | Requirement | Permitted endpoint |
 |---|---|---|
-| A | Ce_total and Ce_VI measured, solid-phase Cr speciation (XPS/XANES), pH basis final or controlled, background electrolyte reported | Adsorbed Cr(VI), reduced Cr and Cr(III) partition |
-| B | Ce_total **or** solid-phase speciation | Cr(VI) disappearance with a bounded partition |
-| C | Residual Cr(VI) only | Apparent Cr(VI) disappearance only |
+| C | Residual Cr(VI) only (solid data without a total-aqueous-Cr analysis also count as C) | Apparent Cr(VI) disappearance only |
+| B | Cr(VI) and total aqueous Cr | Cr(VI) disappearance; dissolved Cr(III) as a lower bound on reduction |
+| A1 | B + solid oxidation-state evidence (XPS or XANES, recorded separately), final/controlled pH, reported electrolyte | As B + presence of solid Cr(III) (technique-specific bias noted) |
+| A2 | A1 + solid Cr inventory (digestion + total Cr) + phase/coordination evidence (retained vs precipitated Cr(III)) | Chromium partition between adsorbed Cr(VI), retained and precipitated Cr(III) |
+
+Oxidation-state identification and chromium mass balance are different analytical tasks; XPS
+(surface-sensitive, possible beam/vacuum reduction) and XANES (bulk-sensitive) are recorded in
+separate fields (`xps_cr3_frac`, `xanes_cr3_frac`).
 
 ## 6. Quality appraisal
 

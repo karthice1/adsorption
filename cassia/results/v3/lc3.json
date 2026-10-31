@@ -1,0 +1,24 @@
+{
+  "summary": [
+    {
+      "n_studies": 12,
+      "R2_LOSO_mean": 0.1594,
+      "R2_LOSO_sd": 0.4294,
+      "R2_LOSO_se": 0.3036,
+      "R2_random_mean": 0.8667,
+      "n": 2
+    },
+    {
+      "n_studies": 24,
+      "R2_LOSO_mean": 0.5677,
+      "R2_LOSO_sd": 0.0258,
+      "R2_LOSO_se": 0.0182,
+      "R2_random_mean": 0.8539,
+      "n": 2
+    }
+  ],
+  "spearman_n_vs_R2": [
+    0.8944271909999159,
+    0.10557280900008414
+  ]
+}

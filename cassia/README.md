@@ -1,4 +1,4 @@
-# CASSIA 0.2
+# CASSIA 0.3
 
 **CASSIA** (*Chromium Adsorption, Speciation and Surface-reduction Identifiability Analysis*) is an
 open Python framework for **evidence-constrained** analysis of Cr(VI) removal by carbonaceous
@@ -13,7 +13,7 @@ the point-by-point reply to the reviewer is `manuscript/CASSIA_response_to_revie
 
 | Layer | Module | What it does |
 |---|---|---|
-| 1 Data | `cassia.dataset` | 34-field schema with DOI/source provenance, validation and QC flags, endpoints (`q_app_VI`, `q_tot_aq`), **observation-level** evidence classes A/B/C |
+| 1 Data | `cassia.dataset`, `cassia.measurement` | Schema with DOI/source provenance, validation and QC flags, endpoints (`q_app_VI`, `q_tot_aq`), **observation-level** evidence classes C/B/A1/A2; XPS, XANES, solid-inventory and phase measurement models |
 | 2 Chemistry | `cassia.chemistry` | phreeqpython/PHREEQC adapter for three Cr-bearing databases: Cr(VI) speciation, `SpeciationGrid` over pH x Cr(VI) x I x T, redox scenarios, Cr(III) saturation by direct SI bisection, database provenance |
 | 3 Simulator | `cassia.simulate` | Known-truth multi-mechanism batch model (scenarios A-E), mass and electron balances, six material families with per-corpus hyper-priors, measurement model |
 | 4 Identifiability | `cassia.identifiability` | Fisher information / Laplace posterior per measurement design, model-free detection tests, adsorption-only equivalence test, profile likelihood, metadata-bias propagation |
@@ -56,7 +56,8 @@ A complete workflow for user data in the schema is `examples/user_data_workflow.
 
 ```bash
 cd cassia
-python scripts/run_v2.py --stage all      # ~2 h on 4 cores; --quick for a smoke test
+python scripts/run_v2.py --stage all      # v0.2 analyses (~4-5 h on 4 cores); --quick for a smoke test
+python scripts/run_v3.py --stage all      # v0.3 analyses (~2-3 h)
 ```
 
 Stages `chem, bench, ident, ml, uq, design, missing, figures` can be run separately. Outputs go to

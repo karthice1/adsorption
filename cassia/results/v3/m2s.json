@@ -1,0 +1,262 @@
+{
+  "summary": [
+    {
+      "target": "Ce_VI",
+      "nominal_1-alpha": 0.95,
+      "n_test_studies": 24,
+      "n_cal_mean": 6.0,
+      "frac_unbounded": 1.0,
+      "frac_studies_cov_ge_0.9": 1.0,
+      "mean_cov": 1.0,
+      "worst_cov": 1.0,
+      "mean_width_log10_bounded": null
+    },
+    {
+      "target": "Ce_VI",
+      "nominal_1-alpha": 0.9,
+      "n_test_studies": 24,
+      "n_cal_mean": 6.0,
+      "frac_unbounded": 1.0,
+      "frac_studies_cov_ge_0.9": 1.0,
+      "mean_cov": 1.0,
+      "worst_cov": 1.0,
+      "mean_width_log10_bounded": null
+    },
+    {
+      "target": "Ce_VI",
+      "nominal_1-alpha": 0.8,
+      "n_test_studies": 24,
+      "n_cal_mean": 6.0,
+      "frac_unbounded": 0.0,
+      "frac_studies_cov_ge_0.9": 0.7083,
+      "mean_cov": 0.8914,
+      "worst_cov": 0.2143,
+      "mean_width_log10_bounded": 2.8734
+    },
+    {
+      "target": "Ce_VI",
+      "nominal_1-alpha": 0.7,
+      "n_test_studies": 24,
+      "n_cal_mean": 6.0,
+      "frac_unbounded": 0.0,
+      "frac_studies_cov_ge_0.9": 0.6667,
+      "mean_cov": 0.8497,
+      "worst_cov": 0.1071,
+      "mean_width_log10_bounded": 2.3527
+    },
+    {
+      "target": "Ce_VI",
+      "nominal_1-alpha": 0.5,
+      "n_test_studies": 24,
+      "n_cal_mean": 6.0,
+      "frac_unbounded": 0.0,
+      "frac_studies_cov_ge_0.9": 0.4583,
+      "mean_cov": 0.7872,
+      "worst_cov": 0.1071,
+      "mean_width_log10_bounded": 1.9546
+    },
+    {
+      "target": "Ce_total",
+      "nominal_1-alpha": 0.95,
+      "n_test_studies": 16,
+      "n_cal_mean": 3.5625,
+      "frac_unbounded": 1.0,
+      "frac_studies_cov_ge_0.9": 1.0,
+      "mean_cov": 1.0,
+      "worst_cov": 1.0,
+      "mean_width_log10_bounded": null
+    },
+    {
+      "target": "Ce_total",
+      "nominal_1-alpha": 0.9,
+      "n_test_studies": 16,
+      "n_cal_mean": 3.5625,
+      "frac_unbounded": 1.0,
+      "frac_studies_cov_ge_0.9": 1.0,
+      "mean_cov": 1.0,
+      "worst_cov": 1.0,
+      "mean_width_log10_bounded": null
+    },
+    {
+      "target": "Ce_total",
+      "nominal_1-alpha": 0.8,
+      "n_test_studies": 16,
+      "n_cal_mean": 3.5625,
+      "frac_unbounded": 0.4375,
+      "frac_studies_cov_ge_0.9": 0.9375,
+      "mean_cov": 0.9754,
+      "worst_cov": 0.6071,
+      "mean_width_log10_bounded": 3.0133
+    },
+    {
+      "target": "Ce_total",
+      "nominal_1-alpha": 0.7,
+      "n_test_studies": 16,
+      "n_cal_mean": 3.5625,
+      "frac_unbounded": 0.0,
+      "frac_studies_cov_ge_0.9": 0.875,
+      "mean_cov": 0.95,
+      "worst_cov": 0.6071,
+      "mean_width_log10_bounded": 2.4348
+    },
+    {
+      "target": "Ce_total",
+      "nominal_1-alpha": 0.5,
+      "n_test_studies": 16,
+      "n_cal_mean": 3.5625,
+      "frac_unbounded": 0.0,
+      "frac_studies_cov_ge_0.9": 0.5625,
+      "mean_cov": 0.7982,
+      "worst_cov": 0.1,
+      "mean_width_log10_bounded": 1.6895
+    },
+    {
+      "target": "q_app_VI",
+      "nominal_1-alpha": 0.95,
+      "n_test_studies": 24,
+      "n_cal_mean": 6.0,
+      "frac_unbounded": 1.0,
+      "frac_studies_cov_ge_0.9": 1.0,
+      "mean_cov": 1.0,
+      "worst_cov": 1.0,
+      "mean_width_log10_bounded": null
+    },
+    {
+      "target": "q_app_VI",
+      "nominal_1-alpha": 0.9,
+      "n_test_studies": 24,
+      "n_cal_mean": 6.0,
+      "frac_unbounded": 1.0,
+      "frac_studies_cov_ge_0.9": 1.0,
+      "mean_cov": 1.0,
+      "worst_cov": 1.0,
+      "mean_width_log10_bounded": null
+    },
+    {
+      "target": "q_app_VI",
+      "nominal_1-alpha": 0.8,
+      "n_test_studies": 24,
+      "n_cal_mean": 6.0,
+      "frac_unbounded": 0.0,
+      "frac_studies_cov_ge_0.9": 0.7083,
+      "mean_cov": 0.933,
+      "worst_cov": 0.6071,
+      "mean_width_log10_bounded": 1.9448
+    },
+    {
+      "target": "q_app_VI",
+      "nominal_1-alpha": 0.7,
+      "n_test_studies": 24,
+      "n_cal_mean": 6.0,
+      "frac_unbounded": 0.0,
+      "frac_studies_cov_ge_0.9": 0.5833,
+      "mean_cov": 0.8676,
+      "worst_cov": 0.3571,
+      "mean_width_log10_bounded": 1.1625
+    },
+    {
+      "target": "q_app_VI",
+      "nominal_1-alpha": 0.5,
+      "n_test_studies": 24,
+      "n_cal_mean": 6.0,
+      "frac_unbounded": 0.0,
+      "frac_studies_cov_ge_0.9": 0.5,
+      "mean_cov": 0.8348,
+      "worst_cov": 0.3214,
+      "mean_width_log10_bounded": 1.0107
+    },
+    {
+      "target": "q_tot_aq",
+      "nominal_1-alpha": 0.95,
+      "n_test_studies": 16,
+      "n_cal_mean": 3.5625,
+      "frac_unbounded": 1.0,
+      "frac_studies_cov_ge_0.9": 1.0,
+      "mean_cov": 1.0,
+      "worst_cov": 1.0,
+      "mean_width_log10_bounded": null
+    },
+    {
+      "target": "q_tot_aq",
+      "nominal_1-alpha": 0.9,
+      "n_test_studies": 16,
+      "n_cal_mean": 3.5625,
+      "frac_unbounded": 1.0,
+      "frac_studies_cov_ge_0.9": 1.0,
+      "mean_cov": 1.0,
+      "worst_cov": 1.0,
+      "mean_width_log10_bounded": null
+    },
+    {
+      "target": "q_tot_aq",
+      "nominal_1-alpha": 0.8,
+      "n_test_studies": 16,
+      "n_cal_mean": 3.5625,
+      "frac_unbounded": 0.4375,
+      "frac_studies_cov_ge_0.9": 0.9375,
+      "mean_cov": 0.9438,
+      "worst_cov": 0.1,
+      "mean_width_log10_bounded": 3.4274
+    },
+    {
+      "target": "q_tot_aq",
+      "nominal_1-alpha": 0.7,
+      "n_test_studies": 16,
+      "n_cal_mean": 3.5625,
+      "frac_unbounded": 0.0,
+      "frac_studies_cov_ge_0.9": 0.875,
+      "mean_cov": 0.9281,
+      "worst_cov": 0.1,
+      "mean_width_log10_bounded": 2.6313
+    },
+    {
+      "target": "q_tot_aq",
+      "nominal_1-alpha": 0.5,
+      "n_test_studies": 16,
+      "n_cal_mean": 3.5625,
+      "frac_unbounded": 0.0,
+      "frac_studies_cov_ge_0.9": 0.75,
+      "mean_cov": 0.8897,
+      "worst_cov": 0.05,
+      "mean_width_log10_bounded": 1.1977
+    }
+  ],
+  "family_frac_ge_0.9": {
+    "AC_chemical": {
+      "Ce_VI": 1.0,
+      "Ce_total": 1.0,
+      "q_app_VI": 1.0,
+      "q_tot_aq": 1.0
+    },
+    "AC_physical": {
+      "Ce_VI": 1.0,
+      "Ce_total": 1.0,
+      "q_app_VI": 1.0,
+      "q_tot_aq": 1.0
+    },
+    "biochar_manure": {
+      "Ce_VI": 1.0,
+      "Ce_total": 1.0,
+      "q_app_VI": 1.0,
+      "q_tot_aq": 1.0
+    },
+    "biochar_wood": {
+      "Ce_VI": 1.0,
+      "Ce_total": 1.0,
+      "q_app_VI": 1.0,
+      "q_tot_aq": 1.0
+    },
+    "hydrochar": {
+      "Ce_VI": 1.0,
+      "Ce_total": 1.0,
+      "q_app_VI": 1.0,
+      "q_tot_aq": 1.0
+    },
+    "porous_carbon": {
+      "Ce_VI": 1.0,
+      "Ce_total": 1.0,
+      "q_app_VI": 1.0,
+      "q_tot_aq": 1.0
+    }
+  }
+}

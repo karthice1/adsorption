@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.3.0 (2026-10-31) - second revision
+- Evidence classes C/B/A1/A2; separate measurement models for XPS (surface enrichment, beam/vacuum
+  reduction), XANES (bulk), solid Cr inventory and phase evidence (`cassia.measurement`).
+- Identifiability designs D1-D5 with technique nuisance parameters; precipitation share added.
+- Adsorption-only test: calibrated rejection threshold (negative controls, split-half type-I), TOST-type
+  noncentral-chi-square equivalence test with margins 5/10/20%, operating characteristics against
+  the noise-free truth; three outcomes (rejected / equivalent / inconclusive).
+- M2s: exact study-level split conformal with proof (Appendix A); M2 (CV+) guarantee withdrawn.
+- ML and intervals for all five mechanism scenarios + cross-mechanism transfer; censoring/LOD
+  sensitivity; learning curve with 8 replicates.
+- Error-controlled sequential verification (upper confidence bound, Bonferroni over rounds and
+  endpoints) with false-acceptance probabilities under shared and independent calibration bias.
+- Background-electrolyte sensitivity (NaCl, NaNO3, Na2SO4).
+- Release manifest (SHA-256 of all files, commit hash, commands, expected outputs).
+
 ## 0.2.0 (2026-10-30) - revision in response to peer review
 - Chemistry: third Cr-bearing database (minteq.dat); speciation grid over pH x Cr(VI) x I x T with
   validation against direct PHREEQC; Cr(III) solubility by direct saturation-index bisection with
