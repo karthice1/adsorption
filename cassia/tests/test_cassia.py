@@ -85,8 +85,8 @@ def test_endpoints_and_observation_level_classes():
     e = ds.endpoints(df)
     assert e["q_app_VI"].tolist() == [40, 40] and e.loc[0, "q_tot_aq"] == 35
     c = ds.classify(df)
-    assert c["evidence_class"].tolist() == ["A", "C"]
-    assert c["study_best_class"].tolist() == ["A", "A"]
+    assert c["evidence_class"].tolist() == ["A1", "C"]
+    assert c["study_best_class"].tolist() == ["A1", "A1"]
     assert c.loc[1, "endpoint_label"] == "apparent_CrVI_disappearance"
 
 
@@ -200,7 +200,7 @@ def test_evaluate_conformal_and_variance_on_toy():
     icc = val.between_study_variance(dd, pl)
     assert 0 <= icc["ICC"] <= 1
     cf = val.conformal_loso(d, target="q_app_VI", features=["x"], K=4, alphas=(0.2,))
-    assert set(cf.method) == {"M0", "M1", "M2"} and cf.coverage.between(0, 1).all()
+    assert set(cf.method) == {"M0", "M1", "M2", "M2s"} and cf.coverage.between(0, 1).all()
 
 
 def test_chemistry_tables_and_features_flag_missing_I():
@@ -238,3 +238,40 @@ def test_adapted_halfwidth_shrinks_with_offset_removal():
     hw_m1 = float(np.median((hi - lo) / 2))
     hw_k4 = cp.adapted_halfwidth(4, 0.1)
     assert np.isfinite(hw_k4) and hw_k4 < hw_m1
+
+
+
+def test_a2_requires_inventory_and_phase_and_solid_without_total_is_c():
+    base = {"C0": 100, "Ce_VI": 20, "D": 2, "Ce_total": 30, "xanes_cr3_frac": 0.4, "pH_final": 3.0, "I": 0.01}
+    assert ds.evidence_class(pd.Series(base)) == "A1"
+    assert ds.evidence_class(pd.Series(base | {"solid_cr_mgg": 35.0, "cr3_precip_frac": 0.1})) == "A2"
+    assert ds.evidence_class(pd.Series({k: v for k, v in base.items() if k != "Ce_total"})) == "C"
+
+
+def test_measurement_models_xps_biased_xanes_less():
+    from cassia import measurement as ms
+    rng = np.random.default_rng(0)
+    xps0 = np.mean([ms.measure_oxidation_state(rng, 0.0, "XPS") for _ in range(400)])
+    xan0 = np.mean([ms.measure_oxidation_state(rng, 0.0, "XANES") for _ in range(400)])
+    assert xps0 > xan0 > 0          # beam reduction creates apparent Cr(III) even without reduction
+    assert ms.oxidation_state_bias(0.5, enrich=2.0, beam=0.0) == pytest.approx(2 / 3)
+
+
+def test_split_conformal_guarantee_on_toy():
+    hits, n = 0, 0
+    for seed in range(6):
+        d = _toy(n_st=24, seed=seed)
+        test = d[d.study_id == "s0"]; train = d[d.study_id != "s0"]
+        sp = val.StudySplitConformal("RF", ["x"], frac_cal=0.5, beta=0.9, seed=seed).fit(train, "q")
+        lo, hi, _ = sp.interval(test, 0.2)
+        y = val.to_target(test.q.values)
+        hits += ((y >= lo) & (y <= hi)).mean() >= 0.9
+        n += 1
+    assert hits / n >= 0.5 and np.isfinite(hi).all()
+
+
+def test_equivalence_v3_control_and_reduction():
+    m, meta = _one_study()
+    ctrl = idf.equivalence_test_v3(sim.apply_scenario(m, "A"), meta, "D3", sd_rel=0.10, seed=1, n_starts=2)
+    assert ctrl["lambda_true"] < ctrl["lambda0_0.1"]          # control is truly within the margin
+    assert set(k for k in ctrl if k.startswith("equiv_")) == {"equiv_0.05", "equiv_0.1", "equiv_0.2"}

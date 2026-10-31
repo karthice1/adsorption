@@ -7,3 +7,4 @@ results/*.npz
 results/v2_run_part*.log
 results/v2_run_part*.log
 results/v2_run_*.log
+results/v3_run*.log

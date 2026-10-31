@@ -50,6 +50,11 @@ def _background(electrolyte: str, ionic_strength: float, balance: str = "anion")
     on the cation (base added, e.g. NaOH).
     """
     I_mmol = max(ionic_strength, 1e-6) * 1000.0
+    if electrolyte == "Na2SO4":  # I = 3 c for a 1:2 salt
+        c = I_mmol / 3.0
+        if balance == "anion":
+            return {"Na": 2 * c, "S(6)": f"{c} charge"}
+        return {"Na": f"{2 * c} charge", "S(6)": c}
     cation, anion = {"NaCl": ("Na", "Cl"), "NaNO3": ("Na", "N(5)"), "KCl": ("K", "Cl")}[electrolyte]
     if balance == "anion":
         return {cation: I_mmol, anion: f"{I_mmol} charge"}

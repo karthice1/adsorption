@@ -1,0 +1,78 @@
+{
+  "n": {
+    "B": 6,
+    "C": 6,
+    "D": 6,
+    "E": 12
+  },
+  "red_bins": [
+    "(-0.001, 0.05]",
+    "(0.05, 0.2]",
+    "(0.2, 0.4]",
+    "(0.4, 1.0]"
+  ],
+  "post_sd_red_by_bin|D1": [
+    0.0066,
+    0.0292,
+    0.0282,
+    0.0689
+  ],
+  "post_sd_precip_median_precip>0.02|D1": 0.14179143464238328,
+  "post_sd_red_by_bin|D2": [
+    0.0065,
+    0.0266,
+    0.0208,
+    0.06
+  ],
+  "post_sd_precip_median_precip>0.02|D2": 0.13965123325003334,
+  "post_sd_red_by_bin|D3": [
+    0.0042,
+    0.0125,
+    0.0148,
+    0.0288
+  ],
+  "post_sd_precip_median_precip>0.02|D3": 0.10860935099998673,
+  "post_sd_red_by_bin|D4x": [
+    0.004,
+    0.0125,
+    0.0126,
+    0.0254
+  ],
+  "post_sd_precip_median_precip>0.02|D4x": 0.07443994855813957,
+  "post_sd_red_by_bin|D4n": [
+    0.0035,
+    0.0124,
+    0.0116,
+    0.0214
+  ],
+  "post_sd_precip_median_precip>0.02|D4n": 0.054120162554928825,
+  "post_sd_red_by_bin|D5": [
+    0.0035,
+    0.0112,
+    0.0115,
+    0.0133
+  ],
+  "post_sd_precip_median_precip>0.02|D5": 0.03561003254944665,
+  "n_precip>0.02": 2,
+  "detect_by_bin|dissolved_cr3": [
+    0.012,
+    0.367,
+    0.77,
+    0.583
+  ],
+  "false_alarm_controls|dissolved_cr3": 0.006666666666666667,
+  "detect_by_bin|xps_cr3": [
+    0.15,
+    0.361,
+    0.89,
+    0.871
+  ],
+  "false_alarm_controls|xps_cr3": 0.085,
+  "detect_by_bin|xanes_cr3": [
+    0.038,
+    0.339,
+    1.0,
+    0.892
+  ],
+  "false_alarm_controls|xanes_cr3": 0.0033333333333333335
+}

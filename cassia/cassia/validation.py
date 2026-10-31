@@ -60,11 +60,18 @@ TUNE_GRID = {
 }
 
 
+TRANSFORM = {"mode": "log"}  # "log" (censor q < 0 at 0) or "asinh" (keeps negative values; sensitivity analysis)
+
+
 def to_target(q, target="q_app_VI"):
+    if TRANSFORM["mode"] == "asinh":
+        return np.arcsinh(np.asarray(q, float) / OFFSETS.get(target, OFFSET))
     return np.log10(np.clip(q, 0, None) + OFFSETS.get(target, OFFSET))
 
 
 def from_target(y, smear=1.0, target="q_app_VI"):
+    if TRANSFORM["mode"] == "asinh":
+        return np.clip(np.sinh(np.asarray(y, float)) * OFFSETS.get(target, OFFSET), 0, None)
     return np.clip(10 ** y * smear - OFFSETS.get(target, OFFSET), 0, None)
 
 
@@ -292,7 +299,48 @@ class StudyCVPlus:
         return float(_wquantile(v, w, 1 - alpha))
 
 
-def conformal_loso(df, target="q_app_VI", model_name="RF", features=None, K=10, alphas=(0.1,), beta=0.9, seed=0):
+class StudySplitConformal:
+    """M2s: study-level split conformal with within-study order-statistic scores (exact).
+
+    The training studies are split at random into a proper-training set (model fit) and J
+    calibration studies. For calibration study j with n_j observations and absolute residuals
+    |r_j,(1)| <= ... <= |r_j,(n_j)|, the score is s_j = |r_j,(ceil(beta n_j))|. For miscoverage alpha
+    the half-width is q = s_(k), the k-th smallest score with k = ceil((1 - alpha)(J + 1)); if k > J
+    the interval is unbounded.
+
+    Guarantee (Appendix A): if the calibration studies and the test study are exchangeable given
+    the proper-training studies, then with probability >= 1 - alpha at least ceil(beta n) of the n
+    observations of the new study lie in centre +/- q, i.e. within-study coverage >= beta. It is
+    marginal over the study population (families, study sizes), not conditional on a family.
+    """
+
+    def __init__(self, model_name="RF", features=None, frac_cal=0.5, beta=0.9, seed=0):
+        self.model_name, self.features, self.frac_cal, self.beta, self.seed = model_name, features or CHEM, frac_cal, beta, seed
+
+    def fit(self, d: pd.DataFrame, target: str):
+        self.target = target
+        d = prepare(d, target)
+        studies = np.unique(d["study_id"].values)
+        rng = np.random.default_rng(self.seed)
+        cal = rng.choice(studies, int(round(self.frac_cal * len(studies))), replace=False)
+        is_cal = d["study_id"].isin(cal).values
+        X, y = d[self.features], to_target(d[target].values, target)
+        self.model = make_model(self.model_name, self.seed).fit(X[~is_cal], y[~is_cal])
+        r = np.abs(y[is_cal] - self.model.predict(X[is_cal]))
+        g = d["study_id"].values[is_cal]
+        self.scores = np.array([np.sort(r[g == s])[int(np.ceil(self.beta * (g == s).sum())) - 1] for s in cal])
+        self.J = len(self.scores)
+        return self
+
+    def interval(self, X, alpha=0.1, method="M2s", beta=None):
+        c = self.model.predict(X[self.features])
+        k = int(np.ceil((1 - alpha) * (self.J + 1)))
+        q = np.sort(self.scores)[k - 1] if k <= self.J else np.inf
+        return c - q, c + q, c
+
+
+def conformal_loso(df, target="q_app_VI", model_name="RF", features=None, K=10, alphas=(0.1,), beta=0.9, seed=0,
+                   with_split=True):
     """Outer leave-one-study-out evaluation of M0/M1/M2; per-study coverage table."""
     features = features or CHEM
     d = prepare(df, target)
@@ -302,12 +350,14 @@ def conformal_loso(df, target="q_app_VI", model_name="RF", features=None, K=10, 
     for test in np.unique(g):
         tr, te = g != test, g == test
         cp = StudyCVPlus(model_name, features, K, seed).fit(d[tr], target)
+        sp = StudySplitConformal(model_name, features, 0.5, beta, seed).fit(d[tr], target) if with_split else None
         for a in alphas:
-            for meth in ("M0", "M1", "M2"):
-                lo, hi, _ = cp.interval(d[te], a, meth, beta)
+            for meth in ("M0", "M1", "M2") + (("M2s",) if with_split else ()):
+                lo, hi, _ = (sp if meth == "M2s" else cp).interval(d[te], a, meth, beta)
                 cov = (y[te] >= lo) & (y[te] <= hi)
                 rows.append({"study_id": test, "family": d["material_family"].values[te][0], "alpha": a,
                              "method": meth, "coverage": float(cov.mean()), "n": int(te.sum()),
+                             "n_cal_split": sp.J if sp is not None else np.nan,
                              "width_log10": float(np.mean(np.minimum(hi - lo, 10))),
                              "n_cal_studies": cp.n_studies})
     return pd.DataFrame(rows)

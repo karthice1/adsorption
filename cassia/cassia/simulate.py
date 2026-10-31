@@ -36,6 +36,7 @@ import numpy as np
 import pandas as pd
 
 from . import chemistry as ch
+from . import measurement as ms
 
 MW = ch.CR_MW
 SCENARIOS = ("A", "B", "C", "D", "E")
@@ -78,7 +79,10 @@ PARAMETERS = {
 MEASUREMENT = {
     "Ce_VI": "DPC: x(1 + N(0, 0.03)) * study bias; LOD 0.01 mg/L, values < LOD reported as LOD/2 and flagged",
     "Ce_total": "AAS/ICP: (Cv + C3)(1 + N(0, 0.03)) * study bias; LOD 0.02 mg/L",
-    "xps_cr3_frac": "XPS Cr(III)/(Cr(III)+Cr(VI)) on solid: true + N(0, 0.05), clipped to [0, 1]",
+    "xps_cr3_frac": "XPS (surface): e f/(e f + 1 - f) + b (1 - [.]) + N(0, 0.05), clipped; per-study enrichment e ~ LN(0, 0.4), beam reduction b ~ U(0, 0.15)",
+    "xanes_cr3_frac": "XANES (bulk, LCF): f + b (1 - f) + N(0, 0.03), clipped; b ~ U(0, 0.03); no enrichment",
+    "solid_cr_mgg": "digestion + total-Cr analysis of the solid: true inventory (1 + N(0, 0.05))",
+    "cr3_precip_frac": "phase/coordination evidence: precipitated share of solid Cr(III) + N(0, 0.10), clipped",
     "pH_final": "true final pH + N(0, 0.05)",
     "study bias": "exp(N(0, 0.05)), shared by Cr(VI) and total-Cr analyses within a study",
 }
@@ -321,31 +325,42 @@ def run_batch(m: Material, C0, pH0, D, t_points, T=298.15, I=0.01):
             "Rs": Rs, "L": L, "Lrel": Lrel, "pH_true": pH if m.scenario == "E" else np.full_like(Cv, pH0),
             "share_ads": D * q6 / removed, "share_red": reduced / removed,
             "share_precip": P3 / removed, "share_cr3_aq": C3 / removed,
-            "xps_cr3_true": np.where(solid > 0, (solid - D * q6) / np.maximum(solid, 1e-12), 0.0)}
+            "xps_cr3_true": np.where(solid > 0, (solid - D * q6) / np.maximum(solid, 1e-12), 0.0),
+            "solid_cr_mgg_true": solid / D,
+            "precip_frac_of_cr3_true": np.where(solid - D * q6 > 1e-12, P3 / np.maximum(solid - D * q6, 1e-12), 0.0)}
 
 
 # ---------------------------------------------------------------------------
 # Virtual studies and corpora
 # ---------------------------------------------------------------------------
-EVIDENCE_MIX = {"C": 0.40, "B": 0.35, "A": 0.25}
+EVIDENCE_MIX = {"C": 0.40, "B": 0.30, "A1": 0.20, "A2": 0.10}
 DOSE_SERIES = (0.5, 1.0, 2.0, 4.0, 6.0, 8.0)  # g/L at C0 = 20 mg/L, the study's optimum pH
 
 
 def virtual_study(rng, study_idx, family, hyper, scenario="E", n_iso=8, n_edge=6, n_kin=8, prefix="VS"):
+    """One virtual study. Evidence (observation level):
+    C  residual Cr(VI) only;
+    B  + total aqueous Cr on isotherm, pH-edge and dose series;
+    A1 B + solid oxidation state (XPS or XANES, half each) on 3 solids + final pH + total Cr on kinetics;
+    A2 A1 (XANES) + solid Cr inventory and phase/coordination evidence on the same 3 solids.
+    """
     m = random_material(rng, family, study_idx, hyper, scenario)
     sid = f"{prefix}{study_idx:03d}"
     ev = rng.choice(list(EVIDENCE_MIX), p=list(EVIDENCE_MIX.values()))
+    tech = None if ev in ("C", "B") else ("XANES" if ev == "A2" else str(rng.choice(["XPS", "XANES"])))
+    enrich, beam = ms.draw_technique_bias(rng, tech) if tech else (1.0, 0.0)
     bias = np.exp(rng.normal(0, 0.05))
     I = float(rng.choice([0.001, 0.005, 0.01, 0.05, 0.1]))
     T = float(rng.choice([293.15, 298.15, 303.15, 308.15, 313.15]))
     D = float(rng.choice([0.5, 1.0, 2.0, 4.0]))
     pH_opt = float(rng.uniform(1.8, 3.5))
     t_eq = float(rng.choice([360, 720, 1440]))
-    reports_I = True if ev == "A" else bool(rng.random() < {"B": 0.5, "C": 0.3}[ev])
-    reports_final_pH = ev == "A" or (ev == "B" and rng.random() < 0.5)
+    full = ev in ("A1", "A2")
+    reports_I = True if full else bool(rng.random() < {"B": 0.5, "C": 0.3}[ev])
+    reports_final_pH = full or (ev == "B" and rng.random() < 0.5)
     rows = []
 
-    def add(series, C0, pH0, t_arr, total_meas, xps_meas, Dose=None):
+    def add(series, C0, pH0, t_arr, total_meas, solid_meas, Dose=None):
         Dz = D if Dose is None else Dose
         tr = run_batch(m, C0, pH0, Dz, t_arr, T, I)
         for k in range(len(tr["t"])):
@@ -353,32 +368,39 @@ def virtual_study(rng, study_idx, family, hyper, scenario="E", n_iso=8, n_edge=6
             cv = one["Ce_VI_true"] * bias * (1 + rng.normal(0, 0.03))
             below = cv < 0.01
             row = {"study_id": sid, "material_id": m.material_id, "material_family": family,
-                   "scenario": scenario, "study_evidence": ev, "series": series, "C0": C0, "pH": pH0,
+                   "scenario": scenario, "study_evidence": ev, "solid_technique": tech or "none",
+                   "series": series, "C0": C0, "pH": pH0,
                    "D": Dz, "t": float(one["t"]), "T": T, "I": I if reports_I else np.nan, "I_true": I,
                    "SBET": m.SBET, "Vp": m.Vp, "dp": m.dp, "pHpzc": m.pHpzc,
                    "Ce_VI": 0.005 if below else cv, "Ce_VI_below_LOD": below}
             if total_meas:
                 ct = (one["Ce_VI_true"] + one["Cr3_aq_true"]) * bias * (1 + rng.normal(0, 0.03))
                 row["Ce_total"] = max(ct, 0.01)
-            if xps_meas:
-                row["xps_cr3_frac"] = float(np.clip(one["xps_cr3_true"] + rng.normal(0, 0.05), 0, 1))
+            if solid_meas:
+                f = float(ms.measure_oxidation_state(rng, one["xps_cr3_true"], tech, enrich, beam))
+                row["xps_cr3_frac" if tech == "XPS" else "xanes_cr3_frac"] = f
+                if ev == "A2":
+                    row["solid_cr_mgg"] = float(ms.measure_inventory(rng, one["solid_cr_mgg_true"]))
+                    row["cr3_precip_frac"] = float(ms.measure_phase(rng, one["precip_frac_of_cr3_true"]))
             row["pH_final"] = one["pH_true"] + rng.normal(0, 0.05) if reports_final_pH else np.nan
             row.update({k2: one[k2] for k2 in ("Ce_VI_true", "q_adsVI_true", "Cr3_surface_true", "Cr3_aq_true",
                                                "Cr3_precip_true", "reduced_mgL", "share_ads", "share_red",
-                                               "share_precip", "share_cr3_aq", "pH_true", "xps_cr3_true")})
+                                               "share_precip", "share_cr3_aq", "pH_true", "xps_cr3_true",
+                                               "solid_cr_mgg_true", "precip_frac_of_cr3_true")})
             rows.append(row)
 
     iso_C0 = np.geomspace(5, 300, n_iso)
     for j, C0 in enumerate(iso_C0):
-        add("isotherm", float(C0), pH_opt, [t_eq], ev in ("A", "B"), ev == "A" and j in (0, n_iso - 1))
+        add("isotherm", float(C0), pH_opt, [t_eq], ev != "C", full and j in (0, n_iso - 1))
     for j, pH in enumerate(np.linspace(2.0, 8.0, n_edge)):
-        add("pH_edge", 50.0, float(pH), [t_eq], ev in ("A", "B"), ev == "A" and j == 0)
-    add("kinetic", 50.0, pH_opt, np.geomspace(5, t_eq, n_kin), ev == "A", False)
+        add("pH_edge", 50.0, float(pH), [t_eq], ev != "C", full and j == 0)
+    add("kinetic", 50.0, pH_opt, np.geomspace(5, t_eq, n_kin), full, False)
     for Dose in DOSE_SERIES:
-        add("dose", 20.0, pH_opt, [t_eq], ev in ("A", "B"), False, Dose=Dose)
+        add("dose", 20.0, pH_opt, [t_eq], ev != "C", False, Dose=Dose)
     df = pd.DataFrame(rows)
     meta = asdict(m) | {"study_id": sid, "I": I, "T": T, "D": D, "pH_opt": pH_opt, "bias": bias,
-                        "t_eq": t_eq, "study_evidence": ev}
+                        "t_eq": t_eq, "study_evidence": ev, "solid_technique": tech or "none",
+                        "xps_enrich": enrich, "beam_reduction": beam}
     return df, meta
 
 
@@ -403,9 +425,10 @@ STUDY_DESIGN = {
     "Vp, dp": ("cm3/g, nm", "Vp = SBET/1000 U(0.35, 0.75); dp ~ U(1.6, 6.0)"),
     "affinity": ("-", "K = K0 (f_base + f[HCrO4- + Cr2O7-2]) (e_base + 1/(1 + exp((pH - pHpzc)/w_elec))); "
                       "f_base 0.05, e_base 0.1, w_elec 0.8 (fixed)"),
-    "evidence class of a study": ("-", "C 0.40, B 0.35, A 0.25; B: total Cr on isotherm, pH-edge and dose series; "
-                                       "A: total Cr everywhere + XPS on 3 solids + final pH"),
-    "I": ("mol/L", "one of 0.001, 0.005, 0.01, 0.05, 0.1; reported always (A), 50% (B), 30% (C)"),
+    "evidence class of a study": ("-", "C 0.40, B 0.30, A1 0.20, A2 0.10; B: total aqueous Cr on isotherm, pH-edge and dose "
+                                       "series; A1: B + solid oxidation state (XPS or XANES, equal odds) on 3 solids + final pH + "
+                                       "total Cr on kinetics; A2: A1 with XANES + solid Cr inventory + phase evidence on the 3 solids"),
+    "I": ("mol/L", "one of 0.001, 0.005, 0.01, 0.05, 0.1; reported always (A1, A2), 50% (B), 30% (C)"),
     "T": ("K", "one of 293.15-313.15 in 5 K steps"),
     "D": ("g/L", "one of 0.5, 1, 2, 4 (dose series: 0.5, 1, 2, 4, 6, 8 at C0 = 20 mg/L)"),
     "pH_opt": ("-", "U(1.8, 3.5): pH of isotherm, kinetic and dose series"),

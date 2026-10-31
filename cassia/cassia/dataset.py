@@ -14,7 +14,8 @@ SCHEMA = {
     "electrolyte": ("-", False), "SBET": ("m2/g", False), "Vp": ("cm3/g", False), "dp": ("nm", False),
     "pHpzc": ("-", False), "oxidation_state": ("-", False), "method": ("-", False),
     "cr3_measured": ("bool", False), "solid_phase_cr_speciation": ("XPS|XANES|none", False),
-    "xps_cr3_frac": ("-", False), "pH_final": ("-", False), "Ce_VI_below_LOD": ("bool", False),
+    "xps_cr3_frac": ("-", False), "xanes_cr3_frac": ("-", False), "solid_cr_mgg": ("mg/g", False),
+    "cr3_precip_frac": ("-", False), "pH_final": ("-", False), "Ce_VI_below_LOD": ("bool", False),
     "alkalinity": ("mg/L CaCO3", False), "major_anions": ("-", False), "major_cations": ("-", False),
     "Eh_mV": ("mV", False), "reducing_agents": ("-", False),
     "n": ("-", False), "SD": ("same as endpoint", False),
@@ -59,21 +60,33 @@ def endpoints(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def evidence_class(row: pd.Series) -> str:
-    """Observation-level class. A: oxidation-state-resolved mass balance + chemistry;
-    B: partial; C: residual Cr(VI) only. Class C rows may only be modelled as apparent
-    Cr(VI) disappearance. A publication can contain rows of different classes.
+    """Observation-level evidence class (v0.3).
+
+    C   residual Cr(VI) only (or solid data without a total-aqueous-Cr analysis)
+    B   Cr(VI) and total aqueous Cr
+    A1  B + solid-phase oxidation-state evidence (XPS or XANES), final/controlled pH and reported
+        electrolyte
+    A2  A1 + solid Cr inventory (digestion) + phase/coordination evidence distinguishing retained
+        from precipitated Cr(III)
+
+    Oxidation-state evidence and chromium mass balance are different analytical tasks: A1 shows
+    that Cr(III) is present on the solid; only A2 quantifies how much Cr sits where. Class C rows may
+    only be modelled as apparent Cr(VI) disappearance. A publication can contain rows of different
+    classes.
     """
     has_total = pd.notna(row.get("Ce_total"))
-    has_solid = (str(row.get("solid_phase_cr_speciation", "none")).lower() not in ("none", "nan", "")
-                 or pd.notna(row.get("xps_cr3_frac")))
+    has_ox = (str(row.get("solid_phase_cr_speciation", "none")).lower() not in ("none", "nan", "")
+              or pd.notna(row.get("xps_cr3_frac")) or pd.notna(row.get("xanes_cr3_frac")))
+    has_inv = pd.notna(row.get("solid_cr_mgg"))
+    has_phase = pd.notna(row.get("cr3_precip_frac"))
     has_pH_basis = (str(row.get("pH_basis", "")).lower() in ("final", "controlled")
                     or pd.notna(row.get("pH_final")))
     has_I = pd.notna(row.get("I")) or pd.notna(row.get("electrolyte"))
-    if has_total and has_solid and has_pH_basis and has_I:
-        return "A"
-    if has_total or has_solid:
-        return "B"
-    return "C"
+    if not has_total:
+        return "C"
+    if has_ox and has_pH_basis and has_I:
+        return "A2" if (has_inv and has_phase) else "A1"
+    return "B"
 
 
 def classify(df: pd.DataFrame) -> pd.DataFrame:
@@ -81,8 +94,10 @@ def classify(df: pd.DataFrame) -> pd.DataFrame:
     out["evidence_class"] = out.apply(evidence_class, axis=1)
     # study-level label = best class available in the study (for reporting only)
     if "study_id" in out:
-        rank = out["evidence_class"].map({"A": 0, "B": 1, "C": 2})
-        out["study_best_class"] = rank.groupby(out["study_id"]).transform("min").map({0: "A", 1: "B", 2: "C"})
+        order = {"A2": 0, "A1": 1, "B": 2, "C": 3}
+        inv = {v: k for k, v in order.items()}
+        rank = out["evidence_class"].map(order)
+        out["study_best_class"] = rank.groupby(out["study_id"]).transform("min").map(inv)
     out["endpoint_label"] = np.where(out["evidence_class"] == "C", "apparent_CrVI_disappearance",
                                      "CrVI_disappearance_with_partition")
     return out
