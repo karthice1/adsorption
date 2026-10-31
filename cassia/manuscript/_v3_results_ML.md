@@ -31,7 +31,7 @@ The hypothesis that chemistry-informed features improve predictive reliability (
 - Forty-five per cent (ICC 0.45 ± 0.14) of the variance of out-of-study residuals was a study-level offset.
 - Per-study RMSE under LOSO ranged from 1.9 to 14.8 mg g⁻¹ (10th–90th percentile) and scaled with material capacity: median 9.0 mg g⁻¹ for chemically activated carbons, 3.5 mg g⁻¹ for hydrochars.
 
-**The conclusions hold across mechanisms, but transfer between mechanisms is not free (Fig. 8a; Table S6).** RF with speciation features was evaluated on five corpora for each mechanism scenario:
+**The conclusions hold across mechanisms, but transfer between mechanisms is not free (Fig. 5a; Table S6).** RF with speciation features was evaluated on five corpora for each mechanism scenario:
 - Random-split R² was 0.86–0.89 for every scenario. LOSO R² was 0.48–0.65 and LOFO R² 0.40–0.63, so the random-split inflation is not specific to scenario E.
 - Speciation features again lowered LOSO R² slightly in every scenario (−0.010 to −0.033).
 - Models trained on scenario-E corpora and tested on corpora generated under other mechanisms reached R² = 0.65 (A), 0.53 (B), 0.60 (C) and 0.55 (D). For B and D this is 0.05–0.10 below the within-scenario LOSO R²; for A and C it is equal or higher.
@@ -39,10 +39,12 @@ The hypothesis that chemistry-informed features improve predictive reliability (
 
 **Retransformation.** Duan smearing reduced the mean back-transformation bias from −1.86 to −1.30 mg g⁻¹, but did not remove it, because the residuals are heteroscedastic.
 
-**More studies help, more rows do not.**
-- LOSO R² rose from 0.47 ± 0.14 with 12 studies to 0.59 ± 0.14 (24), 0.56 ± 0.11 (48) and 0.75 ± 0.08 (96).
-- Random-split R² stayed between 0.80 and 0.90 throughout.
-- The effective sample size for transferability is the number of independent studies. On this evidence, a literature corpus of 20–30 studies yields LOSO R² of about 0.5–0.6.
+**More studies help, more rows do not (Fig. 5b).** The learning curve was repeated with 8 replicate corpora per size (v0.2 used 4, and its curve was not monotonic: 0.47, 0.59, 0.56, 0.75):
+- LOSO R² rose from 0.31 ± 0.09 (mean ± SE) with 12 studies to 0.58 ± 0.05 (24), 0.66 ± 0.02 (48) and 0.66 ± 0.02 (96). The rank correlation between corpus size and LOSO R² was ρ = 0.58 (p < 0.001, 32 corpora).
+- With 8 replicates the curve is monotonic in its means but levels off beyond about 48 studies. The 48- and 96-study means differ by less than their SE. The v0.2 dip at 48 studies and its higher value at 96 were therefore replicate noise.
+- The between-replicate SD fell from 0.26 (12 studies) to 0.06 (96). Small corpora are unreliable as well as less accurate.
+- Random-split R² stayed between 0.85 and 0.90 throughout.
+- The effective sample size for transferability is the number of independent studies. On this evidence, a literature corpus of 20–30 studies yields LOSO R² of about 0.5–0.6, and the plateau near 0.66 reflects irreducible between-study heterogeneity in the simulator, not a general property of real data.
 
 **Table 5.** Out-of-fold R² for apparent Cr(VI) uptake: mean (2.5–97.5% range across 20 corpora; GPR: 3 corpora).
 
@@ -57,4 +59,8 @@ The hypothesis that chemistry-informed features improve predictive reliability (
 
 ![Fig. 4](figures/fig4_ml_validation.png)
 
-**Fig. 4.** Transferability of ML models (synthetic; 20 corpora of 30 studies). (a) R² for apparent Cr(VI) uptake under five validation schemes (bars: mean; whiskers: 2.5–97.5% range across corpora). (b) Learning curve: R² against the number of independent studies (RF with speciation features; mean ± SD of 4 replicates). (c) Per-study RMSE under leave-one-study-out by family (ACc/ACp: chemically/physically activated carbon; BCw/BCm: wood/manure biochar; HC: hydrochar; PC: biomass-derived porous carbon).
+**Fig. 4.** Transferability of ML models (synthetic; 20 corpora of 30 studies). (a) R² for apparent Cr(VI) uptake under five validation schemes (bars: mean; whiskers: 2.5–97.5% range across corpora). (b) Learning curve from v0.2: R² against the number of independent studies (RF with speciation features; mean ± SD of 4 replicates); superseded by the 8-replicate curve in Fig. 5b. (c) Per-study RMSE under leave-one-study-out by family (ACc/ACp: chemically/physically activated carbon; BCw/BCm: wood/manure biochar; HC: hydrochar; PC: biomass-derived porous carbon).
+
+![Fig. 5](figures/fig8_mechanism_transfer.png)
+
+**Fig. 5.** Robustness of the ML and interval results across mechanisms (synthetic). (a) Out-of-fold R² for apparent uptake by mechanism scenario (RF with speciation features; 5 corpora per scenario; bars: mean, whiskers: SD): random 5-fold, leave-one-study-out, leave-one-family-out, and models trained on scenario-E corpora and tested on the given scenario. (b) Learning curve: leave-one-study-out R² against the number of studies (8 replicate corpora per size; mean ± SE; points: replicates) and random-split R². (c) Fraction of unseen studies with ≥ 90% within-study coverage at nominal 90%, by scenario and interval method (dotted: 0.90).

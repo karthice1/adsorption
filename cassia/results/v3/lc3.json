@@ -2,23 +2,39 @@
   "summary": [
     {
       "n_studies": 12,
-      "R2_LOSO_mean": 0.1594,
-      "R2_LOSO_sd": 0.4294,
-      "R2_LOSO_se": 0.3036,
-      "R2_random_mean": 0.8667,
-      "n": 2
+      "R2_LOSO_mean": 0.3136,
+      "R2_LOSO_sd": 0.2587,
+      "R2_LOSO_se": 0.0915,
+      "R2_random_mean": 0.8513,
+      "n": 8
     },
     {
       "n_studies": 24,
-      "R2_LOSO_mean": 0.5677,
-      "R2_LOSO_sd": 0.0258,
-      "R2_LOSO_se": 0.0182,
-      "R2_random_mean": 0.8539,
-      "n": 2
+      "R2_LOSO_mean": 0.5815,
+      "R2_LOSO_sd": 0.1339,
+      "R2_LOSO_se": 0.0473,
+      "R2_random_mean": 0.8577,
+      "n": 8
+    },
+    {
+      "n_studies": 48,
+      "R2_LOSO_mean": 0.6606,
+      "R2_LOSO_sd": 0.0671,
+      "R2_LOSO_se": 0.0237,
+      "R2_random_mean": 0.9027,
+      "n": 8
+    },
+    {
+      "n_studies": 96,
+      "R2_LOSO_mean": 0.6612,
+      "R2_LOSO_sd": 0.0616,
+      "R2_LOSO_se": 0.0218,
+      "R2_random_mean": 0.8724,
+      "n": 8
     }
   ],
   "spearman_n_vs_R2": [
-    0.8944271909999159,
-    0.10557280900008414
+    0.5842586223838824,
+    0.00044633703962745794
   ]
 }

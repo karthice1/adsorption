@@ -9,7 +9,7 @@ We thank the reviewer for a second, detailed report. Every major comment led to 
 - Evidence classes are now C, B, A1 and A2. XPS and XANES are simulated with separate, explicitly stated bias models, and solid Cr inventory and phase evidence are simulated (§2.1, §2.4, §2.6).
 - An exact study-level split-conformal interval (M2s) is given with a theorem and proof (Appendix A). The earlier guarantee for M2 is withdrawn.
 - The false-acceptance risk of sequential verification was simulated for two acceptance rules (Table 7b, Table S9).
-- The ML conclusions were re-tested across mechanism scenarios A–E (Table S6, Fig. 8). The learning curve was repeated with 8 replicates, and censoring sensitivity was added (Table S7).
+- The ML conclusions were re-tested across mechanism scenarios A–E (Table S6, Fig. 5). The learning curve was repeated with 8 replicates, and censoring sensitivity was added (Table S7).
 - The PHREEQC pH-threshold discrepancy was corrected, and an electrolyte sensitivity analysis was added (Table S10).
 - Release: code commit `{COMMIT}`, SHA-256 manifest, test log and coverage report (`release/`).
 - **Not met:** the empirical application (Major Comment 1). This is explained below.
@@ -83,14 +83,14 @@ We recognise that the reviewer may consider this decisive. If the editor agrees,
 
 ## Major Comment 6 – ML across scenarios, GPR, learning curve, censoring
 
-**Response: done (§3.4, §4.3, Table S6, Table S7, Fig. 8).**
+**Response: done (§3.4, §4.3, Table S6, Table S7, Fig. 5).**
 - **Scenarios A–E.** The ML conclusions were re-tested on five corpora per mechanism scenario.
   - Random-split R² was 0.86–0.89, LOSO 0.48–0.65 and LOFO 0.40–0.63, so the random-split inflation is not specific to scenario E.
   - Speciation features lowered LOSO R² in every scenario.
   - Models trained on scenario E and transferred to scenarios B and D lost 0.05–0.10 in R².
   - These claims are restricted to the simulator's model family.
 - **GPR.** It is labelled exploratory (3 corpora, untuned kernel), and no general conclusion is drawn from it (§4.3 item 5).
-- **Learning curve.** It was repeated with 8 replicates per corpus size; SE and the Spearman trend are reported. {LC_SENTENCE}
+- **Learning curve.** It was repeated with 8 replicates per corpus size; SE and the Spearman trend are reported. With 8 replicates, the mean LOSO R² was 0.31, 0.58, 0.66 and 0.66 for 12, 24, 48 and 96 studies (SE 0.09–0.02; Spearman ρ = 0.58, p < 0.001). The curve is monotonic in its means and levels off beyond about 48 studies. The non-monotonic v0.2 curve (4 replicates) is explained in the text as replicate noise.
 - **Censoring.** The main analysis censors negative apparent uptake (about 5% of observations) at zero. The alternatives were LOD-based censoring, LOD/2, dropping, and an asinh transform without censoring. They gave LOSO R² 0.58–0.68 and mean M1 coverage 0.94 in every case (Table S7), so the conclusions are unchanged.
 
 ## Major Comment 7 – PHREEQC validation, pH threshold, background electrolyte

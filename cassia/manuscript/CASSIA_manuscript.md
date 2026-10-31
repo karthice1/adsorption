@@ -559,7 +559,7 @@ The hypothesis that chemistry-informed features improve predictive reliability (
 - Forty-five per cent (ICC 0.45 ± 0.14) of the variance of out-of-study residuals was a study-level offset.
 - Per-study RMSE under LOSO ranged from 1.9 to 14.8 mg g⁻¹ (10th–90th percentile) and scaled with material capacity: median 9.0 mg g⁻¹ for chemically activated carbons, 3.5 mg g⁻¹ for hydrochars.
 
-**The conclusions hold across mechanisms, but transfer between mechanisms is not free (Fig. 8a; Table S6).** RF with speciation features was evaluated on five corpora for each mechanism scenario:
+**The conclusions hold across mechanisms, but transfer between mechanisms is not free (Fig. 5a; Table S6).** RF with speciation features was evaluated on five corpora for each mechanism scenario:
 - Random-split R² was 0.86–0.89 for every scenario. LOSO R² was 0.48–0.65 and LOFO R² 0.40–0.63, so the random-split inflation is not specific to scenario E.
 - Speciation features again lowered LOSO R² slightly in every scenario (−0.010 to −0.033).
 - Models trained on scenario-E corpora and tested on corpora generated under other mechanisms reached R² = 0.65 (A), 0.53 (B), 0.60 (C) and 0.55 (D). For B and D this is 0.05–0.10 below the within-scenario LOSO R²; for A and C it is equal or higher.
@@ -567,10 +567,12 @@ The hypothesis that chemistry-informed features improve predictive reliability (
 
 **Retransformation.** Duan smearing reduced the mean back-transformation bias from −1.86 to −1.30 mg g⁻¹, but did not remove it, because the residuals are heteroscedastic.
 
-**More studies help, more rows do not.**
-- LOSO R² rose from 0.47 ± 0.14 with 12 studies to 0.59 ± 0.14 (24), 0.56 ± 0.11 (48) and 0.75 ± 0.08 (96).
-- Random-split R² stayed between 0.80 and 0.90 throughout.
-- The effective sample size for transferability is the number of independent studies. On this evidence, a literature corpus of 20–30 studies yields LOSO R² of about 0.5–0.6.
+**More studies help, more rows do not (Fig. 5b).** The learning curve was repeated with 8 replicate corpora per size (v0.2 used 4, and its curve was not monotonic: 0.47, 0.59, 0.56, 0.75):
+- LOSO R² rose from 0.31 ± 0.09 (mean ± SE) with 12 studies to 0.58 ± 0.05 (24), 0.66 ± 0.02 (48) and 0.66 ± 0.02 (96). The rank correlation between corpus size and LOSO R² was ρ = 0.58 (p < 0.001, 32 corpora).
+- With 8 replicates the curve is monotonic in its means but levels off beyond about 48 studies. The 48- and 96-study means differ by less than their SE. The v0.2 dip at 48 studies and its higher value at 96 were therefore replicate noise.
+- The between-replicate SD fell from 0.26 (12 studies) to 0.06 (96). Small corpora are unreliable as well as less accurate.
+- Random-split R² stayed between 0.85 and 0.90 throughout.
+- The effective sample size for transferability is the number of independent studies. On this evidence, a literature corpus of 20–30 studies yields LOSO R² of about 0.5–0.6, and the plateau near 0.66 reflects irreducible between-study heterogeneity in the simulator, not a general property of real data.
 
 **Table 5.** Out-of-fold R² for apparent Cr(VI) uptake: mean (2.5–97.5% range across 20 corpora; GPR: 3 corpora).
 
@@ -585,11 +587,15 @@ The hypothesis that chemistry-informed features improve predictive reliability (
 
 ![Fig. 4](figures/fig4_ml_validation.png)
 
-**Fig. 4.** Transferability of ML models (synthetic; 20 corpora of 30 studies). (a) R² for apparent Cr(VI) uptake under five validation schemes (bars: mean; whiskers: 2.5–97.5% range across corpora). (b) Learning curve: R² against the number of independent studies (RF with speciation features; mean ± SD of 4 replicates). (c) Per-study RMSE under leave-one-study-out by family (ACc/ACp: chemically/physically activated carbon; BCw/BCm: wood/manure biochar; HC: hydrochar; PC: biomass-derived porous carbon).
+**Fig. 4.** Transferability of ML models (synthetic; 20 corpora of 30 studies). (a) R² for apparent Cr(VI) uptake under five validation schemes (bars: mean; whiskers: 2.5–97.5% range across corpora). (b) Learning curve from v0.2: R² against the number of independent studies (RF with speciation features; mean ± SD of 4 replicates); superseded by the 8-replicate curve in Fig. 5b. (c) Per-study RMSE under leave-one-study-out by family (ACc/ACp: chemically/physically activated carbon; BCw/BCm: wood/manure biochar; HC: hydrochar; PC: biomass-derived porous carbon).
+
+![Fig. 5](figures/fig8_mechanism_transfer.png)
+
+**Fig. 5.** Robustness of the ML and interval results across mechanisms (synthetic). (a) Out-of-fold R² for apparent uptake by mechanism scenario (RF with speciation features; 5 corpora per scenario; bars: mean, whiskers: SD): random 5-fold, leave-one-study-out, leave-one-family-out, and models trained on scenario-E corpora and tested on the given scenario. (b) Learning curve: leave-one-study-out R² against the number of studies (8 replicate corpora per size; mean ± SE; points: replicates) and random-split R². (c) Fraction of unseen studies with ≥ 90% within-study coverage at nominal 90%, by scenario and interval method (dotted: 0.90).
 
 ### 3.5 Study-level prediction intervals (synthetic)
 
-Table 6 and Fig. 5 report outer leave-one-study-out evaluations on 10 corpora: 300 test studies for Cr(VI) endpoints and 182 for total-Cr endpoints, which are measured only in Class A/B studies.
+Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 300 test studies for Cr(VI) endpoints and 182 for total-Cr endpoints, which are measured only in Class A/B studies.
 
 **Average coverage is the wrong criterion.**
 - The pooled-residual interval M0 (the v0.1 method) reached its nominal *average* coverage for every endpoint (0.89–0.90 at 90%).
@@ -606,11 +612,11 @@ Table 6 and Fig. 5 report outer leave-one-study-out evaluations on 10 corpora: 3
 - At 95%, intervals for the total-Cr endpoints were effectively unbounded. Only about 17 studies with total-Cr data were available for calibration, fewer than the 19 that a study-level 95% quantile requires.
 - This is a concrete data requirement: certifying total-Cr predictions at 95% needs at least 19 independent studies that report total Cr.
 
-**The exact split-conformal interval M2s behaved as its theorem predicts (Table 6b, Fig. 5).**
+**The exact split-conformal interval M2s behaved as its theorem predicts (Table 6b, Fig. 6).**
 - *Calibration.* Training studies were split in half, giving 14 calibration studies for Cr(VI) endpoints and 8.6 on average for total-Cr endpoints. The fraction of unseen studies with at least 90% of their observations covered tracked the nominal level for apparent uptake: 0.93, 0.80, 0.72 and 0.50 at nominal 0.90, 0.80, 0.70 and 0.50. Every value lies within the theoretical bounds of 1 − α and 1 − α + 1/(J + 1).
 - *Cost.* The price of exactness is width, 3.3 log₁₀ units at 90% for apparent uptake. Only half of the training studies are used to fit the model.
 - *Unbounded intervals.* At 95%, M2s is unbounded for every endpoint, because it needs J ≥ 19. At 90% it is unbounded for 63% of test studies on the total-Cr endpoints, because it needs J ≥ 9.
-- *Across mechanisms.* The guarantee held in all five scenarios (≥ 0.92 of studies covered at ≥ 90%; Fig. 8c).
+- *Across mechanisms.* The guarantee held in all five scenarios (≥ 0.92 of studies covered at ≥ 90%; Fig. 5c).
 - *Interpretation.* Exact study-level guarantees are available, but with literature-scale numbers of studies they are too wide for low-effluent engineering decisions. This is a substantive negative result, not a defect of the method.
 
 **Table 6b.** M2s, exact study-level split conformal: fraction of unseen studies with ≥ 90% within-study coverage (10 corpora, leave-one-study-out).
@@ -641,13 +647,13 @@ Table 6 and Fig. 5 report outer leave-one-study-out evaluations on 10 corpora: 3
 | C_e,tot | M1 | 0.949 | 1.00 | 0.85 | 0.18 | 0.87 | 1.68 | 17 |
 | C_e,tot | M2 | 0.973 | 1.00 | 0.90 | 0.25 | 0.93 | 2.07 | 17 |
 
-![Fig. 5](figures/fig5_conformal.png)
+![Fig. 6](figures/fig5_conformal.png)
 
-**Fig. 5.** Study-level conformal prediction (synthetic; outer leave-one-study-out on 10 corpora). (a) Nominal against mean per-study coverage for apparent uptake (dotted: 10th-percentile study). (b) Distribution of per-study coverage at 90%. (c) Mean per-study coverage at 90% for the four endpoints. M0: pooled residuals; M1: study-level CV+ with study-weighted scores; M2: study-level CV+ with one score per study.
+**Fig. 6.** Study-level conformal prediction (synthetic; outer leave-one-study-out on 10 corpora). (a) Nominal against mean per-study coverage for apparent uptake (dotted: 10th-percentile study). (b) Distribution of per-study coverage at 90%. (c) Mean per-study coverage at 90% for the four endpoints. M0: pooled residuals; M1: study-level CV+ with study-weighted scores; M2: study-level CV+ with one score per study.
 
 ### 3.6 Treatment design with two endpoints (synthetic)
 
-**Set-up.** Of the 300 new materials per target (20 cohorts × 15), 169 (S1) and 181 (S2) could truly meet both limits somewhere on the design grid (Table 7, Fig. 6).
+**Set-up.** Of the 300 new materials per target (20 cohorts × 15), 169 (S1) and 181 (S2) could truly meet both limits somewhere on the design grid (Table 7, Fig. 7).
 
 **Point predictions are unsafe.**
 - They recommended a design for 105 materials (S1). Only 41% of these complied in truth.
@@ -670,7 +676,7 @@ Table 6 and Fig. 5 report outer leave-one-study-out evaluations on 10 corpora: 3
 - It found compliant designs for 62% (S1) and 54% (S2) of attainable materials, after a mean of 1.4–1.5 rounds.
 - The median dose was twice the true minimum dose, which is the price of escalating on a coarse dose grid.
 
-**Verification is a sequential decision, so its false-acceptance risk was evaluated explicitly (Table 7b, Fig. 6b,c).**
+**Verification is a sequential decision, so its false-acceptance risk was evaluated explicitly (Table 7b, Fig. 7b,c).**
 - *Simulation.* For every material and target, 1,000 verification sequences were simulated, with up to four dose rounds and both endpoints measured each round. Each sequence drew a calibration bias and correlated replicate errors.
 - *Per material.* The probability of accepting a non-compliant design was:
   - v0.2 rule (duplicates, mean ≤ 90% of each limit): mean 0.01% across materials, worst material 1.4–1.7%;
@@ -720,9 +726,9 @@ Table 6 and Fig. 5 report outer leave-one-study-out evaluations on 10 corpora: 3
 | S2 | joint 80% + 4 confirmatory batches | 6 | 83% | 1 (0.3%) | 3% | 4 |
 | S2 | point + verification batches | 98 | 100% | 0 | 54% | 8 |
 
-![Fig. 6](figures/fig6_design.png)
+![Fig. 7](figures/fig6_design.png)
 
-**Fig. 6.** Treatment design for new virtual materials (synthetic; 20 cohorts × 15 materials). (a) Fraction of recommended designs that comply in truth, with Wilson 95% intervals; numbers in the bars are median doses. (b) Predicted against true total Cr at the selected designs (S1). (c) Compliance of point + verification designs under perturbations of pH and dose (S1).
+**Fig. 7.** Treatment design for new virtual materials (synthetic; 20 cohorts × 15 materials per target). (a) Fraction of all materials receiving an unsafe recommendation, and fraction of attainable materials for which a compliant design was found, by design rule (point prediction; marginal and joint 90% bounds; joint 90% and 80% bounds with up to four confirmatory batches; point prediction with sequential verification); solid: S1, hatched: S2. (b) Distribution over materials of the probability of accepting a non-compliant design under the two verification rules (shared calibration bias; materials whose dose ladder contains a non-compliant dose; dotted: 5%). (c) Mean probability of acceptance within four rounds; numbers in the bars: mean batches per material.
 
 ### 3.7 Propagation of unreported chemistry
 
@@ -739,9 +745,9 @@ Table 6 and Fig. 5 report outer leave-one-study-out evaluations on 10 corpora: 3
 
 **Conclusion.** For prediction and design, missing solution chemistry is a second-order uncertainty compared with between-study heterogeneity. For mechanistic interpretation, a missing pH basis is first-order.
 
-![Fig. 7](figures/fig7_missing_chemistry.png)
+![Fig. 8](figures/fig7_missing_chemistry.png)
 
-**Fig. 7.** Propagation of unreported ionic strength and pH basis (1,000 draws per observation; synthetic studies). (a) 90% range of f(HCrO₄⁻). (b) Width of the nominal M1 interval, of its union over scenarios, and spread of the point prediction (log₁₀). (c) Accepted dose under unknown ionic strength for each new material (box over 300 draws; numbers: compliance probability).
+**Fig. 8.** Propagation of unreported ionic strength and pH basis (1,000 draws per observation; synthetic studies). (a) 90% range of f(HCrO₄⁻). (b) Width of the nominal M1 interval, of its union over scenarios, and spread of the point prediction (log₁₀). (c) Accepted dose under unknown ionic strength for each new material (box over 300 draws; numbers: compliance probability).
 
 ### 3.8 Empirical application: status
 
@@ -864,7 +870,7 @@ Existing adsorption databases and ML studies of Cr(VI) removal typically pool re
 1. Three PHREEQC databases agree on Cr(VI) speciation to within 0.044 in species fraction. They differ by 63–83 mV on the Cr(VI)/Cr(III) boundary and by more than an order of magnitude on Cr(OH)₃(am) solubility at pH 4. Direct saturation indices show Cr(III) undersaturated up to 5,000 mg L⁻¹ at pH ≤ 4.25 (minteq.v4, I ≤ 0.01 M; 4.5 at I = 0.1 M) and pH ≤ 3.5 (minteq), on a 0.25-pH grid (Table S4). The constants have not been validated independently.
 2. Across 15,000 virtual studies under five mechanisms, isotherm fits of residual Cr(VI) with R² ≥ 0.95 occurred in 41–52% of studies with more than 20% reduction under surface, adsorption-coupled and combined reduction. Fitted q_max then exceeded the adsorption capacity in proportion to the reduction share. The effect was weak when reduction occurred only in solution.
 3. Observed through residual Cr(VI) alone, adsorption-only was not rejected by the calibrated test for 63–76% of high-reduction studies, and was demonstrated equivalent within a 10% margin for 43–65%. With total Cr, the calibrated test rejected it in 80–88% (type-I error 3–5%); with solid-phase evidence, in 90–96%. Only the A2 design constrained the precipitated share.
-4. LOSO R² for apparent uptake (0.48–0.65 across the five scenarios) was far below random-split R² (0.86–0.89). Speciation features did not improve it, and a corpus of 20–30 studies cannot rank learners. The learning curve rose with the number of studies but was not monotonic at the replication used (§3.4).
+4. LOSO R² for apparent uptake (0.48–0.65 across the five scenarios) was far below random-split R² (0.86–0.89). Speciation features did not improve it, and a corpus of 20–30 studies cannot rank learners. With 8 replicates per size, LOSO R² rose from 0.31 (12 studies) to 0.66 (48) and then levelled off (0.66 at 96; §3.4).
 5. Pooled conformal intervals reached nominal average coverage but covered only 65–75% of studies. The exact study-level split-conformal interval M2s met its guarantee, but at 3.3 log₁₀ units at 90% and unbounded at 95% with literature-scale numbers of calibration studies.
 6. Point-prediction designs were unsafe for 21% (S1) and 7% (S2) of new materials, and calibrated-bound designs were rarely available. Model-guided designs with sequential confirmatory testing were accepted for 98–105 of 300 materials per target; no unsafe accepted design was observed in the simulated cohorts (Wilson 95% upper bound 1.3%), and the error-controlled rule kept the per-material false-acceptance probability ≤ 0.7%.
 
@@ -880,7 +886,7 @@ Existing adsorption databases and ML studies of Cr(VI) removal typically pool re
 **Location.** All code, the three PHREEQC databases (with checksums and provenance), the virtual corpora, the result tables and the figure scripts are in the `cassia/` directory of the repository `karthice1/adsorption` (CASSIA 0.3.0).
 
 **Fixed snapshot.** The content of this release is identified by `release/MANIFEST.sha256`: SHA-256 checksums of every code, database, data, result and figure file. `release/RELEASE.md` records:
-- the code commit `abc`;
+- the code commit `[COMMIT]`;
 - the environment (`requirements-lock.txt`, Python 3.13.17);
 - the test log and coverage report;
 - the exact commands: `python scripts/run_v2.py --stage all` and `python scripts/run_v3.py --stage all`;

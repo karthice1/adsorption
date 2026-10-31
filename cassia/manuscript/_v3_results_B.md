@@ -1,6 +1,6 @@
 ### 3.5 Study-level prediction intervals (synthetic)
 
-Table 6 and Fig. 5 report outer leave-one-study-out evaluations on 10 corpora: 300 test studies for Cr(VI) endpoints and 182 for total-Cr endpoints, which are measured only in Class A/B studies.
+Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 300 test studies for Cr(VI) endpoints and 182 for total-Cr endpoints, which are measured only in Class A/B studies.
 
 **Average coverage is the wrong criterion.**
 - The pooled-residual interval M0 (the v0.1 method) reached its nominal *average* coverage for every endpoint (0.89–0.90 at 90%).
@@ -17,11 +17,11 @@ Table 6 and Fig. 5 report outer leave-one-study-out evaluations on 10 corpora: 3
 - At 95%, intervals for the total-Cr endpoints were effectively unbounded. Only about 17 studies with total-Cr data were available for calibration, fewer than the 19 that a study-level 95% quantile requires.
 - This is a concrete data requirement: certifying total-Cr predictions at 95% needs at least 19 independent studies that report total Cr.
 
-**The exact split-conformal interval M2s behaved as its theorem predicts (Table 6b, Fig. 5).**
+**The exact split-conformal interval M2s behaved as its theorem predicts (Table 6b, Fig. 6).**
 - *Calibration.* Training studies were split in half, giving 14 calibration studies for Cr(VI) endpoints and 8.6 on average for total-Cr endpoints. The fraction of unseen studies with at least 90% of their observations covered tracked the nominal level for apparent uptake: 0.93, 0.80, 0.72 and 0.50 at nominal 0.90, 0.80, 0.70 and 0.50. Every value lies within the theoretical bounds of 1 − α and 1 − α + 1/(J + 1).
 - *Cost.* The price of exactness is width, 3.3 log₁₀ units at 90% for apparent uptake. Only half of the training studies are used to fit the model.
 - *Unbounded intervals.* At 95%, M2s is unbounded for every endpoint, because it needs J ≥ 19. At 90% it is unbounded for 63% of test studies on the total-Cr endpoints, because it needs J ≥ 9.
-- *Across mechanisms.* The guarantee held in all five scenarios (≥ 0.92 of studies covered at ≥ 90%; Fig. 8c).
+- *Across mechanisms.* The guarantee held in all five scenarios (≥ 0.92 of studies covered at ≥ 90%; Fig. 5c).
 - *Interpretation.* Exact study-level guarantees are available, but with literature-scale numbers of studies they are too wide for low-effluent engineering decisions. This is a substantive negative result, not a defect of the method.
 
 **Table 6b.** M2s, exact study-level split conformal: fraction of unseen studies with ≥ 90% within-study coverage (10 corpora, leave-one-study-out).
@@ -52,13 +52,13 @@ Table 6 and Fig. 5 report outer leave-one-study-out evaluations on 10 corpora: 3
 | C_e,tot | M1 | 0.949 | 1.00 | 0.85 | 0.18 | 0.87 | 1.68 | 17 |
 | C_e,tot | M2 | 0.973 | 1.00 | 0.90 | 0.25 | 0.93 | 2.07 | 17 |
 
-![Fig. 5](figures/fig5_conformal.png)
+![Fig. 6](figures/fig5_conformal.png)
 
-**Fig. 5.** Study-level conformal prediction (synthetic; outer leave-one-study-out on 10 corpora). (a) Nominal against mean per-study coverage for apparent uptake (dotted: 10th-percentile study). (b) Distribution of per-study coverage at 90%. (c) Mean per-study coverage at 90% for the four endpoints. M0: pooled residuals; M1: study-level CV+ with study-weighted scores; M2: study-level CV+ with one score per study.
+**Fig. 6.** Study-level conformal prediction (synthetic; outer leave-one-study-out on 10 corpora). (a) Nominal against mean per-study coverage for apparent uptake (dotted: 10th-percentile study). (b) Distribution of per-study coverage at 90%. (c) Mean per-study coverage at 90% for the four endpoints. M0: pooled residuals; M1: study-level CV+ with study-weighted scores; M2: study-level CV+ with one score per study.
 
 ### 3.6 Treatment design with two endpoints (synthetic)
 
-**Set-up.** Of the 300 new materials per target (20 cohorts × 15), 169 (S1) and 181 (S2) could truly meet both limits somewhere on the design grid (Table 7, Fig. 6).
+**Set-up.** Of the 300 new materials per target (20 cohorts × 15), 169 (S1) and 181 (S2) could truly meet both limits somewhere on the design grid (Table 7, Fig. 7).
 
 **Point predictions are unsafe.**
 - They recommended a design for 105 materials (S1). Only 41% of these complied in truth.
@@ -81,7 +81,7 @@ Table 6 and Fig. 5 report outer leave-one-study-out evaluations on 10 corpora: 3
 - It found compliant designs for 62% (S1) and 54% (S2) of attainable materials, after a mean of 1.4–1.5 rounds.
 - The median dose was twice the true minimum dose, which is the price of escalating on a coarse dose grid.
 
-**Verification is a sequential decision, so its false-acceptance risk was evaluated explicitly (Table 7b, Fig. 6b,c).**
+**Verification is a sequential decision, so its false-acceptance risk was evaluated explicitly (Table 7b, Fig. 7b,c).**
 - *Simulation.* For every material and target, 1,000 verification sequences were simulated, with up to four dose rounds and both endpoints measured each round. Each sequence drew a calibration bias and correlated replicate errors.
 - *Per material.* The probability of accepting a non-compliant design was:
   - v0.2 rule (duplicates, mean ≤ 90% of each limit): mean 0.01% across materials, worst material 1.4–1.7%;
@@ -131,9 +131,9 @@ Table 6 and Fig. 5 report outer leave-one-study-out evaluations on 10 corpora: 3
 | S2 | joint 80% + 4 confirmatory batches | 6 | 83% | 1 (0.3%) | 3% | 4 |
 | S2 | point + verification batches | 98 | 100% | 0 | 54% | 8 |
 
-![Fig. 6](figures/fig6_design.png)
+![Fig. 7](figures/fig6_design.png)
 
-**Fig. 6.** Treatment design for new virtual materials (synthetic; 20 cohorts × 15 materials). (a) Fraction of recommended designs that comply in truth, with Wilson 95% intervals; numbers in the bars are median doses. (b) Predicted against true total Cr at the selected designs (S1). (c) Compliance of point + verification designs under perturbations of pH and dose (S1).
+**Fig. 7.** Treatment design for new virtual materials (synthetic; 20 cohorts × 15 materials per target). (a) Fraction of all materials receiving an unsafe recommendation, and fraction of attainable materials for which a compliant design was found, by design rule (point prediction; marginal and joint 90% bounds; joint 90% and 80% bounds with up to four confirmatory batches; point prediction with sequential verification); solid: S1, hatched: S2. (b) Distribution over materials of the probability of accepting a non-compliant design under the two verification rules (shared calibration bias; materials whose dose ladder contains a non-compliant dose; dotted: 5%). (c) Mean probability of acceptance within four rounds; numbers in the bars: mean batches per material.
 
 ### 3.7 Propagation of unreported chemistry
 
@@ -150,9 +150,9 @@ Table 6 and Fig. 5 report outer leave-one-study-out evaluations on 10 corpora: 3
 
 **Conclusion.** For prediction and design, missing solution chemistry is a second-order uncertainty compared with between-study heterogeneity. For mechanistic interpretation, a missing pH basis is first-order.
 
-![Fig. 7](figures/fig7_missing_chemistry.png)
+![Fig. 8](figures/fig7_missing_chemistry.png)
 
-**Fig. 7.** Propagation of unreported ionic strength and pH basis (1,000 draws per observation; synthetic studies). (a) 90% range of f(HCrO₄⁻). (b) Width of the nominal M1 interval, of its union over scenarios, and spread of the point prediction (log₁₀). (c) Accepted dose under unknown ionic strength for each new material (box over 300 draws; numbers: compliance probability).
+**Fig. 8.** Propagation of unreported ionic strength and pH basis (1,000 draws per observation; synthetic studies). (a) 90% range of f(HCrO₄⁻). (b) Width of the nominal M1 interval, of its union over scenarios, and spread of the point prediction (log₁₀). (c) Accepted dose under unknown ionic strength for each new material (box over 300 draws; numbers: compliance probability).
 
 ### 3.8 Empirical application: status
 
