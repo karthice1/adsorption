@@ -2,12 +2,12 @@
 
 **Setting.** Let the studies used in one leave-one-study-out fold be divided at random into a *proper-training* set and $J$ *calibration* studies, and let $Z_{J+1}$ be the held-out test study. Each study is a set of observations,
 
-$$Z_j=\{(x_{ji},y_{ji})\}_{i=1}^{n_j}.$$
+$$Z_j=\{(x_{ji},y_{ji}):\ i=1,\dots,n_j\}.$$
 
 The study size $n_j$ is part of the study: it is random, can vary between studies, and the observations within a study may be arbitrarily dependent. Let $\hat\mu$ be a model fitted to the proper-training studies only. For a fixed $\beta\in(0,1]$ define:
 
 - the residuals $R_{ji}=|y_{ji}-\hat\mu(x_{ji})|$;
-- the study score $s_j=R_{j,(\lceil\beta n_j\rceil)}$, the $\lceil\beta n_j\rceil$-th smallest residual of study $j$.
+- the study score $s_j$, the $k_j$-th smallest of the residuals $R_{ji}$ of study $j$, with $k_j=\lceil\beta n_j\rceil$.
 
 For a miscoverage level $\alpha$, let $k=\lceil(1-\alpha)(J+1)\rceil$. Set $\hat q=s_{(k)}$, the $k$-th smallest of the $J$ calibration scores, if $k\le J$, and $\hat q=\infty$ otherwise. The M2s interval at any $x$ is $\hat\mu(x)\pm\hat q$.
 

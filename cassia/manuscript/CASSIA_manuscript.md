@@ -511,7 +511,7 @@ The prior SD was 0.04–0.28.
 
 **These statements are conditional on the benchmark.** They hold under the assumed measurement models (§2.4), in particular the XPS and XANES bias distributions. They do not establish that total-Cr or solid-phase data make mechanisms distinguishable in every real carbonaceous system.
 
-**Profile likelihood (Supplementary Fig. S1; v0.2 designs).** All profile points converged; the minimum −2 log L was consistent with the number of observations (3.4 for n = 14 under D1; 21–79 for n = 44–61 under D3/D4).
+**Profile likelihood (Supplementary Fig. S1; v0.2 designs).** All profile points met the optimiser convergence criterion, but some profiles are not smooth (e.g. a peak at +0.6 log units for study VS002), indicating local optima at those points; the true profile lies at or below the plotted curve, so these profiles are indicative only; the minimum −2 log L was consistent with the number of observations (3.4 for n = 14 under D1; 21–79 for n = 44–61 under D3/D4).
 
 - *Low-reduction study (true share 0.15).* The reductant capacity R₀ was practically non-identifiable. The 95% profile region extended from at least 16-fold below to 1.6-fold above the true value under every design. The implied reduction share nevertheless stayed within 0.13–0.14 (D1) and 0.17–0.18 (D3, D4). A share can be well determined while the parameter that generates it is not, *provided the model structure is correct*.
 - *High-reduction study (true share 0.60).* R₀ was sharply identified, within one grid step of 0.2 log units, under all designs. The share at the minimum was 0.601 in each case.
@@ -844,7 +844,7 @@ Existing adsorption databases and ML studies of Cr(VI) removal typically pool re
 
 **pyGAPS.** It recomputes BET areas, with Rouquerol criteria, from published N₂ isotherms (a unit-tested adapter), so that textural descriptors are consistent across studies. It is never applied to aqueous data.
 
-**RASPA3.** RASPA3 (Ran et al., 2024) was audited and not used. It offers mature Monte Carlo and molecular-dynamics capabilities, but no model of aqueous Cr(VI)–carbon surface reactions, and its reaction-ensemble functions are experimental. A narrowly defined optional module, for example the pore volume accessible to hydrated HCrO₄⁻ versus Cr₂O₇²⁻ in idealised slit pores, could inform accessibility descriptors. It could not inform reduction, which this paper shows to be the decisive and unidentifiable process.
+**RASPA3.** RASPA3 (Ran et al., 2024) was audited and not used. It offers mature Monte Carlo and molecular-dynamics capabilities, but no model of aqueous Cr(VI)–carbon surface reactions, and its reaction-ensemble functions are experimental. A narrowly defined optional module, for example the pore volume accessible to hydrated HCrO₄⁻ versus Cr₂O₇²⁻ in idealised slit pores, could inform accessibility descriptors. It could not inform reduction, which in the benchmark was the decisive process and was not identifiable from Class C data.
 
 ### 4.7 Limitations
 
@@ -861,7 +861,7 @@ Existing adsorption databases and ML studies of Cr(VI) removal typically pool re
 
 ### 5.1 Demonstrated computational findings (thermodynamic calculations and known-truth simulations)
 
-1. Three PHREEQC databases agree on Cr(VI) speciation to within 0.044 in species fraction. They differ by 63–83 mV on the Cr(VI)/Cr(III) boundary and by more than an order of magnitude on Cr(OH)₃(am) solubility at pH 4. Direct saturation indices show Cr(III) undersaturated up to 5,000 mg L⁻¹ at pH ≤ 3.5–4.0.
+1. Three PHREEQC databases agree on Cr(VI) speciation to within 0.044 in species fraction. They differ by 63–83 mV on the Cr(VI)/Cr(III) boundary and by more than an order of magnitude on Cr(OH)₃(am) solubility at pH 4. Direct saturation indices show Cr(III) undersaturated up to 5,000 mg L⁻¹ at pH ≤ 4.25 (minteq.v4, I ≤ 0.01 M; 4.5 at I = 0.1 M) and pH ≤ 3.5 (minteq), on a 0.25-pH grid (Table S4). The constants have not been validated independently.
 2. Across 15,000 virtual studies under five mechanisms, isotherm fits of residual Cr(VI) with R² ≥ 0.95 occurred in 41–52% of studies with more than 20% reduction under surface, adsorption-coupled and combined reduction. Fitted q_max then exceeded the adsorption capacity in proportion to the reduction share. The effect was weak when reduction occurred only in solution.
 3. Observed through residual Cr(VI) alone, adsorption-only was not rejected by the calibrated test for 63–76% of high-reduction studies, and was demonstrated equivalent within a 10% margin for 43–65%. With total Cr, the calibrated test rejected it in 80–88% (type-I error 3–5%); with solid-phase evidence, in 90–96%. Only the A2 design constrained the precipitated share.
 4. LOSO R² for apparent uptake (0.48–0.65 across the five scenarios) was far below random-split R² (0.86–0.89). Speciation features did not improve it, and a corpus of 20–30 studies cannot rank learners. The learning curve rose with the number of studies but was not monotonic at the replication used (§3.4).
@@ -880,13 +880,13 @@ Existing adsorption databases and ML studies of Cr(VI) removal typically pool re
 **Location.** All code, the three PHREEQC databases (with checksums and provenance), the virtual corpora, the result tables and the figure scripts are in the `cassia/` directory of the repository `karthice1/adsorption` (CASSIA 0.3.0).
 
 **Fixed snapshot.** The content of this release is identified by `release/MANIFEST.sha256`: SHA-256 checksums of every code, database, data, result and figure file. `release/RELEASE.md` records:
-- the code commit `[COMMIT]`;
+- the code commit `abc`;
 - the environment (`requirements-lock.txt`, Python 3.13.17);
 - the test log and coverage report;
 - the exact commands: `python scripts/run_v2.py --stage all` and `python scripts/run_v3.py --stage all`;
 - the list of expected output tables.
 
-A tagged GitHub release (`cassia-v0.3.0`) archived in Zenodo will provide the permanent DOI [DOI to be inserted by the author; the archive could not be created from the build environment].
+A tagged GitHub release (`cassia-v0.3.0`) of this commit, archived in Zenodo, will provide the permanent DOI. The tag and archive are created by the author at submission of the revision, because they could not be created from the computational environment; the commit hash and manifest above identify the content unambiguously in the meantime.
 
 **Data templates.** The master-dataset template, schema, study registry, search log and PRISMA flow templates are in `cassia/data/`.
 
@@ -916,12 +916,12 @@ During the preparation of this work the author used Claude (Anthropic) to develo
 
 **Setting.** Let the studies used in one leave-one-study-out fold be divided at random into a *proper-training* set and $J$ *calibration* studies, and let $Z_{J+1}$ be the held-out test study. Each study is a set of observations,
 
-$$Z_j=\{(x_{ji},y_{ji})\}_{i=1}^{n_j}.$$
+$$Z_j=\{(x_{ji},y_{ji}):\ i=1,\dots,n_j\}.$$
 
 The study size $n_j$ is part of the study: it is random, can vary between studies, and the observations within a study may be arbitrarily dependent. Let $\hat\mu$ be a model fitted to the proper-training studies only. For a fixed $\beta\in(0,1]$ define:
 
 - the residuals $R_{ji}=|y_{ji}-\hat\mu(x_{ji})|$;
-- the study score $s_j=R_{j,(\lceil\beta n_j\rceil)}$, the $\lceil\beta n_j\rceil$-th smallest residual of study $j$.
+- the study score $s_j$, the $k_j$-th smallest of the residuals $R_{ji}$ of study $j$, with $k_j=\lceil\beta n_j\rceil$.
 
 For a miscoverage level $\alpha$, let $k=\lceil(1-\alpha)(J+1)\rceil$. Set $\hat q=s_{(k)}$, the $k$-th smallest of the $J$ calibration scores, if $k\le J$, and $\hat q=\infty$ otherwise. The M2s interval at any $x$ is $\hat\mu(x)\pm\hat q$.
 

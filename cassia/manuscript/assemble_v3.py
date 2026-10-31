@@ -1,5 +1,10 @@
 """Assemble CASSIA_manuscript.md (v3) from the section drafts. Run from manuscript/."""
 import re
+import sys
+
+from latex2uni import convert
+
+COMMIT = sys.argv[1] if len(sys.argv) > 1 else "[COMMIT]"
 
 front = open("_v3_front_methods.md").read()
 parts = [open(f).read().strip() for f in ("_v3_results_A.md", "_v3_results_ML.md", "_v3_results_B.md", "_v3_discussion.md")]
@@ -29,7 +34,9 @@ AB = ("Loss of dissolved Cr(VI) on carbonaceous materials is routinely reported 
 front = front.replace("<!--HIGHLIGHTS-->", "\n".join("- " + h for h in HL)).replace("<!--ABSTRACT-->", AB)
 parts[-1] = parts[-1].replace("RASPA3.** It was audited", "RASPA3.** RASPA3 (Ran et al., 2024) was audited")
 ms = "\n\n".join([front.rstrip(), *parts, tail.split("## References")[0].strip(), appendix, "## References" + tail.split("## References")[1]]) + "\n"
+ms = ms.replace("[COMMIT]", COMMIT)
 open("CASSIA_manuscript.md", "w").write(ms)
+open("_build_manuscript.md", "w").write(ms.replace(appendix, convert(appendix)))
 open("_v3_highlights.md", "w").write("# Highlights\n\n" + "\n".join("- " + h for h in HL) + "\n")
 left = re.findall(r"\[(?:ML|UQ|DESIGN|PROFILE|COMMIT|DOI)[A-Z ]*\]|<!--[A-Z]+-->", ms)
 print("abstract words:", len(AB.split()), "| manuscript words:", len(ms.split()), "| unfilled:", left, "| HL len:", [len(h) for h in HL])

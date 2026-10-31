@@ -16,7 +16,7 @@ const {
 
 const DIR = __dirname;
 const MODE = process.argv[2] === "plain" ? "plain" : "manuscript";
-const IN = MODE === "plain" ? process.argv[3] : "CASSIA_manuscript.md";
+const IN = MODE === "plain" ? process.argv[3] : (process.env.CASSIA_IN || "CASSIA_manuscript.md");
 const OUT = MODE === "plain" ? process.argv[4] : "CASSIA_manuscript.docx";
 const md = fs.readFileSync(path.join(DIR, IN), "utf8").split("\n");
 const FONT = "Times New Roman";
@@ -29,7 +29,16 @@ function runs(text, base = {}) {
   const out = [];
   const re = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g;
   let last = 0, m;
-  const plain = (t, fmt) => {
+  const plain = (t0, fmt) => {
+    // explicit _{sub} / ^{sup} (from latex2uni.py), then the implicit X_sub rule
+    const parts = t0.split(/(_\{[^{}]*\}|\^\{[^{}]*\})/);
+    parts.forEach((t) => {
+      if (/^_\{.*\}$/.test(t)) { out.push(new TextRun({ text: t.slice(2, -1), subScript: true, ...fmt })); return; }
+      if (/^\^\{.*\}$/.test(t)) { out.push(new TextRun({ text: t.slice(2, -1), superScript: true, ...fmt })); return; }
+      plain1(t, fmt);
+    });
+  };
+  const plain1 = (t, fmt) => {
     // subscripts: q_max, C_e,VI, q_app,VI, pH_pzc, E_a, R_s
     const sre = /([A-Za-zτσ)])_([A-Za-z0-9]+(?:,[A-Za-z]+)?)/g;
     let l = 0, s;
@@ -151,6 +160,10 @@ while (i < md.length) {
     body.push(table(block));
     afterTable = true;
     continue;
+  }
+  if (line.startsWith("<center>")) {
+    body.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { ...DOUBLE, before: 120, after: 120 }, children: runs(line.slice(8), { italics: true }) }));
+    i++; continue;
   }
   const img = line.match(/^!\[[^\]]*\]\(([^)]+)\)/);
   if (img) { body.push(figure(img[1])); i++; continue; }
