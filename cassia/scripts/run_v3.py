@@ -137,11 +137,13 @@ def _equiv3_worker(args):
         m = v2.material_from(meta)
         for arm, mm in (("true", m), ("control_A", sim.apply_scenario(m, "A"))):
             for sd in (0.03, 0.10):
-                for d in idf.DESIGNS_V3:
+                x_prev = None
+                for d in idf.DESIGNS_V3:          # warm start each design from the previous design's fit
                     try:
-                        r = idf.equivalence_test_v3(mm, meta, d, sd_rel=sd, seed=seed + k, n_starts=2)
+                        r = idf.equivalence_test_v3(mm, meta, d, sd_rel=sd, seed=seed + k, n_starts=3, x_init=x_prev)
                     except (RuntimeError, ValueError):
                         continue
+                    x_prev = r.pop("_x")
                     out.append({"scenario": scen, "rep": rep, "study_id": meta["study_id"], "arm": arm, **r})
     return out
 

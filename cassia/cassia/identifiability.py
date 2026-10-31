@@ -438,7 +438,7 @@ def _stack_equiv(base, design):
 
 
 def equivalence_test_v3(m: sim.Material, meta: dict, design: str, sd_rel=0.03, seed=0, n_starts=3,
-                        margins=(0.05, 0.10, 0.20), margin_ox=0.05, alpha=0.05):
+                        margins=(0.05, 0.10, 0.20), margin_ox=0.05, alpha=0.05, x_init=None):
     """Goodness of fit and a formal equivalence test of an adsorption-only model.
 
     Weighted least squares with independent, heteroscedastic errors: SD = sd_rel * y + floor for
@@ -476,24 +476,32 @@ def equivalence_test_v3(m: sim.Material, meta: dict, design: str, sd_rel=0.03, s
     hi = np.array([3.0, 3.0, 2.0, 6.0, 10.0, np.log10(5.0), 0.0, 0.15, 1.0, 3.0, 2.5, max(beam_max, 1e-6)])
     n_free = 8 + (0 if design == "D1" else 3) - (1 if design not in TECH_OF else 0) + (1 if tech else 0)
 
-    def fit_to(target, sdv):
-        best = None
+    def fit_to(target, sdv, inits=()):
+        """Bounded WLS from random starts plus warm starts; returns (chi2, x)."""
+        f = lambda x: (target - _empirical_predict_v3(x, meta, base, design)) / sdv
+        starts = []
         for k in range(n_starts):
             x0 = lo + (hi - lo) * rng.uniform(0.2, 0.8, lo.size)
             x0[0] = np.log10(max(m.qmax, 0.1)); x0[7] = 0.0
-            r = least_squares(lambda x: (target - _empirical_predict_v3(x, meta, base, design)) / sdv,
-                              np.clip(x0, lo + 1e-9, hi - 1e-9), bounds=(lo, hi), max_nfev=400, x_scale=0.5)
+            starts.append(x0)
+        starts += [np.asarray(x, float) for x in inits if x is not None]
+        best = None
+        for x0 in starts:
+            r = least_squares(f, np.clip(x0, lo + 1e-9, hi - 1e-9), bounds=(lo, hi), max_nfev=600, x_scale=0.5)
             if best is None or r.cost < best.cost:
                 best = r
-        return float(2 * best.cost)
+        return float(2 * best.cost), best.x
 
-    chi2 = fit_to(yobs, sd_fit)
-    lam_true = fit_to(y_true_obs, sd)            # noise-free misfit of the best adsorption-only fit
+    chi2, x_noisy = fit_to(yobs, sd_fit, (x_init,))
+    lam_true, x_true = fit_to(y_true_obs, sd, (x_noisy, x_init))      # noise-free misfit of the best fit
+    chi2_b, x_b = fit_to(yobs, sd_fit, (x_true,))                      # cross-seeded refit of the noisy data
+    if chi2_b < chi2:
+        chi2, x_noisy = chi2_b, x_b
     dof = max(y.size - n_free, 1)
     out = {"design": design, "sd_rel": sd_rel, "n_obs": int(y.size), "n_free": int(n_free), "dof": int(dof),
            "chi2": chi2, "lambda_true": lam_true, "p_gof": float(stats.chi2.sf(chi2, dof)),
            "share_red": base["share_red"], "share_precip": base["share_precip"],
-           "tech_enrich": e, "tech_beam": bm}
+           "tech_enrich": e, "tech_beam": bm, "_x": x_noisy}
     for eps in margins:
         mvec = np.r_[eps * y[:nc], np.full(nrest, margin_ox)]
         lam0 = float(np.sum((mvec / sd) ** 2))
