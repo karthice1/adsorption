@@ -10,7 +10,7 @@ def md(df):
     cols = list(df.columns)
     out = ["| " + " | ".join(map(str, cols)) + " |", "|" + "---|" * len(cols)]
     for _, r in df.iterrows():
-        out.append("| " + " | ".join(f"{v:.3f}" if isinstance(v, float) else str(v) for v in r) + " |")
+        out.append("| " + " | ".join(f"{v:.3f}" if isinstance(v, float) else str(v).replace("|", "given") for v in r) + " |")
     return "\n".join(out)
 
 S = [base]

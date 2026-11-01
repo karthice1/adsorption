@@ -9,7 +9,7 @@
 - the exact commands: `python scripts/run_v2.py --stage all` and `python scripts/run_v3.py --stage all`;
 - the list of expected output tables.
 
-A tagged GitHub release (`cassia-v0.3.1`) of this commit, archived in Zenodo, will provide the permanent DOI. The tag and archive are created by the author at submission of the revision, because they could not be created from the computational environment; the commit hash and manifest above identify the content unambiguously in the meantime.
+A tagged GitHub release (`cassia-v0.3.1`) of this commit, archived in Zenodo, will provide the permanent DOI. The tag and archive are created by the author at submission, because they could not be created from the computational environment; the commit hash and manifest above identify the content unambiguously in the meantime.
 
 **Data templates.** The master-dataset template, schema, study registry, search log and PRISMA flow templates are in `cassia/data/`.
 

@@ -1,11 +1,11 @@
-# CASSIA 0.3.0 release record
+# CASSIA 0.3.1 release record
 
-- Date: 2026-10-31
-- Code commit at manifest generation (parent of the commit that adds this file): `9d5a37bd6012b6abf2cacbca284a97aada468f68`
-- Content identity: `release/MANIFEST.sha256` (103 files); verify with `sha256sum -c release/MANIFEST.sha256`
+- Date: 2026-11-01
+- Code commit at manifest generation (parent of the commit that adds this file): `0528c60cc3dcd567b246e9e883f41b5ef20de0ef`
+- Content identity: `release/MANIFEST.sha256` (109 files); verify with `sha256sum -c release/MANIFEST.sha256`
 - Environment: `requirements-lock.txt` (Python 3.13.17); PHREEQC databases with checksums and provenance in `databases/`
 - Tests: `release/test_log.txt`; coverage: `results/coverage_report.txt`
-- Permanent archive: to be created by the author (GitHub release `cassia-v0.3.0` + Zenodo DOI); not available from the build environment
+- Permanent archive: to be created by the author (GitHub release `cassia-v0.3.1` + Zenodo DOI); not available from the build environment
 
 ## Reproduce
 
@@ -15,9 +15,10 @@ pip install -e .[ml,pores,dev]
 pytest -q tests                        # expected: all tests pass (see release/test_log.txt)
 python scripts/run_v2.py --stage all   # v0.2 analyses (~4-5 h, 4 cores) -> results/v2/
 python scripts/run_v3.py --stage all   # v0.3 analyses (~2-3 h, 4 cores) -> results/v3/, figures
+python scripts/bench_partition.py; PYTHONPATH=. python scripts/endpoint_validation.py; PYTHONPATH=. python scripts/seqver_oc.py; python scripts/make_supp_figs.py
 ```
 
-## Expected output tables (60)
+## Expected output tables (64)
 
 - `results/v2/T_S1_simulator_parameters.csv`
 - `results/v2/T_S3_hyperparameters.csv`
@@ -51,8 +52,11 @@ python scripts/run_v3.py --stage all   # v0.3 analyses (~2-3 h, 4 cores) -> resu
 - `results/v2/timing.json`
 - `results/v2/uq.json`
 - `results/v2/uq_per_study.csv`
+- `results/v3/T_bench_mcse.csv`
+- `results/v3/T_bench_partition.csv`
 - `results/v3/T_censor_summary.csv`
 - `results/v3/T_electrolyte_sensitivity.csv`
+- `results/v3/T_endpoint_validation.csv`
 - `results/v3/T_equiv3_summary.csv`
 - `results/v3/T_lc3.csv`
 - `results/v3/T_m2s_family.csv`
@@ -64,6 +68,7 @@ python scripts/run_v3.py --stage all   # v0.3 analyses (~2-3 h, 4 cores) -> resu
 - `results/v3/censor.json`
 - `results/v3/censor_sensitivity.csv`
 - `results/v3/chem3.json`
+- `results/v3/endpoint_validation.csv`
 - `results/v3/equiv3.csv.gz`
 - `results/v3/equiv3.json`
 - `results/v3/equiv3_part1.csv.gz`
