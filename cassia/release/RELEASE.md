@@ -1,11 +1,11 @@
-# CASSIA 0.3.1 release record
+# CASSIA 0.3.2 release record
 
 - Date: 2026-11-01
-- Code commit at manifest generation (parent of the commit that adds this file): `0528c60cc3dcd567b246e9e883f41b5ef20de0ef`
-- Content identity: `release/MANIFEST.sha256` (109 files); verify with `sha256sum -c release/MANIFEST.sha256`
+- Code commit at manifest generation (parent of the commit that adds this file): `72b4a6bcddf59b4bc9ab4d7da4b386a39b202331`
+- Content identity: `release/MANIFEST.sha256` (120 files); verify with `sha256sum -c release/MANIFEST.sha256`
 - Environment: `requirements-lock.txt` (Python 3.13.17); PHREEQC databases with checksums and provenance in `databases/`
 - Tests: `release/test_log.txt`; coverage: `results/coverage_report.txt`
-- Permanent archive: to be created by the author (GitHub release `cassia-v0.3.1` + Zenodo DOI); not available from the build environment
+- Permanent archive: to be created by the author (GitHub release `cassia-v0.3.2` + Zenodo DOI); not available from the build environment
 
 ## Reproduce
 
@@ -14,11 +14,11 @@ pip install -e ..                      # adsorption equation package (repository
 pip install -e .[ml,pores,dev]
 pytest -q tests                        # expected: all tests pass (see release/test_log.txt)
 python scripts/run_v2.py --stage all   # v0.2 analyses (~4-5 h, 4 cores) -> results/v2/
-python scripts/run_v3.py --stage all   # v0.3 analyses (~2-3 h, 4 cores) -> results/v3/, figures
+bash scripts/reproduce_all.sh          # every table, figure and number, in dependency order (~9-11 h, 4 cores)
 python scripts/bench_partition.py; PYTHONPATH=. python scripts/endpoint_validation.py; PYTHONPATH=. python scripts/seqver_oc.py; python scripts/make_supp_figs.py
 ```
 
-## Expected output tables (64)
+## Expected output tables (70)
 
 - `results/v2/T_S1_simulator_parameters.csv`
 - `results/v2/T_S3_hyperparameters.csv`
@@ -52,6 +52,7 @@ python scripts/bench_partition.py; PYTHONPATH=. python scripts/endpoint_validati
 - `results/v2/timing.json`
 - `results/v2/uq.json`
 - `results/v2/uq_per_study.csv`
+- `results/v3/T_S1_simulator_parameters.csv`
 - `results/v3/T_bench_mcse.csv`
 - `results/v3/T_bench_partition.csv`
 - `results/v3/T_censor_summary.csv`
@@ -60,11 +61,14 @@ python scripts/bench_partition.py; PYTHONPATH=. python scripts/endpoint_validati
 - `results/v3/T_equiv3_summary.csv`
 - `results/v3/T_lc3.csv`
 - `results/v3/T_m2s_family.csv`
+- `results/v3/T_m2s_family_full.csv`
 - `results/v3/T_m2s_summary.csv`
 - `results/v3/T_mlscen_summary.csv`
 - `results/v3/T_mlscen_uq.csv`
 - `results/v3/T_seqver_oc.csv`
 - `results/v3/T_seqver_summary.csv`
+- `results/v3/T_typeI_validation.csv`
+- `results/v3/T_verification_denominators.csv`
 - `results/v3/censor.json`
 - `results/v3/censor_sensitivity.csv`
 - `results/v3/chem3.json`
@@ -84,3 +88,5 @@ python scripts/bench_partition.py; PYTHONPATH=. python scripts/endpoint_validati
 - `results/v3/mlscen_uq.csv`
 - `results/v3/seqver.csv`
 - `results/v3/seqver.json`
+- `results/v3/typeI_ctrl_part1.csv.gz`
+- `results/v3/typeI_ctrl_part2.csv.gz`
