@@ -1,0 +1,8 @@
+{
+  "name": "cassia-manuscript-build",
+  "private": true,
+  "description": "Builds the CASSIA Word documents from Markdown (build_docx.js)",
+  "dependencies": {
+    "docx": "9.7.1"
+  }
+}
