@@ -94,9 +94,28 @@ def summary():
                 rec[f"inconclusive|{lab}|eps={eps}"] = float((~rej & ~eq).mean())
         rows.append(rec)
     T = pd.DataFrame(rows)
+    # --- leave-one-corpus-out (LOCO) over all 18 corpora: the null chi2 distribution varies between corpora
+    #     (hyper-priors are redrawn per corpus), so the corpus is the unit of exchangeability.
+    Qc = Q[Q.arm == "control_A"].assign(corpus=lambda x: x.scenario + "-" + x.rep.astype(str))
+    Vc = V.assign(corpus="V-" + V.rep.astype(str))
+    A = pd.concat([Qc[["corpus", "sd_rel", "design", "chi2"]], Vc[["corpus", "sd_rel", "design", "chi2"]]], ignore_index=True)
+    rng = np.random.default_rng(7)
+    loco = []
+    for (sd, d), g in A.groupby(["sd_rel", "design"]):
+        per = []
+        for c, h in g.groupby("corpus"):
+            thr = conformal_threshold(g[g.corpus != c].chi2.values)
+            per.append((c, int((h.chi2 > thr).sum()), len(h)))
+        k = np.array([p[1] for p in per]); n = np.array([p[2] for p in per])
+        boot = [k[i].sum() / n[i].sum() for i in (rng.integers(0, len(k), len(k)) for _ in range(4000))]
+        loco.append({"sd_rel": sd, "design": d, "n_corpora": len(per), "n_controls": int(n.sum()),
+                     "typeI_loco": k.sum() / n.sum(), "typeI_loco_lo": float(np.quantile(boot, 0.025)),
+                     "typeI_loco_hi": float(np.quantile(boot, 0.975)), "between_corpus_sd": float(np.std(k / n, ddof=1)),
+                     "max_corpus_typeI": float((k / n).max())})
+    T = T.merge(pd.DataFrame(loco), on=["sd_rel", "design"])
     T.to_csv(RES / "T_typeI_validation.csv", index=False)
     pd.set_option("display.width", 250)
-    print(T[[c for c in T.columns if c.startswith(("sd", "design", "n_", "typeI", "power_conformal|"))]].round(3).to_string())
+    print(T[[c for c in T.columns if c.startswith(("sd", "design", "typeI_conformal", "typeI_loco", "between", "max_", "power_conformal_pooled|>"))]].round(3).to_string())
 
 
 if __name__ == "__main__":
