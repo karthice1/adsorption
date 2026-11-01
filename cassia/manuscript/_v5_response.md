@@ -150,7 +150,7 @@ We followed all five recommendations. The result changes the paper's statement, 
 
 **An ordering pitfall.** While writing Table 2 we found one: `run_v2.py --stage all` writes older versions of Figs. 3, 5, 6 and 7, which `run_v3.py --stage figures` then replaces. `reproduce_all.sh` runs them in the required order, and Table 2 states it.
 
-**Verifiability.** A source archive of commit `{COMMIT_SHORT}` (`git archive` of the repository root) is supplied with this response, so the reviewer can run `pytest -q tests` ({NTESTS} tests) and check the manifest with `sha256sum -c release/MANIFEST.sha256`. The test log and coverage report ({COV} line coverage) are included in it.
+**Verifiability.** A source archive of the submission commit, which descends from code commit `{COMMIT_SHORT}` and adds only the manuscript documents and release logs, (`git archive` of the repository root) is supplied with this response, so the reviewer can run `pytest -q tests` ({NTESTS} tests) and check the manifest with `sha256sum -c release/MANIFEST.sha256`. The test log and coverage report ({COV} line coverage) are included in it.
 
 ---
 
