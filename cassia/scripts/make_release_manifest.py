@@ -42,7 +42,7 @@ pip install -e ..                      # adsorption equation package (repository
 pip install -e .[ml,pores,dev]
 pytest -q tests                        # expected: all tests pass (see release/test_log.txt)
 python scripts/run_v2.py --stage all   # v0.2 analyses (~4-5 h, 4 cores) -> results/v2/
-python scripts/run_v3.py --stage all   # v0.3 analyses (~2-3 h, 4 cores) -> results/v3/, figures
+bash scripts/reproduce_all.sh          # every table, figure and number, in dependency order (~9-11 h, 4 cores)
 python scripts/bench_partition.py; PYTHONPATH=. python scripts/endpoint_validation.py; PYTHONPATH=. python scripts/seqver_oc.py; python scripts/make_supp_figs.py
 ```
 

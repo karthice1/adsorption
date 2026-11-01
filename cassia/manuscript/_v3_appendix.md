@@ -57,8 +57,10 @@ In words: with probability at least $1-\alpha$, at least $\lceil\beta n_{J+1}\rc
 
 **Calibrated rejection.**
 - *Why the nominal test fails.* The empirical model is not exactly the data-generating adsorption model, so $\chi^2$ under the null is inflated relative to $\chi^2_\nu$. The nominal test therefore over-rejects (6.7–15% at nominal 5%; §3.3).
-- *Calibration.* The rejection threshold is instead the 95th percentile of $\chi^2$ in the paired negative controls (same materials, reduction switched off), separately for each design and noise level.
-- *Cross-validated type-I error.* The type-I error is estimated by split-half cross-validation of the controls: the threshold is estimated on one half and the error is evaluated on the other.
+- *Calibration.* The rejection threshold for each design and noise level is the conformal quantile $\hat t=\chi^2_{(k)}$, the $k$-th smallest of $n$ negative-control statistics, with $k=\lceil 0.95(n+1)\rceil$. If a new null study is exchangeable with the controls, $P(\chi^2_{\rm new}>\hat t)\le 0.05$ (the split-conformal quantile lemma; Vovk et al., 2005).
+- *Unit of exchangeability.* The negative controls of one corpus share its family hyper-priors, so the null $\chi^2$ distribution differs between corpora; controls are exchangeable between corpora, not within a fixed set of corpora. A threshold estimated from few corpora therefore does not transfer. With the 120 controls of 6 corpora, the previous empirical 95th-percentile threshold gave a type-I error of 15.4% and 13.8% for D1 on 240 controls from 12 new corpora (Table S14).
+- *Evaluation.* Type-I error is estimated leave-one-corpus-out over all 18 corpora (360 controls): the threshold is computed from the other 17 corpora and applied to the held-out corpus. A 95% interval is obtained by resampling corpora (4,000 bootstrap replicates). The final threshold used for power and equivalence is the conformal quantile of all 360 controls.
+- *Two error rates.* The type-I error refers to rejecting a true adsorption-only model. The false-equivalence probability refers to declaring equivalence when the true misfit exceeds the margin. They are controlled by different procedures and reported separately.
 
 **Equivalence within a margin.**
 - *Hypotheses.* Non-rejection is not evidence of equivalence. We therefore test $H_0{:}\ \lambda\ge\lambda_0$ against $H_1{:}\ \lambda<\lambda_0$, where $\lambda$ is the non-centrality of the misfit, i.e. the $\chi^2$ of the best adsorption-only approximation to the noise-free data.

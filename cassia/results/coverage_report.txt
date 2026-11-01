@@ -9,8 +9,8 @@ cassia/fitting.py             108      7    94%
 cassia/identifiability.py     362    132    64%
 cassia/measurement.py          24      2    92%
 cassia/pores.py                20      0   100%
-cassia/simulate.py            262     12    95%
+cassia/simulate.py            265     12    95%
 cassia/validation.py          244     40    84%
 -----------------------------------------------
-TOTAL                        1321    246    81%
-39 passed in 51.68s
+TOTAL                        1324    246    81%
+40 passed in 50.68s

@@ -62,7 +62,7 @@ cols = {"sd_rel": "noise", "design": "design", "dof": "ν", "nominal_threshold":
         "inconclusive|>30%|eps=0.1": "inconcl. >30% ε=0.10", "false_equivalence|eps=0.05": "false equiv ε=0.05",
         "false_equivalence|eps=0.1": "false equiv ε=0.10", "equivalence_power|eps=0.1": "equiv power ε=0.10",
         "high_red_truly_within|eps=0.1": "truly within ε=0.10 (>30%)"}
-S.append("## Table S8. Calibrated rejection and equivalence tests of the adsorption-only model (120 studies with paired controls; α = 0.05)\n\nPower and equivalence rates are for studies with true reduction share 5–30% (n = 50) or > 30% (n = 51). False equivalence: fraction declared equivalent among studies whose noise-free misfit exceeds the margin; empty when no such study existed.\n\n" + md(e[list(cols)].rename(columns=cols)))
+S.append("## Table S8. Calibrated rejection and equivalence tests of the adsorption-only model (120 studies with paired controls; α = 0.05)\n\nPower and equivalence rates are for studies with true reduction share 5–30% (n = 50) or > 30% (n = 51). False equivalence: fraction declared equivalent among studies whose noise-free misfit exceeds the margin; empty when no such study existed. Thresholds, type-I errors and power in this table use the 95th percentile of the 120 paired controls (6 corpora) with a split-half type-I estimate; that calibration did not transfer to new corpora for D1 and is superseded by the conformal, cross-corpus calibration of Table S14 and main-text Table 5. Equivalence and false-equivalence rates do not depend on the rejection threshold.\n\n" + md(e[list(cols)].rename(columns=cols)))
 o = pd.read_csv(R + "T_seqver_oc.csv")
 ow = o.pivot_table(index="true_over_limit", columns=["rule", "bias_model"], values="p_accept_within_4_rounds").reset_index()
 ow.columns = ["true / limit"] + [f"{a} ({b.replace('bias_', '')})" for a, b in ow.columns[1:]]
@@ -78,13 +78,16 @@ S.append("## Table S13. Out-of-study accuracy of the four endpoint models (RF, s
 import os
 if os.path.exists(R + "T_typeI_validation.csv"):
     TI = pd.read_csv(R + "T_typeI_validation.csv")
-    keep = ["sd_rel", "design", "n_calibration", "n_validation", "thr_empirical", "typeI_empirical", "typeI_empirical_lo", "typeI_empirical_hi",
-            "thr_conformal", "typeI_conformal", "typeI_conformal_lo", "typeI_conformal_hi", "power_conformal|>30%", "power_conformal_pooled|>30%"]
+    keep = ["sd_rel", "design", "typeI_nominal", "typeI_empirical", "typeI_empirical_lo", "typeI_empirical_hi",
+            "typeI_conformal", "typeI_conformal_lo", "typeI_conformal_hi", "typeI_loco", "typeI_loco_lo", "typeI_loco_hi",
+            "max_corpus_typeI", "thr_conformal_pooled", "power_conformal_pooled|>30%", "power_conformal_pooled|5-30%"]
     S.append("## Table S14. Type-I error of the adsorption-only rejection test on an independent cohort of negative controls\n\n"
-             "Thresholds estimated on the 120 calibration controls (stage equiv3); type-I error evaluated on 240 independent validation "
-             "controls (new corpora), with Wilson 95% intervals. 'empirical': 95th percentile; 'conformal': the ⌈0.95(n + 1)⌉-th smallest "
-             "calibration χ². Power for studies with reduction share > 0.3 at the conformal threshold (calibration controls) and at the "
-             "conformal threshold on all 360 controls (pooled). `scripts/typeI_validation.py`.\n\n" + md(TI[keep]))
+             "Columns typeI_nominal, typeI_empirical and typeI_conformal: thresholds from the χ²_ν 95% quantile, the empirical 95th percentile "
+             "and the conformal quantile ⌈0.95(n + 1)⌉ of the 120 paired controls (6 corpora), evaluated on 240 independent controls from 12 "
+             "new corpora (Wilson 95% intervals). typeI_loco: conformal threshold from 17 of 18 corpora applied to the held-out corpus "
+             "(360 controls; corpus-bootstrap 95% interval); max_corpus_typeI: largest held-out-corpus value (20 controls). "
+             "thr_conformal_pooled: final threshold from all 360 controls, with power for studies with reduction share > 0.3 and 5–30%. "
+             "`scripts/typeI_validation.py`.\n\n" + md(TI[keep]))
 S.append("## Fig. S1. Profile likelihoods of the reductant capacity\n\n![Fig. S1](figures/figS1_profiles.png)\n\n**Fig. S1.** Profile of Δ(−2 log L) against log₁₀ R₀ relative to its true value for two virtual studies (true reduction share 0.15 and 0.60) under designs D1, D3 and D4u (D4u: unbiased solid oxidation state). Dotted line: χ²₁ 95% threshold (3.84); symmetric-log axis. Non-smooth peaks indicate local optima at individual profile points; the true profile lies at or below the plotted curve, so the profiles are indicative only. The mechanistic model structure is assumed known.")
 open("CASSIA_supplementary.md", "w").write("\n\n".join(S) + "\n")
 print("supplement words", len(open("CASSIA_supplementary.md").read().split()))

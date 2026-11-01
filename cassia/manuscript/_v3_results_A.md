@@ -128,30 +128,32 @@ The prior SD was 0.04–0.28.
 - XPS false-alarms seven times as often as XANES because of the assumed beam/vacuum reduction and surface enrichment.
 - An XPS Cr(III) signal on its own is therefore weaker evidence of reduction than the same signal from XANES.
 
-**Adsorption-only fits: rejection, equivalence or neither (Table 5, Fig. 3c,d; Appendix B).** For 120 studies, each paired with a pure-adsorption control:
-- *The nominal χ² test over-rejects.* Its type-I error was 6.7–15%, because the empirical model only approximates the generating adsorption model.
-- *Calibration fixes this.* With thresholds calibrated on the controls, the cross-validated type-I error was 3.3–12.5%, mostly 3–7%. With 120 controls the Monte Carlo SE of these estimates is about 2 percentage points.
-- *Power with Class C data is low.* For high-reduction studies (share > 0.3), the calibrated test rejected adsorption-only in only 37% (D1) and 35% (D2) at 3% analytical noise, and 26% and 24% at 10% noise.
-- *Cr(III) measurements raise power.* Adding total Cr (D3) raised power to 80–88%. Adding solid-phase evidence (D4x, D4n, D5) raised it to 90–96%.
+**Adsorption-only fits: rejection, equivalence or neither (Table 5, Fig. 3c,d; Table S14; Appendix B).** For 120 studies, each paired with a pure-adsorption control, and 240 further controls from 12 new corpora:
+- *The nominal χ² test over-rejects.* On the 240 independent controls, its type-I error was 2.9–17.1%, depending on design and noise. The empirical model only approximates the generating adsorption model.
+- *Calibration on few corpora did not transfer.* The 95th-percentile threshold estimated from the 120 paired controls (6 corpora) gave, on the independent controls, a type-I error of 2.1–5.4% for D2–D5 but 15.4% (Wilson 95% interval 11–21%) and 13.8% (10–19%) for D1 at 3% and 10% noise. The D4n value of 12.5% reported by the earlier split-half estimate was not reproduced (2.5%, 1.2–5.3%). The null χ² distribution varies between corpora, and 6 corpora are too few to estimate its 95th percentile.
+- *Conformal calibration across corpora controls type-I error on average.* With the conformal threshold estimated across corpora, the leave-one-corpus-out type-I error was 4.7–5.6% for every design and noise level (corpus-bootstrap 95% intervals within 2.5–8.6%; Table 5). It is not controlled within every corpus: in single held-out corpora of 20 controls, it reached 15–25%. The guarantee is marginal over corpora, which is the relevant population for a new literature study only if that study is exchangeable with the simulated corpora.
+- *Power with Class C data is low.* At the final threshold (360 controls), the test rejected adsorption-only in 28% (D1) and 35% (D2) of high-reduction studies (share > 0.3) at 3% analytical noise, and in 22% at 10% noise.
+- *Cr(III) measurements raise power.* Adding total Cr (D3) raised power to 80–88%. Adding solid-phase evidence (D4x, D4n, D5) raised it to 92–98%. These powers are at a type-I error of about 5% on average across corpora.
 
 **Non-rejection under Class C reflects genuine structural equivalence.** Because the simulator gives noise-free data, the true misfit of the best adsorption-only approximation is known for every study.
 - *Ground truth.* For 77% of high-reduction studies, adsorption only reproduced the noise-free Class C observations (D1) within a 5% systematic discrepancy, and for 90% within 10%. With total Cr (D3), only 22% and 39% did; with solid-phase evidence (D4x–D5), only 12–16% and 24–29%.
-- *The test recovers this truth.* At 3% noise, the equivalence test declared 'equivalent within 5%' for 59% (D1) and 65% (D2) of high-reduction studies, but only 4–12% under D3–D5.
-- *Its false-equivalence rate stayed within α.* It was 0–4.3% across all designs, noise levels and margins, i.e. at most α = 0.05. Its power to declare equivalence when the true misfit was within the margin was 96–99% at 3% noise for all designs.
-- *More noise means more inconclusive outcomes.* At 10% analytical noise, equivalence could be demonstrated less often: under D1, 4% of high-reduction studies at ε = 5% and 43% at ε = 10%. The share of inconclusive outcomes rose to 31–71%.
+- *The test recovers this truth.* At 3% noise, 'equivalent within 5%' (and not rejected) was the outcome for 67% (D1) and 65% (D2) of high-reduction studies, but only 2–12% under D3–D5.
+- *Its false-equivalence rate stayed within α.* It was 0–4.3% across all designs, noise levels and margins, i.e. at most α = 0.05 (Table S8). This is a different error rate from the type-I error of the rejection test. Its power to declare equivalence when the true misfit was within the margin was 96–99% at 3% noise for all designs.
+- *More noise means more inconclusive outcomes.* At 10% analytical noise, equivalence could be demonstrated less often: under D1, for 4% of high-reduction studies at ε = 5% and 43% at ε = 10%. For the Class C designs, 71–75% of high-reduction outcomes were inconclusive at ε = 5% and 16–35% at ε = 10%.
 - *Conclusion.* In this benchmark, residual-Cr(VI) data from strongly reducing systems are typically *demonstrably* compatible with adsorption only within 5–10%, not merely 'not rejected'. Total-Cr and solid-phase data usually break that equivalence.
 
-**Table 5.** Adsorption-only model, high-reduction studies (true share > 0.3; n = 51): calibrated rejection, equivalence within ε = 10% and true within-margin status (synthetic).
+**Table 5.** Adsorption-only model, high-reduction studies (true share > 0.3; n = 51): rejection at the conformal threshold of 360 negative controls, equivalence within ε = 10% and true within-margin status, with the type-I error evaluated leave-one-corpus-out (synthetic).
 
-| Design | Rejected, 3% noise | Rejected, 10% | Equivalent (ε = 10%), 3% | Equivalent, 10% | Truly within ε = 10% (noise-free) | Calibrated type-I, 3% / 10% |
-|---|---|---|---|---|---|---|
-| D1 (C) | 0.37 | 0.26 | 0.63 | 0.43 | 0.90 / 0.84 | 0.067 / 0.058 |
-| D2 (C) | 0.35 | 0.24 | 0.65 | 0.63 | 0.92 / 0.86 | 0.100 / 0.083 |
-| D3 (B) | 0.88 | 0.80 | 0.12 | 0.20 | 0.39 / 0.39 | 0.050 / 0.033 |
-| D4x (A1, XPS) | 0.96 | 0.90 | 0.04 | 0.10 | 0.29 / 0.20 | 0.058 / 0.067 |
-| D4n (A1, XANES) | 0.94 | 0.92 | 0.06 | 0.08 | 0.28 / 0.16 | 0.125 / 0.033 |
-| D5 (A2) | 0.96 | 0.92 | 0.04 | 0.08 | 0.24 / 0.18 | 0.067 / 0.067 |
+| Design | Rejected, 3% noise | Rejected, 10% | Equivalent (ε = 10%), 3% | Equivalent, 10% | Truly within ε = 10% (noise-free), 3% / 10% | Type-I error (95% interval), 3% noise | Type-I error (95% interval), 10% noise |
+|---|---|---|---|---|---|---|---|
+| D1 (C) | 0.28 | 0.22 | 0.73 | 0.43 | 0.90 / 0.84 | 0.047 (0.025–0.069) | 0.053 (0.033–0.078) |
+| D2 (C) | 0.35 | 0.22 | 0.65 | 0.63 | 0.92 / 0.86 | 0.050 (0.025–0.083) | 0.047 (0.031–0.067) |
+| D3 (B) | 0.88 | 0.80 | 0.12 | 0.20 | 0.39 / 0.39 | 0.047 (0.028–0.072) | 0.050 (0.025–0.083) |
+| D4x (A1, XPS) | 0.96 | 0.92 | 0.04 | 0.08 | 0.29 / 0.20 | 0.047 (0.031–0.067) | 0.053 (0.028–0.081) |
+| D4n (A1, XANES) | 0.94 | 0.94 | 0.06 | 0.06 | 0.28 / 0.16 | 0.050 (0.033–0.067) | 0.056 (0.031–0.086) |
+| D5 (A2) | 0.98 | 0.92 | 0.02 | 0.08 | 0.24 / 0.18 | 0.050 (0.033–0.067) | 0.050 (0.028–0.075) |
 
+Type-I error: leave-one-corpus-out over 18 corpora (360 controls), corpus-bootstrap 95% interval; single corpora reached 0.15–0.25. Type-I errors of the nominal and previous thresholds are in Table S14.
 'Truly within' depends on the noise level because the margin is expressed in units of the analytical SD. For D5, the test uses D4n + solid Cr inventory; phase evidence is excluded from the test and contributes only to the precipitation-share estimate (§2.6).
 
 **These statements are conditional on the benchmark.** They hold under the assumed measurement models (§2.4), in particular the XPS and XANES bias distributions. They do not establish that total-Cr or solid-phase data make mechanisms distinguishable in every real carbonaceous system.
@@ -169,4 +171,4 @@ The prior SD was 0.04–0.28.
 
 ![Fig. 3](figures/fig3_identifiability.png)
 
-**Fig. 3.** Mechanism identifiability by measurement design (synthetic). (a) Laplace-posterior SD of the reduction share assuming the true model structure (median per bin; dotted: prior). (b) Detection rates of three model-free diagnostics; false-alarm rates in pure-adsorption controls are given in the legend. (c) Outcome of the adsorption-only test at 10% analytical noise and ε = 10% (rejected by the calibrated χ² test; equivalent within ε by the noncentral-χ² equivalence test; inconclusive), for studies with reduction share > 0.3 (solid) and 5–30% (hatched). (d) Power of the calibrated rejection test against the true reduction share, by design.
+**Fig. 3.** Mechanism identifiability by measurement design (synthetic). (a) Laplace-posterior SD of the reduction share assuming the true model structure (median per bin; dotted: prior). (b) Detection rates of three model-free diagnostics; false-alarm rates in pure-adsorption controls are given in the legend. (c) Outcome of the adsorption-only test at 10% analytical noise and ε = 10% (rejected by the χ² test at the conformal threshold of 360 negative controls; equivalent within ε by the noncentral-χ² equivalence test; inconclusive), for studies with reduction share > 0.3 (solid) and 5–30% (hatched). (d) Power of the rejection test at the same threshold against the true reduction share, by design (dotted: 0.05).

@@ -246,11 +246,11 @@ Four complementary analyses were applied.
 3. **Adsorption-only goodness of fit and equivalence (Appendix B).**
    - *Model and controls.* A flexible empirical adsorption-only model was fitted to each design's observations by weighted least squares: a pH-dependent Sips equilibrium, a free kinetic curve, study bias, pH relaxation and, for A1/A2, a bounded measurement-induced apparent Cr(III) fraction. Every study was paired with a negative control: the same material with reduction switched off. Both arms were run at 3% and 10% analytical noise.
    - *Three outcomes per study.*
-     - **rejected**, when χ² exceeds a threshold calibrated on the negative controls (their 95th percentile; type-I error estimated by split-half cross-validation);
+     - **rejected**, when χ² exceeds a threshold calibrated on negative controls. The threshold is conformal: the ⌈0.95(n + 1)⌉-th smallest χ² of n negative controls, which gives a type-I error ≤ 0.05 for a null study exchangeable with the controls (Vovk et al., 2005). It is estimated from 360 controls in 18 independent corpora: the 120 paired controls and 240 further controls in 12 new corpora (`scripts/typeI_validation.py`). Because the null χ² distribution varies between corpora (hyper-priors are redrawn per corpus), type-I error is evaluated leave-one-corpus-out, with 95% intervals from a corpus-cluster bootstrap;
      - **equivalent within ε**, when a noncentral-χ² equivalence test, the goodness-of-fit analogue of two one-sided tests (Schuirmann, 1987; Wellek, 2010), shows that the misfit non-centrality is below a margin λ₀(ε). The margin corresponds to a systematic discrepancy of ε = 5, 10 or 20% in every concentration (0.05 absolute for oxidation-state fractions);
      - **inconclusive**, otherwise.
    - *Terminology.* "Not rejected" is never interpreted as "equivalent".
-   - *Operating characteristics.* Type-I error, power and false-equivalence rate were evaluated against the noise-free misfit of each study.
+   - *Operating characteristics.* Type-I error (rejecting adsorption-only when it is true) and false-equivalence probability (declaring equivalence when the true misfit exceeds the margin) are different error rates and are reported separately. Power and false-equivalence rate were evaluated against the noise-free misfit of each study.
 4. **Metadata bias.** The first-order bias in the inferred reduction share was propagated for misreported pH (+0.5) and ionic strength (×10), via Δθ = Σ_post JᵀW(y_true − y_assumed). These analyses use designs D1 and D3.
 
 **Sample sizes.**

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.2 (2026-11-01) - fourth revision
+- Rejection test: conformal threshold estimated across corpora; 240 new negative controls in 12 independent
+  corpora; leave-one-corpus-out type-I error with corpus-bootstrap intervals (`scripts/typeI_validation.py`,
+  Table S14). The previous 6-corpus calibration gave 14-15% type-I error for D1 on independent controls.
+- Table S1 generated from the implementation (`scripts/make_table_s1.py`); measurement and evidence-class rows
+  built from the code constants; unit test for agreement.
+- M2s by material family with Wilson intervals (`scripts/m2s_family.py`, Table S5b).
+- Verification denominators and both acceptance rules in one table (`scripts/verification_table.py`, Table 8c);
+  the rule-comparison cohort documented as independent of the design cohort.
+- `scripts/reproduce_all.sh` runs every script in dependency order; manuscript Table 2 lists outputs.
+- Manuscript repositioned as a known-truth methodological benchmark.
+
 ## 0.3.1 (2026-11-01) - third revision
 - Monte Carlo precision analysis of the mechanism benchmark and true partition of Cr(VI)
   disappearance for all scenarios (`scripts/bench_partition.py`; Tables S11-S12).

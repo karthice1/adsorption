@@ -78,7 +78,33 @@ The tested pipeline performs all of these steps without code changes. We would b
 
 **Response: accepted. The calibration procedure was changed and validated on an independent cohort.**
 
-{TYPEI_BLOCK}
+We followed all five recommendations. The result changes the paper's statement, and it uncovered a real problem with the earlier calibration.
+
+1. **More independent negative controls.** We added 240 controls from 12 new, independent simulator corpora (`scripts/typeI_validation.py`). They were fitted with exactly the same procedure as the 120 paired controls. In total there are 360 controls in 18 corpora.
+2. **Evaluation on independent cohorts (Table S14).** We applied the previous threshold, the 95th percentile of the 120 paired controls from 6 corpora, to the 240 new controls:
+
+   | Design | Type-I error, 3% noise (Wilson 95% interval) | Type-I error, 10% noise (Wilson 95% interval) |
+   |---|---|---|
+   | D1 | **15.4%** (11.4–20.5%) | **13.8%** (10.0–18.7%) |
+   | D2–D5 | 2.5–4.2% | 2.1–5.4% |
+
+   - *D4n.* The 12.5% value that concerned the reviewer was not reproduced on independent controls (2.5%, 1.2–5.3%); it was a noisy split-half estimate from 60 controls.
+   - *D1.* The real failure is D1, which the earlier split-half estimate (6.7%) missed.
+   - *The cause.* The null χ² distribution differs between corpora, because family hyper-priors are redrawn per corpus. Controls from 6 corpora are therefore not exchangeable with a new corpus, and their 95th percentile is too low for D1, which has only 7 degrees of freedom.
+3. **Improved calibration.** The threshold is now conformal: the ⌈0.95(n + 1)⌉-th smallest control χ². This gives a finite-sample type-I error ≤ 0.05 for an exchangeable null study. It is estimated across corpora, with the corpus as the unit of exchangeability.
+   - Leave-one-corpus-out over all 18 corpora, the type-I error was **4.7–5.6% for every design and noise level**, with corpus-bootstrap 95% intervals within 2.5–8.6% (Table 5, Table S14).
+   - For D4n it was 5.0% (3.3–6.7%) at 3% noise and 5.6% (3.1–8.6%) at 10% noise.
+4. **Confidence intervals.** Every type-I estimate now has an interval: Wilson for the independent cohort, and corpus-bootstrap for the leave-one-corpus-out estimates. Power is reported at the final threshold from all 360 controls:
+   - D1/D2 (Class C): 22–35%;
+   - D3: 80–88%;
+   - D4x, D4n and D5: 92–98%.
+5. **Two error rates.** The manuscript now distinguishes the type-I error of the rejection test from the false-equivalence probability of the equivalence test (0–4.3%) in §2.6, §3.3 and Appendix B. The second does not depend on the rejection threshold.
+
+**Wording and limitations.** "Calibration fixes this" has been removed. §3.3 now reports the observed rates. A new limitation (§4.7, item 5) states that the 5% level holds on average over corpora, not within every corpus: single held-out corpora reached 15–25%. It also states that the level holds only if a real study is exchangeable with the simulated corpora, and that the threshold would need recalibration before use on literature data.
+
+**Abstract.** The Abstract now reports the type-I error for all measurement designs ("4.7–5.6% for every measurement design on average across corpora (95% intervals within 2.5–8.6%)") next to the power figures.
+
+**Figures.** Fig. 3c,d were redrawn at the new threshold.
 
 ## Major Comment 5 – D5 phase evidence and the equivalence-test observation vector
 
@@ -106,7 +132,7 @@ The tested pipeline performs all of these steps without code changes. We would b
 
 **Response: adopted.**
 - **Abstract.** The Abstract now uses the reviewer's wording: "An exact study-level split-conformal interval achieved its stated coverage guarantee, but the 90% interval for apparent Cr(VI) uptake spanned approximately 3.3 log₁₀ units; intervals for total-chromium endpoints were frequently unbounded with literature-scale calibration samples."
-- **Highlight.** The highlight now reads: "{HL_CONFORMAL}". The reviewer's suggested sentence exceeds Elsevier's 85-character limit, so we shortened it while keeping its meaning.
+- **Highlight.** The highlight now reads: "Exact study-level coverage holds; intervals are too wide for some engineering uses". The reviewer's suggested sentence exceeds Elsevier's 85-character limit, so we shortened it while keeping its meaning.
 
 ## Major Comment 8 – Software versions and reproducibility
 

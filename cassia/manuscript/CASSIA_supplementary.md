@@ -270,7 +270,7 @@ n_censored: observations with negative apparent uptake per corpus. 'log_LOD_full
 
 ## Table S8. Calibrated rejection and equivalence tests of the adsorption-only model (120 studies with paired controls; α = 0.05)
 
-Power and equivalence rates are for studies with true reduction share 5–30% (n = 50) or > 30% (n = 51). False equivalence: fraction declared equivalent among studies whose noise-free misfit exceeds the margin; empty when no such study existed.
+Power and equivalence rates are for studies with true reduction share 5–30% (n = 50) or > 30% (n = 51). False equivalence: fraction declared equivalent among studies whose noise-free misfit exceeds the margin; empty when no such study existed. Thresholds, type-I errors and power in this table use the 95th percentile of the 120 paired controls (6 corpora) with a split-half type-I estimate; that calibration did not transfer to new corpora for D1 and is superseded by the conformal, cross-corpus calibration of Table S14 and main-text Table 5. Equivalence and false-equivalence rates do not depend on the rejection threshold.
 
 | noise | design | ν | χ²₀.₉₅ nominal | calibrated | type-I nominal | type-I calibrated (CV) | power 5–30% | power >30% | equiv >30% ε=0.05 | equiv >30% ε=0.10 | inconcl. >30% ε=0.10 | false equiv ε=0.05 | false equiv ε=0.10 | equiv power ε=0.10 | truly within ε=0.10 (>30%) |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -397,6 +397,25 @@ MCSE = between-replicate SD/√R; R_needed = (1.96·SD/h)² replicates for a 95%
 | q_app_VI | random | 30.000 | 0.767 | 0.048 | 0.836 | 0.310 | 0.073 | 0.003 |
 | q_tot_aq | LOSO | 17.900 | 0.416 | 0.169 | 0.524 | 0.523 | 0.221 | -0.006 |
 | q_tot_aq | random | 17.900 | 0.753 | 0.065 | 0.827 | 0.338 | 0.109 | 0.001 |
+
+## Table S14. Type-I error of the adsorption-only rejection test on an independent cohort of negative controls
+
+Columns typeI_nominal, typeI_empirical and typeI_conformal: thresholds from the χ²_ν 95% quantile, the empirical 95th percentile and the conformal quantile ⌈0.95(n + 1)⌉ of the 120 paired controls (6 corpora), evaluated on 240 independent controls from 12 new corpora (Wilson 95% intervals). typeI_loco: conformal threshold from 17 of 18 corpora applied to the held-out corpus (360 controls; corpus-bootstrap 95% interval); max_corpus_typeI: largest held-out-corpus value (20 controls). thr_conformal_pooled: final threshold from all 360 controls, with power for studies with reduction share > 0.3 and 5–30%. `scripts/typeI_validation.py`.
+
+| sd_rel | design | typeI_nominal | typeI_empirical | typeI_empirical_lo | typeI_empirical_hi | typeI_conformal | typeI_conformal_lo | typeI_conformal_hi | typeI_loco | typeI_loco_lo | typeI_loco_hi | max_corpus_typeI | thr_conformal_pooled | power_conformal_pooled|>30% | power_conformal_pooled|5-30% |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 0.030 | D1 | 0.171 | 0.154 | 0.114 | 0.205 | 0.142 | 0.103 | 0.191 | 0.047 | 0.025 | 0.069 | 0.150 | 20.413 | 0.275 | 0.220 |
+| 0.030 | D2 | 0.138 | 0.037 | 0.020 | 0.070 | 0.037 | 0.020 | 0.070 | 0.050 | 0.025 | 0.083 | 0.250 | 32.515 | 0.353 | 0.200 |
+| 0.030 | D3 | 0.146 | 0.042 | 0.023 | 0.075 | 0.037 | 0.020 | 0.070 | 0.047 | 0.028 | 0.072 | 0.200 | 65.149 | 0.882 | 0.760 |
+| 0.030 | D4n | 0.079 | 0.025 | 0.012 | 0.053 | 0.021 | 0.009 | 0.048 | 0.050 | 0.033 | 0.067 | 0.150 | 78.374 | 0.941 | 0.820 |
+| 0.030 | D4x | 0.108 | 0.033 | 0.017 | 0.064 | 0.021 | 0.009 | 0.048 | 0.047 | 0.031 | 0.067 | 0.150 | 79.598 | 0.961 | 0.800 |
+| 0.030 | D5 | 0.075 | 0.029 | 0.014 | 0.059 | 0.025 | 0.012 | 0.053 | 0.050 | 0.033 | 0.067 | 0.150 | 79.458 | 0.980 | 0.820 |
+| 0.100 | D1 | 0.171 | 0.138 | 0.100 | 0.187 | 0.108 | 0.075 | 0.154 | 0.053 | 0.033 | 0.078 | 0.200 | 17.270 | 0.216 | 0.100 |
+| 0.100 | D2 | 0.096 | 0.054 | 0.032 | 0.090 | 0.046 | 0.026 | 0.080 | 0.047 | 0.031 | 0.067 | 0.150 | 24.583 | 0.216 | 0.160 |
+| 0.100 | D3 | 0.075 | 0.029 | 0.014 | 0.059 | 0.029 | 0.014 | 0.059 | 0.050 | 0.025 | 0.083 | 0.250 | 53.168 | 0.804 | 0.580 |
+| 0.100 | D4n | 0.029 | 0.025 | 0.012 | 0.053 | 0.017 | 0.006 | 0.042 | 0.056 | 0.031 | 0.086 | 0.200 | 66.990 | 0.941 | 0.780 |
+| 0.100 | D4x | 0.042 | 0.025 | 0.012 | 0.053 | 0.025 | 0.012 | 0.053 | 0.053 | 0.028 | 0.081 | 0.200 | 66.363 | 0.922 | 0.720 |
+| 0.100 | D5 | 0.029 | 0.021 | 0.009 | 0.048 | 0.021 | 0.009 | 0.048 | 0.050 | 0.028 | 0.075 | 0.200 | 70.377 | 0.922 | 0.760 |
 
 ## Fig. S1. Profile likelihoods of the reductant capacity
 

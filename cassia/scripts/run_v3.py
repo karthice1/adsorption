@@ -471,7 +471,11 @@ def figures():
     ax[0, 1].set(xlabel="True reduction share", ylabel="Detection rate", ylim=(0, 1.02), title="Model-free diagnostics")
     ax[0, 1].legend(fontsize=6.2)
     panel(ax[0, 1], "b")
-    s10 = S[S.sd_rel == 0.10].set_index("design").loc[list(idf.DESIGNS_V3)]
+    # rejection uses the conformal threshold on all 360 negative controls (scripts/typeI_validation.py), if available
+    TI_path = RES / "T_typeI_validation.csv"
+    SR = pd.read_csv(TI_path) if TI_path.exists() else S
+    thr_col = "thr_conformal_pooled" if TI_path.exists() else "calibrated_threshold"
+    s10 = SR[SR.sd_rel == 0.10].set_index("design").loc[list(idf.DESIGNS_V3)]
     x = np.arange(len(idf.DESIGNS_V3)); w = 0.38
     for j, grp in enumerate((">30%", "5-30%")):
         bottom = np.zeros(len(x))
@@ -486,7 +490,7 @@ def figures():
     ax[1, 0].legend(fontsize=6.5, loc="upper right")
     panel(ax[1, 0], "c")
     tru = Q[(Q.arm == "true") & (Q.sd_rel == 0.10)]
-    thr = S[S.sd_rel == 0.10].set_index("design").calibrated_threshold
+    thr = SR[SR.sd_rel == 0.10].set_index("design")[thr_col]
     b2 = np.array([0, 0.05, 0.1, 0.2, 0.3, 0.5, 1.0]); m2 = 0.5 * (b2[1:] + b2[:-1])
     for i, d in enumerate(idf.DESIGNS_V3):
         g = tru[tru.design == d]

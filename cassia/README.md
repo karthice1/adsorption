@@ -1,4 +1,4 @@
-# CASSIA 0.3
+# CASSIA 0.3.2
 
 **CASSIA** (*Chromium Adsorption, Speciation and Surface-reduction Identifiability Analysis*) is an
 open Python framework for **evidence-constrained** analysis of Cr(VI) removal by carbonaceous
@@ -62,6 +62,7 @@ python scripts/bench_partition.py          # Tables S11-S12 (benchmark partition
 PYTHONPATH=. python scripts/endpoint_validation.py  # Table S13 (endpoint models, ~15 min)
 PYTHONPATH=. python scripts/seqver_oc.py   # Table S9 (verification operating characteristic)
 python scripts/make_supp_figs.py          # Supplementary Fig. S1
+bash scripts/reproduce_all.sh             # everything above, in dependency order (~9-11 h)
 ```
 
 Stages `chem, bench, ident, ml, uq, design, missing, figures` can be run separately. Outputs go to
