@@ -3,7 +3,7 @@
 Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 300 test studies for Cr(VI) endpoints and 182 for total-Cr endpoints, which are measured only in Class A/B studies.
 
 **Average coverage is the wrong criterion.**
-- The pooled-residual interval M0 (the v0.1 method) reached its nominal *average* coverage for every endpoint (0.89–0.90 at 90%).
+- The pooled-residual interval M0 (the conventional approach) reached its nominal *average* coverage for every endpoint (0.89–0.90 at 90%).
 - Only 65–75% of individual test studies were covered at 90%, and the worst study had 11–29% of its observations covered.
 - The observations of one study share an offset, so pooled calibration averages over-coverage of 'easy' studies with severe under-coverage of others.
 
@@ -84,12 +84,12 @@ Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 **Verification is a sequential decision, so its false-acceptance risk was evaluated explicitly (Table 7b, Fig. 7b,c).**
 - *Simulation.* For every material and target, 1,000 verification sequences were simulated, with up to four dose rounds and both endpoints measured each round. Each sequence drew a calibration bias and correlated replicate errors.
 - *Per material.* The probability of accepting a non-compliant design was:
-  - v0.2 rule (duplicates, mean ≤ 90% of each limit): mean 0.01% across materials, worst material 1.4–1.7%;
+  - simple rule (duplicates, mean ≤ 90% of each limit): mean 0.01% across materials, worst material 1.4–1.7%;
   - error-controlled rule (triplicates, one-sided upper confidence bound ≤ limit, Bonferroni over two endpoints and four rounds): worst material 0.1–0.7%.
 - *Overall.* No material exceeded 5% under either rule, with shared or independent calibration bias. The controlled rule needed about 50% more batches per material (4.7 against 3.1 for S1; 4.0 against 2.6 for S2).
 - *Operating characteristic.* Because these averages depend on how close true concentrations sit to the limits, Table 7b gives the acceptance probability over four rounds for a design whose true concentrations stay at a fixed ratio to both limits:
 
-| True concentration / limit | v0.2 rule | Error-controlled rule |
+| True concentration / limit | Simple rule | Error-controlled rule |
 |---|---|---|
 | 1.00 (at the limit) | 3.7% | 0.8% |
 | 1.05 | 0.2% | 0.04% |
@@ -102,17 +102,28 @@ Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 
 | Target | Rule | Bias model | Mean P(false acceptance) | Worst material | Materials > 5% | Mean batches |
 |---|---|---|---|---|---|---|
-| S1 | v0.2 (n = 2, mean ≤ 0.9·limit) | shared | 0.0001 | 0.014 | 0 | 3.1 |
+| S1 | simple (n = 2, mean ≤ 0.9·limit) | shared | 0.0001 | 0.014 | 0 | 3.1 |
 | S1 | controlled (n = 3, UCB ≤ limit) | shared | 0.0000 | 0.001 | 0 | 4.7 |
-| S2 | v0.2 | shared | 0.0001 | 0.015 | 0 | 2.6 |
+| S2 | simple | shared | 0.0001 | 0.015 | 0 | 2.6 |
 | S2 | controlled | shared | 0.0000 | 0.007 | 0 | 4.0 |
-| S1 | v0.2 | independent | 0.0001 | 0.015 | 0 | 3.1 |
+| S1 | simple | independent | 0.0001 | 0.015 | 0 | 3.1 |
 | S1 | controlled | independent | 0.0000 | 0.002 | 0 | 4.7 |
 
 **Sensitivity of accepted designs (S1).**
 - They tolerated a dose increase of 20% (100% compliance) and a pH increase of 0.25 (95%).
 - They were sensitive to lower pH: compliance fell to 81% at −0.25 and 62% at −0.5 pH units, because dissolved Cr(III) release rises as pH falls.
 - A 20% dose reduction gave 83% compliance.
+
+**Out-of-study accuracy of the endpoint models (Table S13).** The design layer uses four RF models: Cr(VI) and total Cr, as uptake and as effluent concentration. The total-Cr models are trained only on rows with a total-Cr measurement, from about 18 Class A/B studies per corpus. Under leave-one-study-out (10 corpora), the R² on the log scale was:
+
+| Endpoint | LOSO R² (log₁₀) | Random-split R² (log₁₀) | LOSO RMSE (log₁₀) |
+|---|---|---|---|
+| C_e,VI | 0.74 ± 0.06 | 0.94 | 0.49 |
+| C_e,tot | 0.65 ± 0.09 | 0.91 | 0.37 |
+| q_app,VI | 0.39 ± 0.16 | 0.77 | 0.51 |
+| q_tot,aq | 0.42 ± 0.17 | 0.75 | 0.52 |
+
+R² on the log scale weights low concentrations, which matter for compliance, more than the linear-scale R² of Table 5 (linear-scale LOSO R² here: 0.87, 0.85, 0.56 and 0.52). The total-Cr models are less accurate than the Cr(VI) models, as expected from fewer training studies, and both lose about 0.2–0.4 in R² between random and study-level validation. Their study-level intervals are reported in Table 6.
 
 **Effluent predictions.** Predicted and true effluent concentrations on a design sub-grid were rank-correlated (Spearman 0.65 for Cr(VI), 0.55 for total Cr), with median absolute errors of 0.40 and 0.22 log₁₀ units. The 95% upper bounds held for 97.9% (Cr(VI)) and 100% (total Cr) of grid points.
 
@@ -145,6 +156,9 @@ Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 **Design level.** Twenty-four new materials were each re-designed 300 times with the test-confirmed protocol, under different assumed ionic strengths.
 - An unknown ionic strength changed the accepted dose for 3 of the 10 materials with accepted designs (e.g. 4–8 g L⁻¹).
 - It never produced a non-compliant accepted design, because the confirmatory batches are run at the true conditions.
+- The 95th percentile of true residual total Cr at the accepted designs was 0.08–1.38 mg L⁻¹ across materials, below the 2 mg L⁻¹ limit.
+
+**Capacity level.** A conventional isotherm fit uses neither ionic strength nor the pH basis, so unreported solution chemistry does not change the fitted q_max itself. It changes what q_max means: the inferred reduction share and the speciation-based affinity (mechanistic level below).
 
 **Mechanistic level.** Unreported pH matters more than unreported ionic strength (§3.3): a 0.5-unit pH error biased the inferred reduction share by up to 0.16 (90th percentile).
 
@@ -156,7 +170,7 @@ Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 
 ### 3.8 Empirical application: status
 
-**Not done.** No published experimental observation was analysed in this revision. The seed dataset (Ramirez et al., 2020; Data in Brief 29, 105292) and the systematic search were blocked: the hosts required to retrieve articles and supplementary files (PubMed Central, ScienceDirect, Crossref, Europe PMC, Zenodo, Mendeley Data, Figshare) were not reachable from the computational environment. No values were transcribed from memory or estimated.
+**Not done.** No published experimental observation was analysed. The seed dataset (Ramirez et al., 2020; Data in Brief 29, 105292) is openly available through PubMed Central (PMC7044665) with its raw isotherm and kinetic files as supplementary material. It reports Cr(VI) removal by a ZnCl₂-activated teakwood-sawdust carbon; its interpretation is in a companion article (J. Environ. Chem. Eng. 8, 103702; doi:10.1016/j.jece.2020.103702). It measures residual Cr(VI) only and is therefore a Class C benchmark: it can test whether CASSIA processes genuine observations, not whether it recovers the true Cr(VI)/Cr(III) distribution. Neither this dataset nor the articles of the systematic search could be retrieved, because the hosts that serve them (PubMed Central, NCBI, ScienceDirect, doi.org, Crossref, Europe PMC, Mendeley Data, Zenodo, Figshare and the institutional repository) were not reachable from the computational environment. No values were transcribed from memory, estimated or digitised from figures.
 
 **Ready.** The empirical pipeline is complete and tested:
 - schema validation and QC flags;
@@ -170,6 +184,8 @@ Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 It runs end to end on files in the CASSIA schema (`examples/user_data_workflow.py`).
 
 **Next steps, in order:**
-1. Extract the Ramirez et al. data as a Class C benchmark of the workflow.
-2. Carry out the registered search and extraction, identifying the subset of studies with total-Cr and XPS/XANES evidence.
-3. Apply the identifiability and validation analyses of §3.3–3.6 to the real corpus, keeping the evidence classes separate.
+1. Extract the Ramirez et al. data (isotherm and kinetic series with pH, C₀, dose, volume, temperature and contact time) and run the full workflow as a Class C benchmark.
+2. Extract at least 20 further Cr(VI)–carbon studies by the registered protocol (`data/PROTOCOL.md`), reconstructing pH (initial and final), C₀, dose, solution volume, temperature, contact time, background electrolyte and ionic strength.
+3. Classify every observation (C, B, A1, A2), identifying the studies that report total Cr and those with XPS or XANES evidence.
+4. Apply the equivalence and identifiability tests (§3.3), the LOSO/LOFO validation (§3.4) and the study-level intervals (§3.5) to the real corpus, keeping evidence classes separate.
+5. Report empirical findings in a section separate from the synthetic benchmark.

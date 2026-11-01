@@ -25,7 +25,7 @@ Fig. 4 and Table 5 summarise 20 independent scenario-E corpora (30 studies, six 
 - XGBoost: −0.013 ± 0.060 (positive in 8 of 20 corpora);
 - Gaussian process: +0.08 ± 0.49 (3 corpora).
 
-The hypothesis that chemistry-informed features improve predictive reliability (RQ1 of v0.1) is not supported. The speciation fractions are smooth functions of pH, C₀, I and T, which are already inputs, so tree models gain nothing from them (§4.3).
+The hypothesis that chemistry-informed features improve predictive reliability is not supported. The speciation fractions are smooth functions of pH, C₀, I and T, which are already inputs, so tree models gain nothing from them (§4.3).
 
 **Most error on a new study is between-study.**
 - Forty-five per cent (ICC 0.45 ± 0.14) of the variance of out-of-study residuals was a study-level offset.
@@ -39,9 +39,9 @@ The hypothesis that chemistry-informed features improve predictive reliability (
 
 **Retransformation.** Duan smearing reduced the mean back-transformation bias from −1.86 to −1.30 mg g⁻¹, but did not remove it, because the residuals are heteroscedastic.
 
-**More studies help, more rows do not (Fig. 5b).** The learning curve was repeated with 8 replicate corpora per size (v0.2 used 4, and its curve was not monotonic: 0.47, 0.59, 0.56, 0.75):
+**More studies help, more rows do not (Fig. 5b).** The learning curve was computed with 8 replicate corpora per size. An earlier run with 4 replicates (Fig. 4b) was not monotonic (0.47, 0.59, 0.56, 0.75):
 - LOSO R² rose from 0.31 ± 0.09 (mean ± SE) with 12 studies to 0.58 ± 0.05 (24), 0.66 ± 0.02 (48) and 0.66 ± 0.02 (96). The rank correlation between corpus size and LOSO R² was ρ = 0.58 (p < 0.001, 32 corpora).
-- With 8 replicates the curve is monotonic in its means but levels off beyond about 48 studies. The 48- and 96-study means differ by less than their SE. The v0.2 dip at 48 studies and its higher value at 96 were therefore replicate noise.
+- With 8 replicates the curve is monotonic in its means but levels off beyond about 48 studies. The 48- and 96-study means differ by less than their SE. The dip at 48 studies in the 4-replicate run and its higher value at 96 were therefore replicate noise.
 - The between-replicate SD fell from 0.26 (12 studies) to 0.06 (96). Small corpora are unreliable as well as less accurate.
 - Random-split R² stayed between 0.85 and 0.90 throughout.
 - The effective sample size for transferability is the number of independent studies. On this evidence, a literature corpus of 20–30 studies yields LOSO R² of about 0.5–0.6, and the plateau near 0.66 reflects irreducible between-study heterogeneity in the simulator, not a general property of real data.
@@ -59,7 +59,7 @@ The hypothesis that chemistry-informed features improve predictive reliability (
 
 ![Fig. 4](figures/fig4_ml_validation.png)
 
-**Fig. 4.** Transferability of ML models (synthetic; 20 corpora of 30 studies). (a) R² for apparent Cr(VI) uptake under five validation schemes (bars: mean; whiskers: 2.5–97.5% range across corpora). (b) Learning curve from v0.2: R² against the number of independent studies (RF with speciation features; mean ± SD of 4 replicates); superseded by the 8-replicate curve in Fig. 5b. (c) Per-study RMSE under leave-one-study-out by family (ACc/ACp: chemically/physically activated carbon; BCw/BCm: wood/manure biochar; HC: hydrochar; PC: biomass-derived porous carbon).
+**Fig. 4.** Transferability of ML models (synthetic; 20 corpora of 30 studies). (a) R² for apparent Cr(VI) uptake under five validation schemes (bars: mean; whiskers: 2.5–97.5% range across corpora). (b) Learning curve with 4 replicates: R² against the number of independent studies (RF with speciation features; mean ± SD of 4 replicates); superseded by the 8-replicate curve in Fig. 5b. (c) Per-study RMSE under leave-one-study-out by family (ACc/ACp: chemically/physically activated carbon; BCw/BCm: wood/manure biochar; HC: hydrochar; PC: biomass-derived porous carbon).
 
 ![Fig. 5](figures/fig8_mechanism_transfer.png)
 

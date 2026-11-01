@@ -272,8 +272,79 @@ Probability of accepting a design within four rounds when both true concentratio
 | Na2SO4 | 0.100 | 5.000 | 0.918 | 0.052 | 0.023 | 0.000 |
 | Na2SO4 | 0.100 | 6.500 | 0.328 | 0.590 | 0.003 | 0.000 |
 
-## Fig. S1. Profile likelihoods of the reductant capacity (v0.2 designs)
+## Table S11. True partition of Cr(VI) disappearance by mechanism scenario (isotherm series, mass-weighted; 3,000 virtual studies per scenario)
+
+`scripts/bench_partition.py`. 'reduced (total)' = dissolved Cr(III) + Cr(III) on solid + precipitate.
+
+| scenario | component | median | p05 | p95 | mean |
+|---|---|---|---|---|---|
+| A | adsorbed Cr(VI) | 1.000 | 1.000 | 1.000 | 1.000 |
+| A | reduced (total) | 0.000 | 0.000 | 0.000 | 0.000 |
+| A | dissolved Cr(III) | 0.000 | 0.000 | 0.000 | 0.000 |
+| A | Cr(III) on solid | 0.000 | 0.000 | 0.000 | 0.000 |
+| A | precipitated Cr(III) | 0.000 | 0.000 | 0.000 | 0.000 |
+| B | adsorbed Cr(VI) | 0.755 | 0.077 | 0.981 | 0.649 |
+| B | reduced (total) | 0.245 | 0.019 | 0.923 | 0.351 |
+| B | dissolved Cr(III) | 0.220 | 0.007 | 0.913 | 0.331 |
+| B | Cr(III) on solid | 0.010 | 0.001 | 0.073 | 0.020 |
+| B | precipitated Cr(III) | 0.000 | 0.000 | 0.000 | 0.000 |
+| C | adsorbed Cr(VI) | 0.781 | 0.249 | 0.969 | 0.716 |
+| C | reduced (total) | 0.219 | 0.031 | 0.751 | 0.284 |
+| C | dissolved Cr(III) | 0.132 | 0.008 | 0.617 | 0.199 |
+| C | Cr(III) on solid | 0.051 | 0.005 | 0.299 | 0.085 |
+| C | precipitated Cr(III) | 0.000 | 0.000 | 0.000 | 0.000 |
+| D | adsorbed Cr(VI) | 0.961 | 0.456 | 0.998 | 0.883 |
+| D | reduced (total) | 0.039 | 0.002 | 0.544 | 0.117 |
+| D | dissolved Cr(III) | 0.028 | 0.001 | 0.530 | 0.109 |
+| D | Cr(III) on solid | 0.003 | 0.000 | 0.035 | 0.008 |
+| D | precipitated Cr(III) | 0.000 | 0.000 | 0.000 | 0.000 |
+| E | adsorbed Cr(VI) | 0.623 | 0.065 | 0.949 | 0.571 |
+| E | reduced (total) | 0.377 | 0.051 | 0.935 | 0.429 |
+| E | dissolved Cr(III) | 0.242 | 0.006 | 0.903 | 0.338 |
+| E | Cr(III) on solid | 0.045 | 0.003 | 0.247 | 0.075 |
+| E | precipitated Cr(III) | 0.000 | 0.000 | 0.065 | 0.017 |
+
+## Table S12. Monte Carlo precision of the mechanism benchmark (R = 100 replicate corpora per scenario)
+
+MCSE = between-replicate SD/√R; R_needed = (1.96·SD/h)² replicates for a 95% half-width h (target_95_halfwidth).
+
+| scenario | quantity | estimate | between_rep_SD | R | MCSE | target_95_halfwidth | R_needed |
+|---|---|---|---|---|---|---|---|
+| A | P(R2>=0.95) | 0.467 | 0.077 | 100 | 0.008 | 0.010 | 228 |
+| B | P(R2>=0.95) | 0.588 | 0.088 | 100 | 0.009 | 0.010 | 298 |
+| B | P(R2>=0.95 | share_red>0.2) | 0.454 | 0.147 | 100 | 0.015 | 0.020 | 209 |
+| B | mean reduction share | 0.351 | 0.056 | 100 | 0.006 | 0.010 | 120 |
+| B | Spearman(share_red, qmax ratio) | 0.603 | 0.194 | 100 | 0.019 | 0.050 | 58 |
+| C | P(R2>=0.95) | 0.496 | 0.081 | 100 | 0.008 | 0.010 | 252 |
+| C | P(R2>=0.95 | share_red>0.2) | 0.408 | 0.137 | 100 | 0.014 | 0.020 | 182 |
+| C | mean reduction share | 0.284 | 0.056 | 100 | 0.006 | 0.010 | 120 |
+| C | Spearman(share_red, qmax ratio) | 0.320 | 0.195 | 100 | 0.019 | 0.050 | 59 |
+| D | P(R2>=0.95) | 0.467 | 0.083 | 100 | 0.008 | 0.010 | 268 |
+| D | P(R2>=0.95 | share_red>0.2) | 0.161 | 0.183 | 100 | 0.018 | 0.020 | 323 |
+| D | mean reduction share | 0.117 | 0.047 | 100 | 0.005 | 0.010 | 85 |
+| D | Spearman(share_red, qmax ratio) | 0.129 | 0.203 | 100 | 0.020 | 0.050 | 64 |
+| E | P(R2>=0.95) | 0.593 | 0.096 | 100 | 0.010 | 0.010 | 357 |
+| E | P(R2>=0.95 | share_red>0.2) | 0.518 | 0.125 | 100 | 0.013 | 0.020 | 151 |
+| E | mean reduction share | 0.429 | 0.057 | 100 | 0.006 | 0.010 | 127 |
+| E | Spearman(share_red, qmax ratio) | 0.632 | 0.174 | 100 | 0.017 | 0.050 | 47 |
+
+## Table S13. Out-of-study accuracy of the four endpoint models (RF, speciation features; 10 corpora; mean over corpora)
+
+`scripts/endpoint_validation.py`. Total-Cr models are trained only on rows with a total-Cr measurement (Class A/B studies; n_studies per corpus). R² and errors on the log₁₀ scale of the modelled transform, and R² on the linear scale.
+
+| target | scheme | n_studies | R2_log10 | R2_log10_sd | R2_linear | RMSE_log10 | MedAE_log10 | bias_log10 |
+|---|---|---|---|---|---|---|---|---|
+| Ce_VI | LOSO | 30.000 | 0.736 | 0.063 | 0.872 | 0.494 | 0.175 | -0.002 |
+| Ce_VI | random | 30.000 | 0.938 | 0.012 | 0.942 | 0.241 | 0.067 | 0.000 |
+| Ce_total | LOSO | 17.900 | 0.645 | 0.093 | 0.847 | 0.366 | 0.142 | -0.011 |
+| Ce_total | random | 17.900 | 0.911 | 0.014 | 0.925 | 0.185 | 0.058 | 0.001 |
+| q_app_VI | LOSO | 30.000 | 0.386 | 0.161 | 0.558 | 0.505 | 0.166 | -0.009 |
+| q_app_VI | random | 30.000 | 0.767 | 0.048 | 0.836 | 0.310 | 0.073 | 0.003 |
+| q_tot_aq | LOSO | 17.900 | 0.416 | 0.169 | 0.524 | 0.523 | 0.221 | -0.006 |
+| q_tot_aq | random | 17.900 | 0.753 | 0.065 | 0.827 | 0.338 | 0.109 | 0.001 |
+
+## Fig. S1. Profile likelihoods of the reductant capacity
 
 ![Fig. S1](figures/figS1_profiles.png)
 
-**Fig. S1.** Profile of Δ(−2 log L) against log₁₀ R₀ relative to its true value for two virtual studies (true reduction share 0.15 and 0.60) under designs D1, D3 and D4 of v0.2 (D4: unbiased solid oxidation state). Dotted line: χ²₁ 95% threshold (3.84); symmetric-log axis. Non-smooth peaks indicate local optima at individual profile points; the true profile lies at or below the plotted curve, so the profiles are indicative only. The mechanistic model structure is assumed known.
+**Fig. S1.** Profile of Δ(−2 log L) against log₁₀ R₀ relative to its true value for two virtual studies (true reduction share 0.15 and 0.60) under designs D1, D3 and D4u (D4u: unbiased solid oxidation state). Dotted line: χ²₁ 95% threshold (3.84); symmetric-log axis. Non-smooth peaks indicate local optima at individual profile points; the true profile lies at or below the plotted curve, so the profiles are indicative only. The mechanistic model structure is assumed known.

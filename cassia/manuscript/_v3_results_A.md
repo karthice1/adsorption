@@ -14,7 +14,7 @@ Sections 3.1 and 3.7 report thermodynamic calculations. Sections 3.2–3.6 repor
 **Concentration matters more than the database.**
 - At pH 3 the dichromate share of Cr rises from 0.17% at 1 mg L⁻¹ to 1.7% (10), 7.4% (50), 13.1% (100), 28.2% (300) and 43.7% (700 mg L⁻¹) in minteq.v4.
 - The three databases agree to within 0.02 at every concentration.
-- A single isotherm spanning 5–300 mg L⁻¹ therefore samples materially different sorbate mixtures. This is why the revised simulator evaluates speciation at the current dissolved Cr(VI) (reviewer comment 3A).
+- A single isotherm spanning 5–300 mg L⁻¹ therefore samples materially different sorbate mixtures. This is why the revised simulator evaluates speciation at the current dissolved Cr(VI).
 - The four-dimensional speciation grid reproduced 300 direct PHREEQC solutions with a maximum absolute error of 0.011 and a mean error of 0.0011 in species fraction.
 
 **Table 2.** Equilibrium constants (25 °C) for CrO₄²⁻ + n H⁺ ⇌ product.
@@ -29,7 +29,7 @@ Sections 3.1 and 3.7 report thermodynamic calculations. Sections 3.2–3.6 repor
 - The Eh at which Cr(VI) and Cr(III) are equally abundant (50 mg L⁻¹ total Cr) is 63–83 mV higher in minteq.v4 than in llnl over pH 2.5–10. The two MINTEQ versions agree to within −19 to +5 mV.
 - At pH 2, neither MINTEQ database reaches 50% Cr(VI) anywhere inside the water-stability field. At the O₂/H₂O limit, only 12% Cr(VI) remains in minteq.v4.
 - Under the conditions where Cr(VI) removal by carbons is usually optimal, Cr(VI) is thermodynamically unstable with respect to reduction at almost any attainable Eh. Its persistence is kinetic.
-- The 63–83 mV spread is a *between-database* difference, not an independently validated uncertainty interval for real systems (reviewer comment 3C).
+- The 63–83 mV spread is a *between-database* difference, not an independently validated uncertainty interval for real systems.
 
 **Direct saturation indices replace phase-boundary convergence (Fig. 1d, Table S4).**
 - Of 174 bisection evaluations (two databases × three ionic strengths × 29 pH values), 146 were bracketed and 28 returned 'undersaturated up to 5,000 mg L⁻¹'. None failed.
@@ -63,7 +63,7 @@ Sections 3.1 and 3.7 report thermodynamic calculations. Sections 3.2–3.6 repor
 - scenario D: 0.04 (0.002–0.54);
 - scenario E: 0.38 (0.05–0.93).
 
-In scenario E the removed chromium was distributed as follows (medians): 0.62 adsorbed Cr(VI), 0.24 dissolved Cr(III), 0.045 Cr(III) on the solid and essentially no precipitate (95th percentile 0.065), consistent with the Cr(OH)₃ undersaturation at the isotherm pH of 1.8–3.5 (Section 3.1). The distributions are shown in Fig. 2a,d.
+In scenario E the removed chromium was distributed as follows (medians): 0.62 adsorbed Cr(VI), 0.24 dissolved Cr(III), 0.045 Cr(III) on the solid and essentially no precipitate (95th percentile 0.065), consistent with the Cr(OH)₃ undersaturation at the isotherm pH of 1.8–3.5 (Section 3.1). The distributions are shown in Fig. 2a,d, and the full partition (adsorbed Cr(VI), dissolved Cr(III), Cr(III) on the solid, precipitate) for every scenario is given in Table S11. Precipitation was absent in scenarios A–D by construction and small in E (mean 0.017). All headline rates have MCSE ≤ 0.02 at 100 replicates (Table S12).
 
 **Goodness of fit does not discriminate mechanisms (Fig. 2b).**
 - *Negative control.* In the pure-adsorption control (A), only 46.7% of best-isotherm fits reached R² ≥ 0.95 (MCSE 0.8%). For low-capacity families (manure biochar, hydrochar; median true q_max 1–4 mg g⁻¹), only 16% did, because their adsorption signal is close to analytical noise.
@@ -99,7 +99,7 @@ In scenario E the removed chromium was distributed as follows (medians): 0.62 ad
 - Even with family-level reductant priors redrawn in every replicate, hydrochar had the highest mean reduction share in 83 of 100 scenario-E replicates.
 - With hydrochar excluded, the most reductive family varied (manure biochar 56, wood biochar 39, physically activated carbon 5).
 - Within scenario E the drawn family reductant prior correlated with the reduction share (ρ = 0.40), as intended. The dominance of low-surface-area chars, however, comes from the assumed proportionality between S_BET and adsorption capacity: a small adsorption sink inflates the reduction *share*.
-- This is a property of the simulator and must not be read as an empirical statement about hydrochars (reviewer comment 2).
+- This is a property of the simulator and must not be read as an empirical statement about hydrochars.
 
 ![Fig. 2](figures/fig2_benchmark.png)
 
@@ -156,13 +156,13 @@ The prior SD was 0.04–0.28.
 
 **These statements are conditional on the benchmark.** They hold under the assumed measurement models (§2.4), in particular the XPS and XANES bias distributions. They do not establish that total-Cr or solid-phase data make mechanisms distinguishable in every real carbonaceous system.
 
-**Profile likelihood (Supplementary Fig. S1; v0.2 designs).** All profile points met the optimiser convergence criterion, but some profiles are not smooth (e.g. a peak at +0.6 log units for study VS002), indicating local optima at those points; the true profile lies at or below the plotted curve, so these profiles are indicative only; the minimum −2 log L was consistent with the number of observations (3.4 for n = 14 under D1; 21–79 for n = 44–61 under D3/D4).
+**Profile likelihood (Supplementary Fig. S1; designs D1, D3, D4u).** All profile points met the optimiser convergence criterion, but some profiles are not smooth (e.g. a peak at +0.6 log units for study VS002), indicating local optima at those points; the true profile lies at or below the plotted curve, so these profiles are indicative only; the minimum −2 log L was consistent with the number of observations (3.4 for n = 14 under D1; 21–79 for n = 44–61 under D3/D4).
 
 - *Low-reduction study (true share 0.15).* The reductant capacity R₀ was practically non-identifiable. The 95% profile region extended from at least 16-fold below to 1.6-fold above the true value under every design. The implied reduction share nevertheless stayed within 0.13–0.14 (D1) and 0.17–0.18 (D3, D4). A share can be well determined while the parameter that generates it is not, *provided the model structure is correct*.
 - *High-reduction study (true share 0.60).* R₀ was sharply identified, within one grid step of 0.2 log units, under all designs. The share at the minimum was 0.601 in each case.
 - *Caveat.* The profiles use the known model structure and include the true parameters among the optimiser starts. They therefore show identifiability under the correct model, not the ease of estimation. The equivalence test removes that assumption, and under it Class C data lose most of their discriminating power.
 
-**Misreported metadata (v0.2 designs D1, D3).**
+**Misreported metadata (designs D1, D3).**
 - Analysing the data at a pH 0.5 units above the true value biased the inferred reduction share by a median of 0.032 (90th percentile 0.157) under D1, and by 0.024 (0.092) under D3.
 - A ten-fold error in ionic strength caused much smaller biases: medians of 0.003 and 0.001, 90th percentiles of 0.025 and 0.015.
 - The pH basis (initial vs final) is therefore the reporting omission that matters most for mechanism inference.

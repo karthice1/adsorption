@@ -112,7 +112,7 @@ That is 7,700 PHREEQC solutions, interpolated multilinearly. The simulator evalu
 
 **Redox scenarios.** Total Cr was entered without a valence state at an assumed pe, restricted to the water-stability field (pe ≤ 20.75 − pH). The Eh at which Cr(VI) and Cr(III) are equally abundant was obtained by interpolation.
 
-**Cr(III) solubility.** The v0.1 analysis relied on convergence of the PHREEQC phase-boundary option, which the reviewer rightly criticised. The saturation index of the Cr(III) hydroxide (Cr(OH)₃(am) in minteq.v4; Cr(OH)₃(A) in minteq) is now evaluated directly for solutions of prescribed dissolved Cr(III). Saturation is located by bisection on log₁₀ C between 10⁻⁶ and 5,000 mg L⁻¹. Every evaluation returns a status:
+**Cr(III) solubility.** Non-convergence of the PHREEQC phase-boundary option does not show that no solubility constraint exists, so it is not used. Instead, the saturation index of the Cr(III) hydroxide (Cr(OH)₃(am) in minteq.v4; Cr(OH)₃(A) in minteq) is evaluated directly for solutions of prescribed dissolved Cr(III). Saturation is located by bisection on log₁₀ C between 10⁻⁶ and 5,000 mg L⁻¹. Every evaluation returns a status:
 - `bracketed` (with the SI at the solution);
 - `undersaturated_to_cmax`: SI < 0 even at 5,000 mg L⁻¹, a direct thermodynamic statement;
 - `supersaturated_at_cmin`;
@@ -168,11 +168,11 @@ Both are verified by unit tests for every scenario.
 | E | all pathways + Cr(III) re-adsorption + precipitation + pH drift |
 
 **Material and study populations.**
-- *Families and family-level parameters.* There are six families: chemically and physically activated carbons, wood and manure biochars, hydrochars, and biomass-derived porous carbons. Each has physically plausible ranges of S_BET and pH_pzc. The family-level means of reductant capacity, leachable reductant and specific capacity are redrawn for every corpus from a common hyper-prior, so which family is most reductive is itself random across replicates. This removes the circularity identified by the reviewer, where the most reductive family was fixed by construction.
+- *Families and family-level parameters.* There are six families: chemically and physically activated carbons, wood and manure biochars, hydrochars, and biomass-derived porous carbons. Each has physically plausible ranges of S_BET and pH_pzc. The family-level means of reductant capacity, leachable reductant and specific capacity are redrawn for every corpus from a common hyper-prior, so which family is most reductive is itself random across replicates. No family is therefore most reductive by construction, and family rankings of reduction share in the outputs are not imposed by fixed inputs.
 - *Experiments per study.* Each virtual study contains an 8-point isotherm (C₀ = 5–300 mg L⁻¹ at an optimum pH of 1.8–3.5), a 6-point pH edge (pH 2–8), an 8-point kinetic series and a 6-point dose series (0.5–8 g L⁻¹ at C₀ = 20 mg L⁻¹).
 - *Measurement model.* Cr(VI) and total Cr carry 3% relative error, detection limits and a study-level calibration bias.
 - *Solid-phase measurements* follow technique-specific models (`cassia.measurement`; Table S1):
-  - **XPS** is surface-sensitive. The reported Cr(III) fraction is e·f/(e·f + 1 − f) + b·(1 − ·), where f is the true fraction, e a per-study surface-enrichment factor (log-normal, SD 0.4) and b ~ U(0, 0.15) beam- or vacuum-induced reduction of Cr(VI) during analysis; the fitting noise is 0.05.
+  - **XPS** is surface-sensitive. The reported Cr(III) fraction is f_s + b(1 − f_s), with surface fraction f_s = e·f/(e·f + 1 − f), where f is the true fraction, e a per-study surface-enrichment factor (log-normal, SD 0.4) and b ~ U(0, 0.15) beam- or vacuum-induced reduction of Cr(VI) during analysis; the fitting noise is 0.05.
   - **XANES** is bulk-sensitive: no enrichment, b ~ U(0, 0.03), noise 0.03.
   - **Solid Cr inventory** is measured with 5% relative error.
   - **Phase evidence** gives the precipitated share of solid Cr(III) with an absolute error of 0.10.
@@ -200,6 +200,8 @@ In 20 replicates per scenario, 200-replicate residual-bootstrap intervals were c
 
 Across-replicate variability gives Monte Carlo standard errors (MCSE).
 
+**Number of replicates.** The 100 replicate corpora per scenario were checked by a Monte Carlo precision analysis (`scripts/bench_partition.py`, Table S12). For each headline rate, the between-replicate SD s gives MCSE = s/√R and the number of replicates R = (1.96 s/h)² needed for a 95% half-width h. With R = 100, the MCSE was ≤ 0.010 for unconditional fit rates, ≤ 0.018 for rates conditional on reduction share > 0.2, ≤ 0.006 for mean reduction shares and ≤ 0.020 for Spearman correlations. The contrasts on which conclusions rest are 0.1–0.4. A half-width of 0.01 on the unconditional fit rates would need 228–357 replicates; this precision is not needed for any conclusion and was not pursued.
+
 ### 2.6 Mechanism-identifiability engine
 
 Six cumulative measurement designs were defined:
@@ -213,7 +215,7 @@ Six cumulative measurement designs were defined:
 | D4n | D3 + XANES Cr(III) fraction on three solids + final pH | A1 (XANES) |
 | D5 | D4n + solid Cr inventory + phase evidence on the same solids | A2 |
 
-(The v0.2 design D4, with unbiased solid oxidation state, is retained only for the profile likelihoods in Supplementary Fig. S1.)
+(A further design, D4u, with an unbiased solid oxidation state, is used only for the profile likelihoods in Supplementary Fig. S1.)
 
 Four complementary analyses were applied.
 
@@ -233,7 +235,7 @@ Four complementary analyses were applied.
      - **inconclusive**, otherwise.
    - *Terminology.* "Not rejected" is never interpreted as "equivalent".
    - *Operating characteristics.* Type-I error, power and false-equivalence rate were evaluated against the noise-free misfit of each study.
-4. **Metadata bias.** The first-order bias in the inferred reduction share was propagated for misreported pH (+0.5) and ionic strength (×10), via Δθ = Σ_post JᵀW(y_true − y_assumed). These v0.2 analyses use designs D1 and D3.
+4. **Metadata bias.** The first-order bias in the inferred reduction share was propagated for misreported pH (+0.5) and ionic strength (×10), via Δθ = Σ_post JᵀW(y_true − y_assumed). These analyses use designs D1 and D3.
 
 **Sample sizes.**
 - Analyses 1 and 2: 300 studies (200 from scenario E and 100 from scenarios B–D).
@@ -267,16 +269,26 @@ Four complementary analyses were applied.
 
 ### 2.8 Study-level conformal prediction
 
-Three interval constructions were compared. All are calibrated on out-of-study residuals, with the study as the unit.
+Four interval constructions were compared. All are calibrated on out-of-study residuals, with the study as the unit of resampling. They differ in the unit of the conformity score and in their guarantee:
 
-- **M0 – pooled residuals (v0.1 method).** The half-width is the ⌈(n+1)(1−α)⌉/n quantile of pooled absolute residuals from an inner grouped 10-fold CV. Residuals within a study are dependent, so M0 has no formal guarantee for a new study.
+| Method | Conformity score | Procedure class | Coverage statement |
+|---|---|---|---|
+| M0 | one score per observation, pooled | inner grouped K-fold residuals (cross-validation residual method; neither split nor cross-conformal in the formal sense) | none for a new study |
+| M1 | one score per observation, weighted 1/n_j per study | study-level CV+ (Barber et al., 2021) with group weights | none claimed; targets coverage of a random observation of a new study |
+| M2 | one score per study (within-study 0.9-quantile) | study-level CV+ | none claimed (Appendix A, Remark 5) |
+| M2s | one score per study (within-study 0.9-quantile) | split conformal over studies | exact: P(≥ ⌈0.9 n⌉ of a new study's n observations covered) ≥ 1 − α (Appendix A) |
+
+Only M2s carries a proven study-level guarantee. The coverage of M0–M2 for unseen studies is established empirically, by outer leave-one-study-out evaluation, and reported per study.
+
+
+- **M0 – pooled residuals (the conventional approach).** The half-width is the ⌈(n+1)(1−α)⌉/n quantile of pooled absolute residuals from an inner grouped 10-fold CV. Residuals within a study are dependent, so M0 has no formal guarantee for a new study.
 - **M1 – study-level CV+ with study-weighted scores.**
   - *Construction:* the CV+ interval of Barber et al. (2021), formed with study-level folds (K = 10). Each calibration study contributes total weight 1 (weight 1/n_j per observation), as in the weighted pooling of Dunn et al. (2023), and the test study carries one further unit of weight.
   - *Target:* marginal coverage of a random observation from a new study.
 - **M2 – study-level CV+ with study scores (empirical).**
   - *Score:* s_j is the ⌈0.9 n_j⌉-th smallest absolute residual of study j.
   - *Interval:* bounded by the ⌊α(J+1)⌋-th and ⌈(1−α)(J+1)⌉-th order statistics of the fold-model predictions ∓ s_j.
-  - *Status:* the v0.2 claim of a 1 − 2α guarantee is withdrawn. The CV+ bound is proven for scalar scores of exchangeable points, and its extension to within-study quantile scores is not established (Appendix A).
+  - *Status:* no coverage guarantee is claimed. The CV+ bound is proven for scalar scores of exchangeable points, and its extension to within-study quantile scores is not established (Appendix A).
 - **M2s – study-level split conformal (exact).**
   - *Construction:* the training studies are split at random into halves, one for model fitting and J for calibration. Each calibration study is scored by s_j as above, and the half-width is the ⌈(1−α)(J+1)⌉-th smallest score.
   - *Guarantee (Appendix A):* under exchangeability of studies, with probability ≥ 1 − α at least ⌈0.9 n⌉ of a new study's n observations are covered. The guarantee is marginal over the study population (families, study sizes), not conditional on a family.
@@ -291,7 +303,7 @@ Three interval constructions were compared. All are calibrated on out-of-study r
 
 ### 2.9 Treatment-design layer
 
-**Models.** Residual Cr(VI) and residual total Cr are modelled directly (Section 2.7), each with its own M1 interval. Modelling effluent through q, as in v0.1, is ill-conditioned when removal approaches completeness.
+**Models.** Residual Cr(VI) and residual total Cr are modelled directly (Section 2.7), each with its own M1 interval. Modelling effluent indirectly through q is ill-conditioned when removal approaches completeness.
 
 **Design problem.**
 - *Grid:* pH 2–7 in 0.5 steps and dose 0.5–8 g L⁻¹ (the training range), 24 h contact.
@@ -304,7 +316,7 @@ Three interval constructions were compared. All are calibrated on out-of-study r
 - *Joint 90%:* Bonferroni, each endpoint at α = 0.05, so that the joint miscoverage is ≤ 0.10 by the union bound.
 - *Joint 90% / 80% + 4 confirmatory batches:* four batches on the new material (pH 3, doses 0.5–4 g L⁻¹, 3% analytical noise) estimate its study offset for each endpoint. The centre is shifted by that offset. The half-width is the study-weighted (1 − α) quantile of offset-adjusted out-of-study residuals of the training studies, with α = 0.05 or 0.10 per endpoint (heuristic; it assumes the confirmatory batches are exchangeable with the study's other observations).
 - *Point + verify (model-guided, test-confirmed):* the point model proposes the pH and the lowest dose. Confirmatory batches are run at that design, and, if they fail, the dose is escalated along the grid for at most four rounds. Two acceptance rules were compared:
-  - **(i) v0.2 rule:** duplicates; accept when both mean measured concentrations are ≤ 90% of their limits.
+  - **(i) Simple rule:** duplicates; accept when both mean measured concentrations are ≤ 90% of their limits.
   - **(ii) error-controlled rule:** triplicates; accept when the one-sided upper confidence bound of each endpoint is ≤ its limit. The bound is mean × exp[z·√(σ_r²/n + σ_b²)], with σ_r = 0.03 random and σ_b = 0.05 calibration uncertainty. z is the 1 − α/(2R) normal quantile, with α = 0.05 and R = 4 rounds (Bonferroni over two endpoints and four looks).
 
   The probability of accepting a non-compliant design was estimated with 1,000 simulated verification sequences per material and target. Two analytical-error models were used: calibration bias shared by both endpoints with correlated replicate errors (ρ = 0.5), and independent biases and errors.
@@ -345,7 +357,7 @@ The seed dataset is Ramirez et al. (2020), Data in Brief 29, 105292: activated c
 
 The CASSIA code, the analysis scripts and the manuscript drafts were developed with an AI coding assistant (Claude, Anthropic), working under the author's direction in a version-controlled repository.
 
-**Safeguards.** The scientific design and the reviewer-driven changes were specified by the author. The correctness checks built into the work are:
+**Safeguards.** The scientific design and all methodological choices were specified by the author. The correctness checks built into the work are:
 - unit tests for conservation laws and numerical constructions;
 - negative controls (scenario A);
 - cross-checks of interpolated against direct PHREEQC calculations;
@@ -369,7 +381,7 @@ Sections 3.1 and 3.7 report thermodynamic calculations. Sections 3.2–3.6 repor
 **Concentration matters more than the database.**
 - At pH 3 the dichromate share of Cr rises from 0.17% at 1 mg L⁻¹ to 1.7% (10), 7.4% (50), 13.1% (100), 28.2% (300) and 43.7% (700 mg L⁻¹) in minteq.v4.
 - The three databases agree to within 0.02 at every concentration.
-- A single isotherm spanning 5–300 mg L⁻¹ therefore samples materially different sorbate mixtures. This is why the revised simulator evaluates speciation at the current dissolved Cr(VI) (reviewer comment 3A).
+- A single isotherm spanning 5–300 mg L⁻¹ therefore samples materially different sorbate mixtures. This is why the revised simulator evaluates speciation at the current dissolved Cr(VI).
 - The four-dimensional speciation grid reproduced 300 direct PHREEQC solutions with a maximum absolute error of 0.011 and a mean error of 0.0011 in species fraction.
 
 **Table 2.** Equilibrium constants (25 °C) for CrO₄²⁻ + n H⁺ ⇌ product.
@@ -384,7 +396,7 @@ Sections 3.1 and 3.7 report thermodynamic calculations. Sections 3.2–3.6 repor
 - The Eh at which Cr(VI) and Cr(III) are equally abundant (50 mg L⁻¹ total Cr) is 63–83 mV higher in minteq.v4 than in llnl over pH 2.5–10. The two MINTEQ versions agree to within −19 to +5 mV.
 - At pH 2, neither MINTEQ database reaches 50% Cr(VI) anywhere inside the water-stability field. At the O₂/H₂O limit, only 12% Cr(VI) remains in minteq.v4.
 - Under the conditions where Cr(VI) removal by carbons is usually optimal, Cr(VI) is thermodynamically unstable with respect to reduction at almost any attainable Eh. Its persistence is kinetic.
-- The 63–83 mV spread is a *between-database* difference, not an independently validated uncertainty interval for real systems (reviewer comment 3C).
+- The 63–83 mV spread is a *between-database* difference, not an independently validated uncertainty interval for real systems.
 
 **Direct saturation indices replace phase-boundary convergence (Fig. 1d, Table S4).**
 - Of 174 bisection evaluations (two databases × three ionic strengths × 29 pH values), 146 were bracketed and 28 returned 'undersaturated up to 5,000 mg L⁻¹'. None failed.
@@ -418,7 +430,7 @@ Sections 3.1 and 3.7 report thermodynamic calculations. Sections 3.2–3.6 repor
 - scenario D: 0.04 (0.002–0.54);
 - scenario E: 0.38 (0.05–0.93).
 
-In scenario E the removed chromium was distributed as follows (medians): 0.62 adsorbed Cr(VI), 0.24 dissolved Cr(III), 0.045 Cr(III) on the solid and essentially no precipitate (95th percentile 0.065), consistent with the Cr(OH)₃ undersaturation at the isotherm pH of 1.8–3.5 (Section 3.1). The distributions are shown in Fig. 2a,d.
+In scenario E the removed chromium was distributed as follows (medians): 0.62 adsorbed Cr(VI), 0.24 dissolved Cr(III), 0.045 Cr(III) on the solid and essentially no precipitate (95th percentile 0.065), consistent with the Cr(OH)₃ undersaturation at the isotherm pH of 1.8–3.5 (Section 3.1). The distributions are shown in Fig. 2a,d, and the full partition (adsorbed Cr(VI), dissolved Cr(III), Cr(III) on the solid, precipitate) for every scenario is given in Table S11. Precipitation was absent in scenarios A–D by construction and small in E (mean 0.017). All headline rates have MCSE ≤ 0.02 at 100 replicates (Table S12).
 
 **Goodness of fit does not discriminate mechanisms (Fig. 2b).**
 - *Negative control.* In the pure-adsorption control (A), only 46.7% of best-isotherm fits reached R² ≥ 0.95 (MCSE 0.8%). For low-capacity families (manure biochar, hydrochar; median true q_max 1–4 mg g⁻¹), only 16% did, because their adsorption signal is close to analytical noise.
@@ -454,7 +466,7 @@ In scenario E the removed chromium was distributed as follows (medians): 0.62 ad
 - Even with family-level reductant priors redrawn in every replicate, hydrochar had the highest mean reduction share in 83 of 100 scenario-E replicates.
 - With hydrochar excluded, the most reductive family varied (manure biochar 56, wood biochar 39, physically activated carbon 5).
 - Within scenario E the drawn family reductant prior correlated with the reduction share (ρ = 0.40), as intended. The dominance of low-surface-area chars, however, comes from the assumed proportionality between S_BET and adsorption capacity: a small adsorption sink inflates the reduction *share*.
-- This is a property of the simulator and must not be read as an empirical statement about hydrochars (reviewer comment 2).
+- This is a property of the simulator and must not be read as an empirical statement about hydrochars.
 
 ![Fig. 2](figures/fig2_benchmark.png)
 
@@ -511,13 +523,13 @@ The prior SD was 0.04–0.28.
 
 **These statements are conditional on the benchmark.** They hold under the assumed measurement models (§2.4), in particular the XPS and XANES bias distributions. They do not establish that total-Cr or solid-phase data make mechanisms distinguishable in every real carbonaceous system.
 
-**Profile likelihood (Supplementary Fig. S1; v0.2 designs).** All profile points met the optimiser convergence criterion, but some profiles are not smooth (e.g. a peak at +0.6 log units for study VS002), indicating local optima at those points; the true profile lies at or below the plotted curve, so these profiles are indicative only; the minimum −2 log L was consistent with the number of observations (3.4 for n = 14 under D1; 21–79 for n = 44–61 under D3/D4).
+**Profile likelihood (Supplementary Fig. S1; designs D1, D3, D4u).** All profile points met the optimiser convergence criterion, but some profiles are not smooth (e.g. a peak at +0.6 log units for study VS002), indicating local optima at those points; the true profile lies at or below the plotted curve, so these profiles are indicative only; the minimum −2 log L was consistent with the number of observations (3.4 for n = 14 under D1; 21–79 for n = 44–61 under D3/D4).
 
 - *Low-reduction study (true share 0.15).* The reductant capacity R₀ was practically non-identifiable. The 95% profile region extended from at least 16-fold below to 1.6-fold above the true value under every design. The implied reduction share nevertheless stayed within 0.13–0.14 (D1) and 0.17–0.18 (D3, D4). A share can be well determined while the parameter that generates it is not, *provided the model structure is correct*.
 - *High-reduction study (true share 0.60).* R₀ was sharply identified, within one grid step of 0.2 log units, under all designs. The share at the minimum was 0.601 in each case.
 - *Caveat.* The profiles use the known model structure and include the true parameters among the optimiser starts. They therefore show identifiability under the correct model, not the ease of estimation. The equivalence test removes that assumption, and under it Class C data lose most of their discriminating power.
 
-**Misreported metadata (v0.2 designs D1, D3).**
+**Misreported metadata (designs D1, D3).**
 - Analysing the data at a pH 0.5 units above the true value biased the inferred reduction share by a median of 0.032 (90th percentile 0.157) under D1, and by 0.024 (0.092) under D3.
 - A ten-fold error in ionic strength caused much smaller biases: medians of 0.003 and 0.001, 90th percentiles of 0.025 and 0.015.
 - The pH basis (initial vs final) is therefore the reporting omission that matters most for mechanism inference.
@@ -553,7 +565,7 @@ Fig. 4 and Table 5 summarise 20 independent scenario-E corpora (30 studies, six 
 - XGBoost: −0.013 ± 0.060 (positive in 8 of 20 corpora);
 - Gaussian process: +0.08 ± 0.49 (3 corpora).
 
-The hypothesis that chemistry-informed features improve predictive reliability (RQ1 of v0.1) is not supported. The speciation fractions are smooth functions of pH, C₀, I and T, which are already inputs, so tree models gain nothing from them (§4.3).
+The hypothesis that chemistry-informed features improve predictive reliability is not supported. The speciation fractions are smooth functions of pH, C₀, I and T, which are already inputs, so tree models gain nothing from them (§4.3).
 
 **Most error on a new study is between-study.**
 - Forty-five per cent (ICC 0.45 ± 0.14) of the variance of out-of-study residuals was a study-level offset.
@@ -567,9 +579,9 @@ The hypothesis that chemistry-informed features improve predictive reliability (
 
 **Retransformation.** Duan smearing reduced the mean back-transformation bias from −1.86 to −1.30 mg g⁻¹, but did not remove it, because the residuals are heteroscedastic.
 
-**More studies help, more rows do not (Fig. 5b).** The learning curve was repeated with 8 replicate corpora per size (v0.2 used 4, and its curve was not monotonic: 0.47, 0.59, 0.56, 0.75):
+**More studies help, more rows do not (Fig. 5b).** The learning curve was computed with 8 replicate corpora per size. An earlier run with 4 replicates (Fig. 4b) was not monotonic (0.47, 0.59, 0.56, 0.75):
 - LOSO R² rose from 0.31 ± 0.09 (mean ± SE) with 12 studies to 0.58 ± 0.05 (24), 0.66 ± 0.02 (48) and 0.66 ± 0.02 (96). The rank correlation between corpus size and LOSO R² was ρ = 0.58 (p < 0.001, 32 corpora).
-- With 8 replicates the curve is monotonic in its means but levels off beyond about 48 studies. The 48- and 96-study means differ by less than their SE. The v0.2 dip at 48 studies and its higher value at 96 were therefore replicate noise.
+- With 8 replicates the curve is monotonic in its means but levels off beyond about 48 studies. The 48- and 96-study means differ by less than their SE. The dip at 48 studies in the 4-replicate run and its higher value at 96 were therefore replicate noise.
 - The between-replicate SD fell from 0.26 (12 studies) to 0.06 (96). Small corpora are unreliable as well as less accurate.
 - Random-split R² stayed between 0.85 and 0.90 throughout.
 - The effective sample size for transferability is the number of independent studies. On this evidence, a literature corpus of 20–30 studies yields LOSO R² of about 0.5–0.6, and the plateau near 0.66 reflects irreducible between-study heterogeneity in the simulator, not a general property of real data.
@@ -587,7 +599,7 @@ The hypothesis that chemistry-informed features improve predictive reliability (
 
 ![Fig. 4](figures/fig4_ml_validation.png)
 
-**Fig. 4.** Transferability of ML models (synthetic; 20 corpora of 30 studies). (a) R² for apparent Cr(VI) uptake under five validation schemes (bars: mean; whiskers: 2.5–97.5% range across corpora). (b) Learning curve from v0.2: R² against the number of independent studies (RF with speciation features; mean ± SD of 4 replicates); superseded by the 8-replicate curve in Fig. 5b. (c) Per-study RMSE under leave-one-study-out by family (ACc/ACp: chemically/physically activated carbon; BCw/BCm: wood/manure biochar; HC: hydrochar; PC: biomass-derived porous carbon).
+**Fig. 4.** Transferability of ML models (synthetic; 20 corpora of 30 studies). (a) R² for apparent Cr(VI) uptake under five validation schemes (bars: mean; whiskers: 2.5–97.5% range across corpora). (b) Learning curve with 4 replicates: R² against the number of independent studies (RF with speciation features; mean ± SD of 4 replicates); superseded by the 8-replicate curve in Fig. 5b. (c) Per-study RMSE under leave-one-study-out by family (ACc/ACp: chemically/physically activated carbon; BCw/BCm: wood/manure biochar; HC: hydrochar; PC: biomass-derived porous carbon).
 
 ![Fig. 5](figures/fig8_mechanism_transfer.png)
 
@@ -598,7 +610,7 @@ The hypothesis that chemistry-informed features improve predictive reliability (
 Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 300 test studies for Cr(VI) endpoints and 182 for total-Cr endpoints, which are measured only in Class A/B studies.
 
 **Average coverage is the wrong criterion.**
-- The pooled-residual interval M0 (the v0.1 method) reached its nominal *average* coverage for every endpoint (0.89–0.90 at 90%).
+- The pooled-residual interval M0 (the conventional approach) reached its nominal *average* coverage for every endpoint (0.89–0.90 at 90%).
 - Only 65–75% of individual test studies were covered at 90%, and the worst study had 11–29% of its observations covered.
 - The observations of one study share an offset, so pooled calibration averages over-coverage of 'easy' studies with severe under-coverage of others.
 
@@ -679,12 +691,12 @@ Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 **Verification is a sequential decision, so its false-acceptance risk was evaluated explicitly (Table 7b, Fig. 7b,c).**
 - *Simulation.* For every material and target, 1,000 verification sequences were simulated, with up to four dose rounds and both endpoints measured each round. Each sequence drew a calibration bias and correlated replicate errors.
 - *Per material.* The probability of accepting a non-compliant design was:
-  - v0.2 rule (duplicates, mean ≤ 90% of each limit): mean 0.01% across materials, worst material 1.4–1.7%;
+  - simple rule (duplicates, mean ≤ 90% of each limit): mean 0.01% across materials, worst material 1.4–1.7%;
   - error-controlled rule (triplicates, one-sided upper confidence bound ≤ limit, Bonferroni over two endpoints and four rounds): worst material 0.1–0.7%.
 - *Overall.* No material exceeded 5% under either rule, with shared or independent calibration bias. The controlled rule needed about 50% more batches per material (4.7 against 3.1 for S1; 4.0 against 2.6 for S2).
 - *Operating characteristic.* Because these averages depend on how close true concentrations sit to the limits, Table 7b gives the acceptance probability over four rounds for a design whose true concentrations stay at a fixed ratio to both limits:
 
-| True concentration / limit | v0.2 rule | Error-controlled rule |
+| True concentration / limit | Simple rule | Error-controlled rule |
 |---|---|---|
 | 1.00 (at the limit) | 3.7% | 0.8% |
 | 1.05 | 0.2% | 0.04% |
@@ -697,17 +709,28 @@ Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 
 | Target | Rule | Bias model | Mean P(false acceptance) | Worst material | Materials > 5% | Mean batches |
 |---|---|---|---|---|---|---|
-| S1 | v0.2 (n = 2, mean ≤ 0.9·limit) | shared | 0.0001 | 0.014 | 0 | 3.1 |
+| S1 | simple (n = 2, mean ≤ 0.9·limit) | shared | 0.0001 | 0.014 | 0 | 3.1 |
 | S1 | controlled (n = 3, UCB ≤ limit) | shared | 0.0000 | 0.001 | 0 | 4.7 |
-| S2 | v0.2 | shared | 0.0001 | 0.015 | 0 | 2.6 |
+| S2 | simple | shared | 0.0001 | 0.015 | 0 | 2.6 |
 | S2 | controlled | shared | 0.0000 | 0.007 | 0 | 4.0 |
-| S1 | v0.2 | independent | 0.0001 | 0.015 | 0 | 3.1 |
+| S1 | simple | independent | 0.0001 | 0.015 | 0 | 3.1 |
 | S1 | controlled | independent | 0.0000 | 0.002 | 0 | 4.7 |
 
 **Sensitivity of accepted designs (S1).**
 - They tolerated a dose increase of 20% (100% compliance) and a pH increase of 0.25 (95%).
 - They were sensitive to lower pH: compliance fell to 81% at −0.25 and 62% at −0.5 pH units, because dissolved Cr(III) release rises as pH falls.
 - A 20% dose reduction gave 83% compliance.
+
+**Out-of-study accuracy of the endpoint models (Table S13).** The design layer uses four RF models: Cr(VI) and total Cr, as uptake and as effluent concentration. The total-Cr models are trained only on rows with a total-Cr measurement, from about 18 Class A/B studies per corpus. Under leave-one-study-out (10 corpora), the R² on the log scale was:
+
+| Endpoint | LOSO R² (log₁₀) | Random-split R² (log₁₀) | LOSO RMSE (log₁₀) |
+|---|---|---|---|
+| C_e,VI | 0.74 ± 0.06 | 0.94 | 0.49 |
+| C_e,tot | 0.65 ± 0.09 | 0.91 | 0.37 |
+| q_app,VI | 0.39 ± 0.16 | 0.77 | 0.51 |
+| q_tot,aq | 0.42 ± 0.17 | 0.75 | 0.52 |
+
+R² on the log scale weights low concentrations, which matter for compliance, more than the linear-scale R² of Table 5 (linear-scale LOSO R² here: 0.87, 0.85, 0.56 and 0.52). The total-Cr models are less accurate than the Cr(VI) models, as expected from fewer training studies, and both lose about 0.2–0.4 in R² between random and study-level validation. Their study-level intervals are reported in Table 6.
 
 **Effluent predictions.** Predicted and true effluent concentrations on a design sub-grid were rank-correlated (Spearman 0.65 for Cr(VI), 0.55 for total Cr), with median absolute errors of 0.40 and 0.22 log₁₀ units. The 95% upper bounds held for 97.9% (Cr(VI)) and 100% (total Cr) of grid points.
 
@@ -740,6 +763,9 @@ Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 **Design level.** Twenty-four new materials were each re-designed 300 times with the test-confirmed protocol, under different assumed ionic strengths.
 - An unknown ionic strength changed the accepted dose for 3 of the 10 materials with accepted designs (e.g. 4–8 g L⁻¹).
 - It never produced a non-compliant accepted design, because the confirmatory batches are run at the true conditions.
+- The 95th percentile of true residual total Cr at the accepted designs was 0.08–1.38 mg L⁻¹ across materials, below the 2 mg L⁻¹ limit.
+
+**Capacity level.** A conventional isotherm fit uses neither ionic strength nor the pH basis, so unreported solution chemistry does not change the fitted q_max itself. It changes what q_max means: the inferred reduction share and the speciation-based affinity (mechanistic level below).
 
 **Mechanistic level.** Unreported pH matters more than unreported ionic strength (§3.3): a 0.5-unit pH error biased the inferred reduction share by up to 0.16 (90th percentile).
 
@@ -751,7 +777,7 @@ Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 
 ### 3.8 Empirical application: status
 
-**Not done.** No published experimental observation was analysed in this revision. The seed dataset (Ramirez et al., 2020; Data in Brief 29, 105292) and the systematic search were blocked: the hosts required to retrieve articles and supplementary files (PubMed Central, ScienceDirect, Crossref, Europe PMC, Zenodo, Mendeley Data, Figshare) were not reachable from the computational environment. No values were transcribed from memory or estimated.
+**Not done.** No published experimental observation was analysed. The seed dataset (Ramirez et al., 2020; Data in Brief 29, 105292) is openly available through PubMed Central (PMC7044665) with its raw isotherm and kinetic files as supplementary material. It reports Cr(VI) removal by a ZnCl₂-activated teakwood-sawdust carbon; its interpretation is in a companion article (J. Environ. Chem. Eng. 8, 103702; doi:10.1016/j.jece.2020.103702). It measures residual Cr(VI) only and is therefore a Class C benchmark: it can test whether CASSIA processes genuine observations, not whether it recovers the true Cr(VI)/Cr(III) distribution. Neither this dataset nor the articles of the systematic search could be retrieved, because the hosts that serve them (PubMed Central, NCBI, ScienceDirect, doi.org, Crossref, Europe PMC, Mendeley Data, Zenodo, Figshare and the institutional repository) were not reachable from the computational environment. No values were transcribed from memory, estimated or digitised from figures.
 
 **Ready.** The empirical pipeline is complete and tested:
 - schema validation and QC flags;
@@ -765,9 +791,11 @@ Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 It runs end to end on files in the CASSIA schema (`examples/user_data_workflow.py`).
 
 **Next steps, in order:**
-1. Extract the Ramirez et al. data as a Class C benchmark of the workflow.
-2. Carry out the registered search and extraction, identifying the subset of studies with total-Cr and XPS/XANES evidence.
-3. Apply the identifiability and validation analyses of §3.3–3.6 to the real corpus, keeping the evidence classes separate.
+1. Extract the Ramirez et al. data (isotherm and kinetic series with pH, C₀, dose, volume, temperature and contact time) and run the full workflow as a Class C benchmark.
+2. Extract at least 20 further Cr(VI)–carbon studies by the registered protocol (`data/PROTOCOL.md`), reconstructing pH (initial and final), C₀, dose, solution volume, temperature, contact time, background electrolyte and ionic strength.
+3. Classify every observation (C, B, A1, A2), identifying the studies that report total Cr and those with XPS or XANES evidence.
+4. Apply the equivalence and identifiability tests (§3.3), the LOSO/LOFO validation (§3.4) and the study-level intervals (§3.5) to the real corpus, keeping evidence classes separate.
+5. Report empirical findings in a section separate from the synthetic benchmark.
 
 ## 4. Discussion
 
@@ -854,7 +882,7 @@ Existing adsorption databases and ML studies of Cr(VI) removal typically pool re
 
 ### 4.7 Limitations
 
-1. **No empirical validation.** All findings in §3.2–3.7 come from simulations. The extraction of the seed dataset (Ramirez et al., 2020) and of 20–30 further studies was not carried out, because the publisher and repository hosts were not reachable from the computational environment (§3.8). This is the main limitation of the paper, and the reviewer's requirement of an empirical application remains unmet in this revision.
+1. **No empirical validation.** All findings in §3.2–3.7 come from simulations. The extraction of the seed dataset (Ramirez et al., 2020) and of 20–30 further studies was not carried out, because the publisher and repository hosts were not reachable from the computational environment (§3.8). This is the main limitation of the paper: the empirical application is still outstanding.
 2. **One model family.** The simulator spans five mechanisms and randomised family-level priors, but all are variants of one kinetic model family. Results that depend on assumed scaling, such as the dominance of low-surface-area chars in reduction share, are properties of the simulator. Mechanisms not represented include electron shuttling by dissolved organic matter, Cr(V) intermediates, competitive anion effects and surface-site heterogeneity. Cross-mechanism transfer (§3.4) was tested only within this family.
 3. **Thermodynamic validation.** Three USGS databases were compared. An independent validation against critically evaluated constants (Ball and Nordstrom, 1998; Rai et al., 1987) is outstanding: those constants could not be retrieved and verified in this revision. NaCl, NaNO₃ and Na₂SO₄ backgrounds were compared (§3.1); Ca²⁺, Mg²⁺, carbonate and dissolved organic matter were not.
 4. **Assumed measurement models.** XPS is modelled with log-normal surface enrichment (SD 0.4 in log), beam reduction up to 15% and noise 0.05; XANES with beam reduction up to 3% and noise 0.03; inventories with 5% error. These distributions are plausible but not calibrated against round-robin data. The A1/A2 results depend on them.
@@ -883,22 +911,22 @@ Existing adsorption databases and ML studies of Cr(VI) removal typically pool re
 
 ## Data and code availability
 
-**Location.** All code, the three PHREEQC databases (with checksums and provenance), the virtual corpora, the result tables and the figure scripts are in the `cassia/` directory of the repository `karthice1/adsorption` (CASSIA 0.3.0).
+**Location.** All code, the three PHREEQC databases (with checksums and provenance), the virtual corpora, the result tables and the figure scripts are in the `cassia/` directory of the repository `karthice1/adsorption` (CASSIA 0.3.1).
 
 **Fixed snapshot.** The content of this release is identified by `release/MANIFEST.sha256`: SHA-256 checksums of every code, database, data, result and figure file. `release/RELEASE.md` records:
-- the code commit `9d5a37bd6012b6abf2cacbca284a97aada468f68`;
+- the code commit `[COMMIT]`;
 - the environment (`requirements-lock.txt`, Python 3.13.17);
 - the test log and coverage report;
 - the exact commands: `python scripts/run_v2.py --stage all` and `python scripts/run_v3.py --stage all`;
 - the list of expected output tables.
 
-A tagged GitHub release (`cassia-v0.3.0`) of this commit, archived in Zenodo, will provide the permanent DOI. The tag and archive are created by the author at submission of the revision, because they could not be created from the computational environment; the commit hash and manifest above identify the content unambiguously in the meantime.
+A tagged GitHub release (`cassia-v0.3.1`) of this commit, archived in Zenodo, will provide the permanent DOI. The tag and archive are created by the author at submission of the revision, because they could not be created from the computational environment; the commit hash and manifest above identify the content unambiguously in the meantime.
 
 **Data templates.** The master-dataset template, schema, study registry, search log and PRISMA flow templates are in `cassia/data/`.
 
 **Third-party files.** The PHREEQC databases are distributed with USGS PHREEQC, a U.S. Government work in the public domain, and are included unmodified.
 
-**Software versions.** CASSIA 0.3.0; phreeqpython 1.6.2 (Vitens); PHREEQC databases minteq.v4.dat, minteq.dat and llnl.dat (revisions in Table S2); adsorption 0.1.0 (Amvro23); pyGAPS 4.3.1.dev693; NumPy 2.5.3; SciPy 1.18.1; pandas 3.0.5; scikit-learn 1.9.1; XGBoost 3.4.1; matplotlib 3.11.2; Python 3.13.17.
+**Software versions.** CASSIA 0.3.1; phreeqpython 1.6.2 (Vitens); PHREEQC databases minteq.v4.dat, minteq.dat and llnl.dat (revisions in Table S2); adsorption 0.1.0 (Amvro23); pyGAPS 4.3.1.dev693; NumPy 2.5.3; SciPy 1.18.1; pandas 3.0.5; scikit-learn 1.9.1; XGBoost 3.4.1; matplotlib 3.11.2; Python 3.13.17.
 
 No experimental data were generated, and no published experimental data were analysed, in this study.
 
@@ -950,7 +978,7 @@ In words: with probability at least $1-\alpha$, at least $\lceil\beta n_{J+1}\rc
 2. *Effect of small studies.* $\lceil\beta n\rceil/n$ is conservative for small studies. For $\beta=0.9$, a study of 28 observations needs 26 inside (92.9%), and a study of 8 observations needs all 8.
 3. *Minimum number of calibration studies.* The interval is finite only if $J\ge(1-\alpha)/\alpha$: at least 9 calibration studies for $\alpha=0.10$ and 19 for $\alpha=0.05$. With half of the 29 training studies used for calibration (about 14), M2s is bounded at 90% and unbounded at 95%. For total-Cr endpoints only about 8 calibration studies are available, so M2s is unbounded even at 90%. This finite-sample limit is reported as a result, not hidden.
 4. *Relation to Dunn et al. (2023).* Their methods target coverage of a *single random observation* from a new group, using pooling, subsampling or repeated subsampling. M1 is our analogue of their weighted pooling. M2s targets a different, group-level $(\beta,1-\alpha)$ tolerance statement: a fraction $\beta$ of a new study's observations, with confidence $1-\alpha$.
-5. *M2 (CV+) has no proven guarantee.* M2 uses the same study scores, but with K-fold models instead of a single split, as in the CV+ construction (Barber et al., 2021). The CV+ guarantee is proven for scalar residual scores of exchangeable data points. We have not shown that it extends to within-study quantile scores, so the v0.2 statement of a $1-2\alpha$ guarantee for M2 is withdrawn. M2 is reported as an empirical method only.
+5. *M2 (CV+) has no proven guarantee.* M2 uses the same study scores, but with K-fold models instead of a single split, as in the CV+ construction (Barber et al., 2021). The CV+ guarantee is proven for scalar residual scores of exchangeable data points. We have not shown that it extends to within-study quantile scores, so no $1-2\alpha$ guarantee is claimed for M2. M2 is reported as an empirical method only.
 
 ## Appendix B. Goodness-of-fit and equivalence tests of the adsorption-only model
 
@@ -976,7 +1004,7 @@ In words: with probability at least $1-\alpha$, at least $\lceil\beta n_{J+1}\rc
 - *Statistic.* The misfit statistic is $\chi^2=\sum_i r_i^2/\sigma_i^2$ at the optimum, with $\nu=n_{\rm obs}-n_{\rm free}$ degrees of freedom.
 
 **Calibrated rejection.**
-- *Why the nominal test fails.* The empirical model is not exactly the data-generating adsorption model, so $\chi^2$ under the null is inflated relative to $\chi^2_\nu$. The nominal test therefore over-rejects: 3–13% at nominal 5% in v0.2.
+- *Why the nominal test fails.* The empirical model is not exactly the data-generating adsorption model, so $\chi^2$ under the null is inflated relative to $\chi^2_\nu$. The nominal test therefore over-rejects (6.7–15% at nominal 5%; §3.3).
 - *Calibration.* The rejection threshold is instead the 95th percentile of $\chi^2$ in the paired negative controls (same materials, reduction switched off), separately for each design and noise level.
 - *Cross-validated type-I error.* The type-I error is estimated by split-half cross-validation of the controls: the threshold is estimated on one half and the error is evaluated on the other.
 

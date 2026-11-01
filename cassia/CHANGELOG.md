@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.1 (2026-11-01) - third revision
+- Monte Carlo precision analysis of the mechanism benchmark and true partition of Cr(VI)
+  disappearance for all scenarios (`scripts/bench_partition.py`; Tables S11-S12).
+- Out-of-study validation of the four endpoint models used by the design layer, including the
+  total-Cr models (`scripts/endpoint_validation.py`; Table S13).
+- Operating characteristic of sequential verification as a stand-alone script (`scripts/seqver_oc.py`).
+- Supplementary Fig. S1 (profile likelihoods; `scripts/make_supp_figs.py`).
+- Manuscript: unit-of-calibration table for interval methods; revision-history language removed;
+  empirical-application protocol expanded; Word build renders appendix mathematics.
+
 ## 0.3.0 (2026-10-31) - second revision
 - Evidence classes C/B/A1/A2; separate measurement models for XPS (surface enrichment, beam/vacuum
   reduction), XANES (bulk), solid Cr inventory and phase evidence (`cassia.measurement`).

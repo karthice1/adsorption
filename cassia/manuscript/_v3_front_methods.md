@@ -108,7 +108,7 @@ That is 7,700 PHREEQC solutions, interpolated multilinearly. The simulator evalu
 
 **Redox scenarios.** Total Cr was entered without a valence state at an assumed pe, restricted to the water-stability field (pe ≤ 20.75 − pH). The Eh at which Cr(VI) and Cr(III) are equally abundant was obtained by interpolation.
 
-**Cr(III) solubility.** The v0.1 analysis relied on convergence of the PHREEQC phase-boundary option, which the reviewer rightly criticised. The saturation index of the Cr(III) hydroxide (Cr(OH)₃(am) in minteq.v4; Cr(OH)₃(A) in minteq) is now evaluated directly for solutions of prescribed dissolved Cr(III). Saturation is located by bisection on log₁₀ C between 10⁻⁶ and 5,000 mg L⁻¹. Every evaluation returns a status:
+**Cr(III) solubility.** Non-convergence of the PHREEQC phase-boundary option does not show that no solubility constraint exists, so it is not used. Instead, the saturation index of the Cr(III) hydroxide (Cr(OH)₃(am) in minteq.v4; Cr(OH)₃(A) in minteq) is evaluated directly for solutions of prescribed dissolved Cr(III). Saturation is located by bisection on log₁₀ C between 10⁻⁶ and 5,000 mg L⁻¹. Every evaluation returns a status:
 - `bracketed` (with the SI at the solution);
 - `undersaturated_to_cmax`: SI < 0 even at 5,000 mg L⁻¹, a direct thermodynamic statement;
 - `supersaturated_at_cmin`;
@@ -164,11 +164,11 @@ Both are verified by unit tests for every scenario.
 | E | all pathways + Cr(III) re-adsorption + precipitation + pH drift |
 
 **Material and study populations.**
-- *Families and family-level parameters.* There are six families: chemically and physically activated carbons, wood and manure biochars, hydrochars, and biomass-derived porous carbons. Each has physically plausible ranges of S_BET and pH_pzc. The family-level means of reductant capacity, leachable reductant and specific capacity are redrawn for every corpus from a common hyper-prior, so which family is most reductive is itself random across replicates. This removes the circularity identified by the reviewer, where the most reductive family was fixed by construction.
+- *Families and family-level parameters.* There are six families: chemically and physically activated carbons, wood and manure biochars, hydrochars, and biomass-derived porous carbons. Each has physically plausible ranges of S_BET and pH_pzc. The family-level means of reductant capacity, leachable reductant and specific capacity are redrawn for every corpus from a common hyper-prior, so which family is most reductive is itself random across replicates. No family is therefore most reductive by construction, and family rankings of reduction share in the outputs are not imposed by fixed inputs.
 - *Experiments per study.* Each virtual study contains an 8-point isotherm (C₀ = 5–300 mg L⁻¹ at an optimum pH of 1.8–3.5), a 6-point pH edge (pH 2–8), an 8-point kinetic series and a 6-point dose series (0.5–8 g L⁻¹ at C₀ = 20 mg L⁻¹).
 - *Measurement model.* Cr(VI) and total Cr carry 3% relative error, detection limits and a study-level calibration bias.
 - *Solid-phase measurements* follow technique-specific models (`cassia.measurement`; Table S1):
-  - **XPS** is surface-sensitive. The reported Cr(III) fraction is e·f/(e·f + 1 − f) + b·(1 − ·), where f is the true fraction, e a per-study surface-enrichment factor (log-normal, SD 0.4) and b ~ U(0, 0.15) beam- or vacuum-induced reduction of Cr(VI) during analysis; the fitting noise is 0.05.
+  - **XPS** is surface-sensitive. The reported Cr(III) fraction is f_s + b(1 − f_s), with surface fraction f_s = e·f/(e·f + 1 − f), where f is the true fraction, e a per-study surface-enrichment factor (log-normal, SD 0.4) and b ~ U(0, 0.15) beam- or vacuum-induced reduction of Cr(VI) during analysis; the fitting noise is 0.05.
   - **XANES** is bulk-sensitive: no enrichment, b ~ U(0, 0.03), noise 0.03.
   - **Solid Cr inventory** is measured with 5% relative error.
   - **Phase evidence** gives the precipitated share of solid Cr(III) with an absolute error of 0.10.
@@ -196,6 +196,8 @@ In 20 replicates per scenario, 200-replicate residual-bootstrap intervals were c
 
 Across-replicate variability gives Monte Carlo standard errors (MCSE).
 
+**Number of replicates.** The 100 replicate corpora per scenario were checked by a Monte Carlo precision analysis (`scripts/bench_partition.py`, Table S12). For each headline rate, the between-replicate SD s gives MCSE = s/√R and the number of replicates R = (1.96 s/h)² needed for a 95% half-width h. With R = 100, the MCSE was ≤ 0.010 for unconditional fit rates, ≤ 0.018 for rates conditional on reduction share > 0.2, ≤ 0.006 for mean reduction shares and ≤ 0.020 for Spearman correlations. The contrasts on which conclusions rest are 0.1–0.4. A half-width of 0.01 on the unconditional fit rates would need 228–357 replicates; this precision is not needed for any conclusion and was not pursued.
+
 ### 2.6 Mechanism-identifiability engine
 
 Six cumulative measurement designs were defined:
@@ -209,7 +211,7 @@ Six cumulative measurement designs were defined:
 | D4n | D3 + XANES Cr(III) fraction on three solids + final pH | A1 (XANES) |
 | D5 | D4n + solid Cr inventory + phase evidence on the same solids | A2 |
 
-(The v0.2 design D4, with unbiased solid oxidation state, is retained only for the profile likelihoods in Supplementary Fig. S1.)
+(A further design, D4u, with an unbiased solid oxidation state, is used only for the profile likelihoods in Supplementary Fig. S1.)
 
 Four complementary analyses were applied.
 
@@ -229,7 +231,7 @@ Four complementary analyses were applied.
      - **inconclusive**, otherwise.
    - *Terminology.* "Not rejected" is never interpreted as "equivalent".
    - *Operating characteristics.* Type-I error, power and false-equivalence rate were evaluated against the noise-free misfit of each study.
-4. **Metadata bias.** The first-order bias in the inferred reduction share was propagated for misreported pH (+0.5) and ionic strength (×10), via Δθ = Σ_post JᵀW(y_true − y_assumed). These v0.2 analyses use designs D1 and D3.
+4. **Metadata bias.** The first-order bias in the inferred reduction share was propagated for misreported pH (+0.5) and ionic strength (×10), via Δθ = Σ_post JᵀW(y_true − y_assumed). These analyses use designs D1 and D3.
 
 **Sample sizes.**
 - Analyses 1 and 2: 300 studies (200 from scenario E and 100 from scenarios B–D).
@@ -263,16 +265,26 @@ Four complementary analyses were applied.
 
 ### 2.8 Study-level conformal prediction
 
-Three interval constructions were compared. All are calibrated on out-of-study residuals, with the study as the unit.
+Four interval constructions were compared. All are calibrated on out-of-study residuals, with the study as the unit of resampling. They differ in the unit of the conformity score and in their guarantee:
 
-- **M0 – pooled residuals (v0.1 method).** The half-width is the ⌈(n+1)(1−α)⌉/n quantile of pooled absolute residuals from an inner grouped 10-fold CV. Residuals within a study are dependent, so M0 has no formal guarantee for a new study.
+| Method | Conformity score | Procedure class | Coverage statement |
+|---|---|---|---|
+| M0 | one score per observation, pooled | inner grouped K-fold residuals (cross-validation residual method; neither split nor cross-conformal in the formal sense) | none for a new study |
+| M1 | one score per observation, weighted 1/n_j per study | study-level CV+ (Barber et al., 2021) with group weights | none claimed; targets coverage of a random observation of a new study |
+| M2 | one score per study (within-study 0.9-quantile) | study-level CV+ | none claimed (Appendix A, Remark 5) |
+| M2s | one score per study (within-study 0.9-quantile) | split conformal over studies | exact: P(≥ ⌈0.9 n⌉ of a new study's n observations covered) ≥ 1 − α (Appendix A) |
+
+Only M2s carries a proven study-level guarantee. The coverage of M0–M2 for unseen studies is established empirically, by outer leave-one-study-out evaluation, and reported per study.
+
+
+- **M0 – pooled residuals (the conventional approach).** The half-width is the ⌈(n+1)(1−α)⌉/n quantile of pooled absolute residuals from an inner grouped 10-fold CV. Residuals within a study are dependent, so M0 has no formal guarantee for a new study.
 - **M1 – study-level CV+ with study-weighted scores.**
   - *Construction:* the CV+ interval of Barber et al. (2021), formed with study-level folds (K = 10). Each calibration study contributes total weight 1 (weight 1/n_j per observation), as in the weighted pooling of Dunn et al. (2023), and the test study carries one further unit of weight.
   - *Target:* marginal coverage of a random observation from a new study.
 - **M2 – study-level CV+ with study scores (empirical).**
   - *Score:* s_j is the ⌈0.9 n_j⌉-th smallest absolute residual of study j.
   - *Interval:* bounded by the ⌊α(J+1)⌋-th and ⌈(1−α)(J+1)⌉-th order statistics of the fold-model predictions ∓ s_j.
-  - *Status:* the v0.2 claim of a 1 − 2α guarantee is withdrawn. The CV+ bound is proven for scalar scores of exchangeable points, and its extension to within-study quantile scores is not established (Appendix A).
+  - *Status:* no coverage guarantee is claimed. The CV+ bound is proven for scalar scores of exchangeable points, and its extension to within-study quantile scores is not established (Appendix A).
 - **M2s – study-level split conformal (exact).**
   - *Construction:* the training studies are split at random into halves, one for model fitting and J for calibration. Each calibration study is scored by s_j as above, and the half-width is the ⌈(1−α)(J+1)⌉-th smallest score.
   - *Guarantee (Appendix A):* under exchangeability of studies, with probability ≥ 1 − α at least ⌈0.9 n⌉ of a new study's n observations are covered. The guarantee is marginal over the study population (families, study sizes), not conditional on a family.
@@ -287,7 +299,7 @@ Three interval constructions were compared. All are calibrated on out-of-study r
 
 ### 2.9 Treatment-design layer
 
-**Models.** Residual Cr(VI) and residual total Cr are modelled directly (Section 2.7), each with its own M1 interval. Modelling effluent through q, as in v0.1, is ill-conditioned when removal approaches completeness.
+**Models.** Residual Cr(VI) and residual total Cr are modelled directly (Section 2.7), each with its own M1 interval. Modelling effluent indirectly through q is ill-conditioned when removal approaches completeness.
 
 **Design problem.**
 - *Grid:* pH 2–7 in 0.5 steps and dose 0.5–8 g L⁻¹ (the training range), 24 h contact.
@@ -300,7 +312,7 @@ Three interval constructions were compared. All are calibrated on out-of-study r
 - *Joint 90%:* Bonferroni, each endpoint at α = 0.05, so that the joint miscoverage is ≤ 0.10 by the union bound.
 - *Joint 90% / 80% + 4 confirmatory batches:* four batches on the new material (pH 3, doses 0.5–4 g L⁻¹, 3% analytical noise) estimate its study offset for each endpoint. The centre is shifted by that offset. The half-width is the study-weighted (1 − α) quantile of offset-adjusted out-of-study residuals of the training studies, with α = 0.05 or 0.10 per endpoint (heuristic; it assumes the confirmatory batches are exchangeable with the study's other observations).
 - *Point + verify (model-guided, test-confirmed):* the point model proposes the pH and the lowest dose. Confirmatory batches are run at that design, and, if they fail, the dose is escalated along the grid for at most four rounds. Two acceptance rules were compared:
-  - **(i) v0.2 rule:** duplicates; accept when both mean measured concentrations are ≤ 90% of their limits.
+  - **(i) Simple rule:** duplicates; accept when both mean measured concentrations are ≤ 90% of their limits.
   - **(ii) error-controlled rule:** triplicates; accept when the one-sided upper confidence bound of each endpoint is ≤ its limit. The bound is mean × exp[z·√(σ_r²/n + σ_b²)], with σ_r = 0.03 random and σ_b = 0.05 calibration uncertainty. z is the 1 − α/(2R) normal quantile, with α = 0.05 and R = 4 rounds (Bonferroni over two endpoints and four looks).
 
   The probability of accepting a non-compliant design was estimated with 1,000 simulated verification sequences per material and target. Two analytical-error models were used: calibration bias shared by both endpoints with correlated replicate errors (ρ = 0.5), and independent biases and errors.
@@ -341,7 +353,7 @@ The seed dataset is Ramirez et al. (2020), Data in Brief 29, 105292: activated c
 
 The CASSIA code, the analysis scripts and the manuscript drafts were developed with an AI coding assistant (Claude, Anthropic), working under the author's direction in a version-controlled repository.
 
-**Safeguards.** The scientific design and the reviewer-driven changes were specified by the author. The correctness checks built into the work are:
+**Safeguards.** The scientific design and all methodological choices were specified by the author. The correctness checks built into the work are:
 - unit tests for conservation laws and numerical constructions;
 - negative controls (scenario A);
 - cross-checks of interpolated against direct PHREEQC calculations;

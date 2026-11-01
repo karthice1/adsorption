@@ -58,6 +58,10 @@ A complete workflow for user data in the schema is `examples/user_data_workflow.
 cd cassia
 python scripts/run_v2.py --stage all      # v0.2 analyses (~4-5 h on 4 cores); --quick for a smoke test
 python scripts/run_v3.py --stage all      # v0.3 analyses (~2-3 h)
+python scripts/bench_partition.py          # Tables S11-S12 (benchmark partition, Monte Carlo precision)
+PYTHONPATH=. python scripts/endpoint_validation.py  # Table S13 (endpoint models, ~15 min)
+PYTHONPATH=. python scripts/seqver_oc.py   # Table S9 (verification operating characteristic)
+python scripts/make_supp_figs.py          # Supplementary Fig. S1
 ```
 
 Stages `chem, bench, ident, ml, uq, design, missing, figures` can be run separately. Outputs go to

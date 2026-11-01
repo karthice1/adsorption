@@ -37,4 +37,4 @@ tests/test_cassia.py::test_a2_requires_inventory_and_phase_and_solid_without_tot
 tests/test_cassia.py::test_measurement_models_xps_biased_xanes_less PASSED [ 94%]
 tests/test_cassia.py::test_split_conformal_guarantee_on_toy PASSED       [ 97%]
 tests/test_cassia.py::test_equivalence_v3_control_and_reduction PASSED   [100%]
-============================= 39 passed in 35.30s ==============================
+============================= 39 passed in 32.10s ==============================

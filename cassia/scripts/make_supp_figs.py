@@ -1,4 +1,4 @@
-"""Supplementary Fig. S1: profile likelihoods of the reductant capacity (v0.2 designs D1, D3, D4).
+"""Supplementary Fig. S1: profile likelihoods of the reductant capacity (designs D1, D3, D4u).
 
     python scripts/make_supp_figs.py   -> manuscript/figures/figS1_profiles.png
 """
@@ -17,7 +17,7 @@ for ax, sid in zip(axes[0], studies):
     s = d[d.study_id == sid]
     for des, g in s.groupby("design"):
         g = g.sort_values("log10_R0")
-        ax.plot(g.log10_R0 - g.true_log10_R0, g.delta, "-o", ms=3, color=colors.get(des), label=f"{des} (n = {g.n_obs.iloc[0]})")
+        ax.plot(g.log10_R0 - g.true_log10_R0, g.delta, "-o", ms=3, color=colors.get(des), label=f"{des.replace('D4', 'D4u')} (n = {g.n_obs.iloc[0]})")
     ax.axhline(3.84, ls=":", c="0.4", lw=1)
     ax.axvline(0, ls="--", c="0.6", lw=0.8)
     ax.set_xlabel("log10 R0 − true value")
