@@ -1,7 +1,7 @@
 # CASSIA 0.3.2 release record
 
 - Date: 2026-11-01
-- Code commit at manifest generation (parent of the commit that adds this file): `72b4a6bcddf59b4bc9ab4d7da4b386a39b202331`
+- Code commit at manifest generation (parent of the commit that adds this file): `72a0b175c07b676093673cbf2b1e8c976de87142`
 - Content identity: `release/MANIFEST.sha256` (120 files); verify with `sha256sum -c release/MANIFEST.sha256`
 - Environment: `requirements-lock.txt` (Python 3.13.17); PHREEQC databases with checksums and provenance in `databases/`
 - Tests: `release/test_log.txt`; coverage: `results/coverage_report.txt`
@@ -12,10 +12,8 @@
 ```
 pip install -e ..                      # adsorption equation package (repository root)
 pip install -e .[ml,pores,dev]
-pytest -q tests                        # expected: all tests pass (see release/test_log.txt)
-python scripts/run_v2.py --stage all   # v0.2 analyses (~4-5 h, 4 cores) -> results/v2/
+pytest -q tests                        # expected: 40 tests pass (see release/test_log.txt)
 bash scripts/reproduce_all.sh          # every table, figure and number, in dependency order (~9-11 h, 4 cores)
-python scripts/bench_partition.py; PYTHONPATH=. python scripts/endpoint_validation.py; PYTHONPATH=. python scripts/seqver_oc.py; python scripts/make_supp_figs.py
 ```
 
 ## Expected output tables (70)

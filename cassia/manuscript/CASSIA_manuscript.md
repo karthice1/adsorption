@@ -953,7 +953,7 @@ Existing adsorption databases and ML studies of Cr(VI) removal typically pool re
 
 **Location.** All code, the three PHREEQC databases (with checksums and provenance), the virtual corpora, the result tables and the figure scripts are in the `cassia/` directory of the repository `karthice1/adsorption` (CASSIA 0.3.2). The repository root contains the `adsorption` equation package on which CASSIA depends.
 
-**Fixed snapshot.** The code commit is `[COMMIT]`. A source archive of this commit (`git archive`, repository root) accompanies the submission for review. Its content is identified by `release/MANIFEST.sha256` (SHA-256 checksums of every code, database, data, result and figure file; verify with `sha256sum -c release/MANIFEST.sha256` in `cassia/`). `release/RELEASE.md` records the commit, the environment (`requirements-lock.txt`, Python 3.13.17), the test log (`release/test_log.txt`), the coverage report (`results/coverage_report.txt`) and the list of expected output tables.
+**Fixed snapshot.** The code commit is `72a0b175c07b676093673cbf2b1e8c976de87142`. A source archive of this commit (`git archive`, repository root) accompanies the submission for review. Its content is identified by `release/MANIFEST.sha256` (SHA-256 checksums of every code, database, data, result and figure file; verify with `sha256sum -c release/MANIFEST.sha256` in `cassia/`). `release/RELEASE.md` records the commit, the environment (`requirements-lock.txt`, Python 3.13.17), the test log (`release/test_log.txt`), the coverage report (`results/coverage_report.txt`) and the list of expected output tables.
 
 **Reproduction.** From the repository root:
 

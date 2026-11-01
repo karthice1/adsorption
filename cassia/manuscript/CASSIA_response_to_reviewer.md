@@ -1,138 +1,164 @@
-# Response to the Reviewer (third round)
+# Response to the Reviewer (fourth round)
 
-**Manuscript:** CASSIA: A Provenance-Aware Computational Framework for Evidence-Constrained Analysis of Cr(VI) Removal by Carbonaceous Materials (revision 3; software CASSIA 0.3.1)
+**Manuscript:** CASSIA: A Provenance-Aware Computational Framework and Known-Truth Benchmark for Evidence-Constrained Analysis of Cr(VI) Removal by Carbonaceous Materials (revision 4; software CASSIA 0.3.2)
 
-We thank the reviewer for the report. The page and line numbers it cites (for example, the fixed 50 mg L⁻¹ speciation lookup, the 40 Monte Carlo draws, the 15 virtual materials, the inner three-fold CV and Table 4 with 85.4% coverage) belong to the first version of the manuscript. Most of these points were addressed in the two previous revisions. Below, for each comment, we say what the current manuscript contains, where to find it, and what was added in this revision. Where a request is still not met, we say so.
+We thank the reviewer for a careful report that checked the supplement against the manuscript line by line. All eight comments are accepted. Seven are resolved in this revision. Comment 1 is resolved by repositioning the paper, as the reviewer suggested, while the empirical application itself remains outstanding. Section, table and figure numbers refer to the revised manuscript. Main-text tables were renumbered because a new Table 2 (reproduction scripts) was added: the former Tables 2–7 are now Tables 3–8.
 
-**New in this revision.**
-- A Monte Carlo precision analysis for the number of benchmark replicates, and the full true partition of Cr(VI) disappearance for all five scenarios (§2.5, §3.2, Tables S11–S12).
-- An out-of-study validation of all four endpoint models used by the design layer, including the two total-Cr models (§3.6, Table S13).
-- A table in §2.8 stating, for every interval method, the unit of the conformity score, the conformal procedure class and the coverage statement.
-- Uncertainty propagation now also reports residual total Cr at accepted designs and explains the effect on fitted capacity (§3.7).
-- The manuscript no longer refers to its own revision history; it reads as a stand-alone article.
-- Code commit `0528c60cc3dcd567b246e9e883f41b5ef20de0ef`, regenerated SHA-256 manifest and test log.
+**Summary of changes.**
 
----
-
-## Major Comment 1 – Empirical validation
-
-**Status: still not met.** We agree that this is the decisive weakness, and that the paper should contain both synthetic and empirical results.
-- *The source.* We confirmed the reviewer's information: Ramirez et al. (2020) is open access on PubMed Central (PMC7044665), with raw isotherm and kinetic files as supplementary material. The companion article is J. Environ. Chem. Eng. 8, 103702. This is now stated in §3.8 and in the study registry (`data/study_registry.csv`).
-- *Why it was not extracted.* On 1 November 2026 we tried again. The network policy of the computational environment rejected every host that serves the article or its files: www.ncbi.nlm.nih.gov, pmc.ncbi.nlm.nih.gov, doi.org, ScienceDirect, Crossref, Europe PMC, Mendeley Data and the institutional repository (repository.udem.edu.co). The same applies to the 20 further studies.
-- *What we did not do.* We did not transcribe values from memory, estimate them, or digitise them from figures. Any of these would produce unverifiable numbers presented as empirical data.
-- *What is in the manuscript.* §3.8 now gives the reviewer's seven-step plan as an ordered protocol: extraction, condition reconstruction, classification into C/B/A1/A2, identification of total-Cr and XPS/XANES studies, application of §3.3–3.5, and separate reporting of empirical findings. The pipeline that carries out these steps is tested and needs no code change. The Abstract, §3.8 and §4.7 state that no published data were analysed.
-
-We recognise that the reviewer may recommend rejection on this point alone. The empirical application can be completed as soon as the source files are supplied by the author or the hosts are allowed.
-
-## Major Comment 2 – Circular validation by the simulator
-
-**Status: addressed (§2.4, §2.5, §3.2–3.6, Tables S1, S6, S11, S12; Fig. 5).**
-- **Multi-mechanism benchmark.** The simulator implements the five scenarios the reviewer proposed:
-  - A, adsorption only;
-  - B, direct surface-mediated reduction;
-  - C, adsorption-coupled reduction of *adsorbed* Cr(VI);
-  - D, dissolved-phase reduction by leached reductants;
-  - E, all pathways with Cr(III) re-adsorption, precipitation and pH drift.
-
-  Chromium mass and electron equivalents are conserved, and unit tests check this for every scenario.
-- **Biochar circularity.** Family-level reductant capacity, leachable reductant and specific capacity are redrawn from a common hyper-prior for every corpus, so no family is most reductive by construction. Even so, hydrochar had the highest reduction share in 83 of 100 scenario-E replicates. We traced this to the assumed proportionality between S_BET and adsorption capacity: a small adsorption sink inflates the reduction *share*. §3.2 reports this as a property of the simulator, not as evidence about hydrochars.
-- **Replicates and precision.** There are 100 independent replicate corpora per scenario (15,000 virtual studies). The new precision analysis (Table S12) gives MCSE ≤ 0.010 for unconditional fit rates, ≤ 0.018 for conditional rates, ≤ 0.006 for mean reduction shares and ≤ 0.020 for correlations. The contrasts the conclusions rest on are 0.1–0.4. A ±0.01 half-width on the unconditional rates would need 228–357 replicates; no conclusion requires it.
-- **True shares.** Table S11 gives median and 5–95% ranges of adsorbed Cr(VI), dissolved Cr(III), Cr(III) on the solid and precipitate for every scenario. For example, the median reduction share was 0.24 in B, 0.22 in C, 0.04 in D and 0.38 in E.
-- **Robustness across mechanisms.** The central conclusions were re-tested under every scenario:
-  - Isotherm fits overstated capacity in proportion to the reduction share in B, C and E, weakly in D (Table 3).
-  - Random splits overstated transferability in all scenarios: R² 0.86–0.89 random against 0.48–0.65 LOSO (Fig. 5a, Table S6).
-  - The study-level interval guarantee held in all scenarios (Fig. 5c).
-- **Limits.** All scenarios belong to one kinetic model family (§4.7, limitation 2).
-
-## Major Comment 3 – PHREEQC chemistry
-
-**A. Fixed-concentration lookup. Status: addressed (§2.3, §3.1).**
-- The lookup was replaced by a four-dimensional minteq.v4 grid of 7,700 PHREEQC solutions:
-  - pH 1.5–10 in 0.25 steps;
-  - dissolved Cr(VI) 0.01–700 mg L⁻¹;
-  - I 10⁻³–10⁻¹ M;
-  - T 288–318 K.
-- The simulator evaluates speciation at the *current* dissolved Cr(VI), and the ML features at each row's C₀, pH, I and T.
-- Against 300 direct PHREEQC solutions, the maximum interpolation error was 0.011 in species fraction.
-- Major ions: NaCl, NaNO₃ and Na₂SO₄ backgrounds were compared (Table S10). Species fractions differed by ≤ 0.024. Ca, Mg, carbonate and DOM are stated as not explored.
-
-**B. Cr(III) solubility. Status: addressed (§2.3, §3.1, Table S4).**
-- Non-convergence is no longer interpreted. Saturation indices are computed directly, and saturation is located by bisection between 10⁻⁶ and 5,000 mg L⁻¹. Every evaluation carries a convergence status: bracketed, undersaturated to the maximum, supersaturated at the minimum, or speciation failed.
-- Undersaturation up to 5,000 mg L⁻¹ extends to pH 4.25 (minteq.v4, I ≤ 0.01 M) and pH 3.5 (minteq).
-
-**C. Database validation. Status: not met; stated as a limitation.**
-- §3.1 now says explicitly that the 63–83 mV spread is a between-database difference, not a validated uncertainty interval.
-- The tabulated constants of Ball and Nordstrom (1998) and Rai et al. (1987) could not be retrieved, for the same network reason as in Major Comment 1. CASSIA accepts a reference-constant table, so the comparison can be run as soon as the values are available.
-
-**D. Uncertainty propagation. Status: addressed (§2.10, §3.7, Fig. 8).** Unreported ionic strength (10⁻³–10⁻¹ M) and pH basis (±0.5) are propagated with 1,000 draws per observation (previously 40) through the complete workflow:
-
-| Quantity | Result |
-|---|---|
-| HCrO₄⁻ fraction | 90% range 0.035–0.24, largest at pH 5–6.5 |
-| ML prediction | spread 0.08–0.14 log₁₀, against an interval width of 1.2–1.3 |
-| Prediction interval | union interval 6–14% wider than nominal |
-| Recommended dose | changed for 3 of 10 materials with accepted designs (300 draws each) |
-| Residual total Cr at accepted designs | 95th percentile 0.08–1.38 mg L⁻¹ (limit 2); no non-compliant accepted design |
-| Reduction share | bias up to 0.16 (90th percentile) for a 0.5-unit pH-basis error |
-| Fitted capacity | q_max itself is unaffected, because isotherm fitting uses neither I nor pH basis; its interpretation changes via the reduction share |
-
-## Major Comment 4 – Treatment-design methodology
-
-**Status: addressed (§2.7, §2.9, §3.6, Tables 6, 7, 7b, S9, S13; Fig. 7).**
-1. **Separate total-Cr models.** Residual Cr(VI) and residual total Cr are modelled directly as effluent concentrations. Each has its own RF model with the same feature set, trained only on rows with the corresponding measurement; for total Cr these are about 18 Class A/B studies per corpus.
-2. **Validation (new, Table S13).** Leave-one-study-out R² (log scale) was 0.74 for C_e,VI and 0.65 for C_e,tot, against 0.94 and 0.91 under random splits.
-3. **Uncertainty bounds for both endpoints.** Study-level intervals for all four endpoints are in Table 6. For total Cr, only about 17 training studies have total-Cr data. The CV+ intervals (M1, M2) are therefore effectively unbounded at 95%, because a study-level 95% quantile needs at least 19 calibration studies. The exact M2s interval, which calibrates on half of them (about 9), is unbounded at 95% and for 63% of test studies at 90%. This is reported as a data requirement.
-4. **Simultaneous feasibility.** The joint criterion uses Bonferroni bounds (α/2 per endpoint) over the grid. Feasibility is evaluated against the simulator's true attainability for every material.
-5. **Sensitivity.** pH ± 0.25/± 0.5 and dose × 0.8/× 1.2 were evaluated.
-6. **Predicted against true effluent.** Spearman 0.65 for Cr(VI) and 0.55 for total Cr; the 95% upper bounds held for 97.9% and 100% of grid points.
-
-**Scale of the evaluation.** The design analysis uses 20 independent cohorts of 15 materials (300 materials per target), each with its own training corpus. The first-version claim of a "seven-fold improvement" from 15 materials has been removed.
-
-**Results.**
-- Point predictions were unsafe for 20.7% (Wilson 16.5–25.6%) and 7.0% of materials for the two targets.
-- Joint 90% bounds recommended almost nothing.
-- Model-guided designs with sequential confirmatory testing were accepted for 98–105 materials per target, with no unsafe accepted design observed (Wilson upper bound 1.3%).
-- The false-acceptance risk of the sequential verification was simulated separately (Table 7b). Under the error-controlled rule the worst per-material probability was ≤ 0.7%.
-
-## Major Comment 5 – Study-aware conformal prediction
-
-**Status: addressed (§2.8, §3.5, Tables 6, 6b, S5; Fig. 6; Appendix A).**
-- **Unit of calibration.** A new table in §2.8 states, for each method:
-  - M0: pooled observation-level scores from an inner grouped K-fold. This is a cross-validation residual method, not split or cross-conformal in the formal sense, and it has no study-level guarantee.
-  - M1: observation-level scores weighted 1/n_j per study, in a study-level CV+ construction. No guarantee is claimed.
-  - M2: one score per study, the within-study 0.9-quantile, in study-level CV+. No guarantee is claimed.
-  - M2s: one score per study, in a split-conformal procedure over studies, with an exact guarantee proven in Appendix A: with probability ≥ 1 − α, at least ⌈0.9n⌉ of a new study's n observations are covered.
-- **Requested statistics.** These are reported for all four endpoints and nominal levels 0.50–0.95 (10 corpora, outer leave-one-study-out):
-  - coverage per study (Fig. 6b);
-  - mean, median, 10th-percentile and worst-study coverage;
-  - the fraction of studies covered;
-  - mean width;
-  - coverage against nominal level (Fig. 6a);
-  - the number of independent calibration studies.
-- **Results.**
-  - Pooled M0 reached nominal *average* coverage but covered only 65–75% of studies at 90%, with worst studies at 11–29%.
-  - M2s met its guarantee: 0.93 of studies at nominal 0.90. The price was 3.3 log₁₀ units of width, and the intervals were unbounded at 95%.
-  - The guarantee is marginal, not family-conditional: hydrochar studies were covered at 84% (Table S5).
-- **Earlier claims.** The first-version Table 4 (RF 85.4%, GPR 85.6%, conformal 90.3–94.9%) was based on pooled residuals and has been replaced.
+| Comment | Change | Where |
+|---|---|---|
+| 1 Empirical validation | Paper repositioned as a methodological, known-truth benchmark (title, keywords, Abstract, §1 scope statement, §4.5); empirical application still outstanding | Title, Abstract, §1, §3.8, §4.5, §4.7 |
+| 2 Table S1 | Regenerated from the implementation by a new script; a unit test checks it against the code constants | Table S1, `scripts/make_table_s1.py`, `tests/` |
+| 3 Table S5 / M2s | New Table S5b: M2s by family, with study counts, mean coverage, fraction ≥ 90% with Wilson intervals, unbounded share and width | Table S5b, §3.5 |
+| 4 Type-I error | Independent cohort of 240 new negative controls; conformal (rank-based) threshold; Wilson intervals for every type-I estimate; "calibration fixes this" removed | §2.6, §3.3, Table 5, Table S14, Appendix B, Abstract |
+| 5 D5 phase evidence | Option A: the test uses D5 without phase evidence; phase evidence is interpreted separately | §2.6, §3.3, Appendix B |
+| 6 Denominators | Overall and conditional Wilson bounds; the 105/98 designs identified as simple-rule results; new consolidated Table 8c for both rules | §3.6, Table 8c, §5 |
+| 7 Abstract and Highlights | Endpoint-specific conformal statement; highlight replaced | Abstract, Highlights |
+| 8 Versions and reproducibility | CASSIA 0.3.2 throughout; Table 1 updated; new Table 2 lists every script and its outputs; one script reproduces everything; source archive supplied | §2.2, Tables 1–2, Data availability, Supplement cover |
 
 ---
 
-## Release and reproducibility
+## Major Comment 1 – Empirical validation remains the decisive barrier
 
-| Item | Status |
+**Response: the paper is repositioned as a methodological benchmark; the empirical application remains outstanding.**
+
+We agree with the reviewer's assessment and take the second route the reviewer describes.
+- **Title.** The title now reads "…Computational Framework and Known-Truth Benchmark…".
+- **Keywords.** "known-truth simulation benchmark" was added.
+- **Abstract.** It now opens by stating that this is a methodological benchmark, and it ends by stating that no published experimental data were analysed.
+- **Introduction.** A new paragraph, "Scope: a methodological benchmark, not an experimentally validated framework" (§1), states what the paper does and does not establish. It also says that the framework should not be described as experimentally validated until the empirical application is reported.
+- **Discussion.** §4.5 states that the quantitative findings are properties of the methods under the simulated data-generating processes.
+
+**Why the empirical application could not be carried out.** We retried on 1 November 2026. The computational environment's network policy still rejects every host that serves Ramirez et al. (2020) and its raw files (pmc.ncbi.nlm.nih.gov, www.ncbi.nlm.nih.gov, europepmc.org, doi.org), as well as the hosts serving further studies. No values were transcribed from memory, estimated or digitised.
+
+**What is ready.** §3.8 lists, as an ordered protocol, the steps the reviewer specifies:
+- import of the observations;
+- provenance and DOI recording;
+- observation-level classification;
+- apparent uptake;
+- nonlinear isotherm and kinetic fitting;
+- comparison with the original publication;
+- the 20–30-study extension, prioritising data quality and identifying total-Cr, XPS/XANES, inventory, final-pH and electrolyte information.
+
+The tested pipeline performs all of these steps without code changes. We would be glad to add the empirical section if the editor prefers that route, as soon as the source files can be obtained.
+
+## Major Comment 2 – Supplementary Table S1 inconsistent with the manuscript
+
+**Response: corrected; Table S1 is now generated from the implementation.**
+- **The cause.** The parameter table was generated by the code (`cassia.simulate.parameter_table()`), but the supplement still printed an older CSV produced by the v0.2 run. The code itself already used the revised models.
+- **The fix.**
+  - `scripts/make_table_s1.py` writes Table S1 from `parameter_table()` of CASSIA 0.3.2.
+  - The supplement builder reads only that output.
+  - The measurement-model and evidence-class rows are no longer hand-written text. They are built from the constants the code uses: `EVIDENCE_MIX`, `cassia.measurement.TECHNIQUES`, `INVENTORY_REL_SD` and `PHASE_ABS_SD`.
+  - A new unit test (`test_parameter_table_matches_implementation`) fails if the table and the constants ever disagree.
+- **What Table S1 now contains (44 rows).**
+  - Evidence-class probabilities: C 0.40, B 0.30, A1 0.20, A2 0.10.
+  - The measurements that define each class, and the A1 allocation (XPS or XANES with probability 0.5 each; A2 always XANES).
+  - The XPS model, f_obs = f_s + b(1 − f_s) + N(0, 0.05) with f_s = ef/(ef + 1 − f), e ~ LN(0, 0.4) and b ~ U(0, 0.15).
+  - The separate XANES model, f_obs = f + b(1 − f) + N(0, 0.03) with b ~ U(0, 0.03).
+  - Solid-inventory error, 5% relative; phase-evidence error, 0.10 absolute.
+  - Reporting probabilities for ionic strength and final pH; corpus composition; family hyper-priors; scenario switches.
+  - All kinetic parameter distributions and the ODE solver settings.
+
+## Major Comment 3 – Table S5 does not support the M2s statement
+
+**Response: corrected.** The 84% figure was computed from `results/v3/m2s_per_study.csv`, which the supplement did not report.
+- **New table.** Table S5b (`scripts/m2s_family.py`) reports, for each material family and each of the four endpoints at nominal 90%:
+  - the number of test studies;
+  - mean within-study coverage;
+  - the fraction of studies with ≥ 90% coverage, with a Wilson 95% interval;
+  - the fraction of unbounded intervals;
+  - the mean width of bounded intervals.
+- **The statistic.** As the reviewer notes, the 84% is a *fraction of studies* meeting the 90% target. Mean coverage is a different statistic, and both are now given.
+- **Revised §3.5 text.** For apparent uptake, 42 of 50 hydrochar studies (84%; Wilson 72–92%) met the target, against 90–98% for the other families. Mean coverage was 0.95, against 0.97–0.995.
+- **Interpretation.** With 50 studies per family these intervals overlap. The text now calls the family difference a tendency, not a demonstrated effect.
+
+## Major Comment 4 – The calibrated rejection test does not consistently control type-I error
+
+**Response: accepted. The calibration procedure was changed and validated on an independent cohort.**
+
+We followed all five recommendations. The result changes the paper's statement, and it uncovered a real problem with the earlier calibration.
+
+1. **More independent negative controls.** We added 240 controls from 12 new, independent simulator corpora (`scripts/typeI_validation.py`). They were fitted with exactly the same procedure as the 120 paired controls. In total there are 360 controls in 18 corpora.
+2. **Evaluation on independent cohorts (Table S14).** We applied the previous threshold, the 95th percentile of the 120 paired controls from 6 corpora, to the 240 new controls:
+
+   | Design | Type-I error, 3% noise (Wilson 95% interval) | Type-I error, 10% noise (Wilson 95% interval) |
+   |---|---|---|
+   | D1 | **15.4%** (11.4–20.5%) | **13.8%** (10.0–18.7%) |
+   | D2–D5 | 2.5–4.2% | 2.1–5.4% |
+
+   - *D4n.* The 12.5% value that concerned the reviewer was not reproduced on independent controls (2.5%, 1.2–5.3%); it was a noisy split-half estimate from 60 controls.
+   - *D1.* The real failure is D1, which the earlier split-half estimate (6.7%) missed.
+   - *The cause.* The null χ² distribution differs between corpora, because family hyper-priors are redrawn per corpus. Controls from 6 corpora are therefore not exchangeable with a new corpus, and their 95th percentile is too low for D1, which has only 7 degrees of freedom.
+3. **Improved calibration.** The threshold is now conformal: the ⌈0.95(n + 1)⌉-th smallest control χ². This gives a finite-sample type-I error ≤ 0.05 for an exchangeable null study. It is estimated across corpora, with the corpus as the unit of exchangeability.
+   - Leave-one-corpus-out over all 18 corpora, the type-I error was **4.7–5.6% for every design and noise level**, with corpus-bootstrap 95% intervals within 2.5–8.6% (Table 5, Table S14).
+   - For D4n it was 5.0% (3.3–6.7%) at 3% noise and 5.6% (3.1–8.6%) at 10% noise.
+4. **Confidence intervals.** Every type-I estimate now has an interval: Wilson for the independent cohort, and corpus-bootstrap for the leave-one-corpus-out estimates. Power is reported at the final threshold from all 360 controls:
+   - D1/D2 (Class C): 22–35%;
+   - D3: 80–88%;
+   - D4x, D4n and D5: 92–98%.
+5. **Two error rates.** The manuscript now distinguishes the type-I error of the rejection test from the false-equivalence probability of the equivalence test (0–4.3%) in §2.6, §3.3 and Appendix B. The second does not depend on the rejection threshold.
+
+**Wording and limitations.** "Calibration fixes this" has been removed. §3.3 now reports the observed rates. A new limitation (§4.7, item 5) states that the 5% level holds on average over corpora, not within every corpus: single held-out corpora reached 15–25%. It also states that the level holds only if a real study is exchangeable with the simulated corpora, and that the threshold would need recalibration before use on literature data.
+
+**Abstract.** The Abstract now reports the type-I error for all measurement designs ("4.7–5.6% for every measurement design on average across corpora (95% intervals within 2.5–8.6%)") next to the power figures.
+
+**Figures.** Fig. 3c,d were redrawn at the new threshold.
+
+## Major Comment 5 – D5 phase evidence and the equivalence-test observation vector
+
+**Response: clarified as Option A, which matches the implementation.**
+- The goodness-of-fit, rejection and equivalence tests for D5 use D4n + solid Cr inventory, without phase evidence.
+- Phase evidence is the precipitated share of solid Cr(III). It is undefined under the adsorption-only null, where the solid holds no Cr(III), and no null observation model is assumed for it.
+- Phase evidence enters only the Fisher analysis of the precipitation share, where D5 was the only design that constrained it (posterior SD 0.026).
+- This is now stated in a paragraph after the design table in §2.6 ("Which D5 measurements enter which analysis"), in the Table 5 note and in Appendix B. The reported D5 rejection power and equivalence rates are explicitly said to exclude phase evidence.
+
+## Major Comment 6 – Denominators of the treatment-design safety claim
+
+**Response: corrected (§3.6, new Table 8c, §5.1).**
+1. **Denominators.** The text now gives both bounds:
+   - the Wilson 95% upper bound over all 300 materials per target: 0/300, 1.3%;
+   - the conditional bound among accepted designs: 0/105, 3.5% (S1); 0/98, 3.8% (S2).
+
+   The Conclusions quote both.
+2. **Which rule.** The 105 and 98 accepted designs were obtained with the **simple rule**: duplicates, mean ≤ 90% of each limit, with one realised verification sequence per material. This is now stated where the numbers are given.
+3. **Consolidated table (Table 8c).** For both rules it gives accepted designs, unsafe acceptances, and unsafe rates over all materials and among accepted designs.
+4. **A correction found while building Table 8c.** The comparison of the two rules (1,000 sequences per material) was run on a different set of 300 materials per target, drawn from the same hyper-priors, not on the design-stage materials. The material identifiers coincide, but the draws differ. The manuscript previously implied the same materials. It now describes this as an independent verification cohort.
+
+   In that cohort the expected number of accepted designs was 82.5 (simple) against 81.6 (error-controlled) for S1, and 100.2 against 98.4 for S2. The expected numbers of unsafe acceptances were 0.018 against 0.002 (S1) and 0.036 against 0.013 (S2). The error-controlled rule therefore accepts almost as many designs at about 50% more batches, with three- to ninefold fewer expected unsafe acceptances.
+
+## Major Comment 7 – Endpoint-specific conformal performance in the Abstract and Highlights
+
+**Response: adopted.**
+- **Abstract.** The Abstract now uses the reviewer's wording: "An exact study-level split-conformal interval achieved its stated coverage guarantee, but the 90% interval for apparent Cr(VI) uptake spanned approximately 3.3 log₁₀ units; intervals for total-chromium endpoints were frequently unbounded with literature-scale calibration samples."
+- **Highlight.** The highlight now reads: "Exact study-level coverage holds; intervals are too wide for some engineering uses". The reviewer's suggested sentence exceeds Elsevier's 85-character limit, so we shortened it while keeping its meaning.
+
+## Major Comment 8 – Software versions and reproducibility
+
+**Response: corrected.**
+
+| Location | Correction |
 |---|---|
-| Version | CASSIA 0.3.1 |
-| Code commit | `0528c60cc3dcd567b246e9e883f41b5ef20de0ef` |
-| New scripts | `scripts/bench_partition.py` (Tables S11–S12), `scripts/endpoint_validation.py` (Table S13) |
-| Tests | 39 tests pass; line coverage 81% |
-| Manifest | `release/MANIFEST.sha256`, `release/RELEASE.md` |
-| Tagged release and Zenodo DOI | **Author action** (cannot be created from the build environment) |
+| §2.2 | "CASSIA 0.3.2 is organised in six layers" |
+| Table 1 | Updated: `cassia.measurement` added; decision support now names both design and verification stages; evidence classes C/B/A1/A2; interval methods M0–M2s |
+| New Table 2 | Every script and the tables and figures it produces, in run order, including `bench_partition.py` (S11–S12), `endpoint_validation.py` (S13), `typeI_validation.py` (S14), `m2s_family.py` (S5b), `verification_table.py` (Table 8c), `make_table_s1.py` (S1), `seqver_oc.py` (S9), `make_supp_figs.py` (Fig. S1) |
+| Regeneration statement | "Every number, table and figure … is regenerated by the scripts of Table 2, run in order by `scripts/reproduce_all.sh`" |
+| Data availability | Full installation, test and reproduction commands |
+| Supplement cover | A table mapping every supplementary table (S1–S14, Fig. S1) to its generating script and CSV file |
+| Release | Code commit `72a0b175c07b676093673cbf2b1e8c976de87142`; manifest regenerated; **tag and Zenodo DOI remain an author action** |
+
+**An ordering pitfall.** While writing Table 2 we found one: `run_v2.py --stage all` writes older versions of Figs. 3, 5, 6 and 7, which `run_v3.py --stage figures` then replaces. `reproduce_all.sh` runs them in the required order, and Table 2 states it.
+
+**Verifiability.** A source archive of commit `72a0b17` (`git archive` of the repository root) is supplied with this response, so the reviewer can run `pytest -q tests` (40 tests) and check the manifest with `sha256sum -c release/MANIFEST.sha256`. The test log and coverage report (81% line coverage) are included in it.
+
+---
 
 ## Items that remain open
 
 | Item | Reason | Remedy |
 |---|---|---|
-| Empirical application (Ramirez et al. + ≥ 20 studies) | Source hosts blocked by the environment's network policy | Author supplies the files, or the hosts are allowed |
-| Validation against Ball and Nordstrom (1998) / Rai et al. (1987) | Same | Same; CASSIA accepts a reference-constant table |
-| Release tag and DOI | Requires the author's GitHub/Zenodo account | Author action |
+| Empirical application (Ramirez et al. + 20–30 studies) | Source hosts blocked by the computational environment's network policy | Author supplies the files, or the hosts are allowed; the pipeline is ready |
+| Validation against Ball and Nordstrom (1998) / Rai et al. (1987) | Same | Same |
+| Release tag and Zenodo DOI | Requires the author's account | Author action |
 | Author name, affiliation, ORCID, CRediT, funding | Author-specific | Author to complete |
