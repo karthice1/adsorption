@@ -8,7 +8,7 @@ The revised analysis gives a mechanism-resolved answer to the question in the ti
 
 **Class C (residual Cr(VI) only).**
 - Such data establish that Cr(VI) disappears under the stated conditions, and how fast.
-- They do not establish why. In the benchmark, adsorption-only was *not rejected by the specified test* for 63–76% of high-reduction studies, and it was *demonstrated equivalent within 10%* for 43–65% of them (Table 4). For 90% of these studies the noise-free misfit was truly within 10%: the non-rejection reflects genuine structural equivalence of the Class C observations, not merely low power.
+- They do not establish why. In the benchmark, adsorption-only was *not rejected by the specified test* for 63–76% of high-reduction studies, and it was *demonstrated equivalent within 10%* for 43–65% of them (Table 5). For 90% of these studies the noise-free misfit was truly within 10%: the non-rejection reflects genuine structural equivalence of the Class C observations, not merely low power.
 - Conventional isotherm statistics do not repair this. Fit quality is weakly, and sometimes positively, related to reduction; residual diagnostics flag 5–8% of fits regardless of mechanism; bootstrap intervals for q_max are precise but rarely cover the true capacity.
 - The fitted q_max is an *apparent Cr(VI) removal capacity*. Under surface or adsorption-coupled reduction it exceeds the adsorption capacity in proportion to the reduction share.
 
@@ -68,6 +68,8 @@ The results support five requirements for any paper that claims Cr(VI) *adsorpti
 
 **What CASSIA does not offer.** It is not a new chromium-uptake predictor, and the paper does not report a better R².
 
+**What kind of contribution this is.** The paper is a methodological and theoretical benchmark: it characterises, under known truth, the identifiability, transferability and decision reliability of methods that are routinely applied to Cr(VI)–carbon data. Its quantitative findings are properties of those methods under the simulated data-generating processes. They become claims about real systems only through the empirical application of §3.8, which this paper does not report.
+
 **What it adds.**
 - **Provenance and evidence at observation level.** Every number is tied to its source and to the measurements that support its interpretation.
 - **A mechanism-identifiability layer.** It tells the user which conclusions a given set of measurements can support, and which additional measurement would change that.
@@ -101,7 +103,7 @@ Existing adsorption databases and ML studies of Cr(VI) removal typically pool re
 3. Observed through residual Cr(VI) alone, adsorption-only was not rejected by the calibrated test for 63–76% of high-reduction studies, and was demonstrated equivalent within a 10% margin for 43–65%. With total Cr, the calibrated test rejected it in 80–88% (type-I error 3–5%); with solid-phase evidence, in 90–96%. Only the A2 design constrained the precipitated share.
 4. LOSO R² for apparent uptake (0.48–0.65 across the five scenarios) was far below random-split R² (0.86–0.89). Speciation features did not improve it, and a corpus of 20–30 studies cannot rank learners. With 8 replicates per size, LOSO R² rose from 0.31 (12 studies) to 0.66 (48) and then levelled off (0.66 at 96; §3.4).
 5. Pooled conformal intervals reached nominal average coverage but covered only 65–75% of studies. The exact study-level split-conformal interval M2s met its guarantee, but at 3.3 log₁₀ units at 90% and unbounded at 95% with literature-scale numbers of calibration studies.
-6. Point-prediction designs were unsafe for 21% (S1) and 7% (S2) of new materials, and calibrated-bound designs were rarely available. Model-guided designs with sequential confirmatory testing were accepted for 98–105 of 300 materials per target; no unsafe accepted design was observed in the simulated cohorts (Wilson 95% upper bound 1.3%), and the error-controlled rule kept the per-material false-acceptance probability ≤ 0.7%.
+6. Point-prediction designs were unsafe for 21% (S1) and 7% (S2) of new materials, and calibrated-bound designs were rarely available. Model-guided designs with sequential confirmatory testing (simple rule) were accepted for 105 (S1) and 98 (S2) of 300 materials per target, and no unsafe accepted designs were observed in the simulated test cohorts. The Wilson 95% upper bound is 1.3% of all materials, or 3.5–3.8% of accepted designs. In an independent cohort, the error-controlled rule accepted almost as many designs and kept the per-material false-acceptance probability ≤ 0.7%.
 
 ### 5.2 Proposed scientific and engineering implications
 

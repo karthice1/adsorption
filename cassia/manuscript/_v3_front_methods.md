@@ -1,4 +1,4 @@
-# CASSIA: A Provenance-Aware Computational Framework for Evidence-Constrained Analysis of Cr(VI) Removal by Carbonaceous Materials
+# CASSIA: A Provenance-Aware Computational Framework and Known-Truth Benchmark for Evidence-Constrained Analysis of Cr(VI) Removal by Carbonaceous Materials
 
 ## Highlights
 
@@ -8,7 +8,7 @@
 
 <!--ABSTRACT-->
 
-**Keywords:** hexavalent chromium; carbonaceous adsorbents; PHREEQC; mechanism identifiability; leave-one-study-out validation; conformal prediction; data provenance
+**Keywords:** hexavalent chromium; carbonaceous adsorbents; known-truth simulation benchmark; PHREEQC; mechanism identifiability; leave-one-study-out validation; conformal prediction; data provenance
 
 ---
 
@@ -34,7 +34,7 @@ Hexavalent chromium is a priority contaminant in effluents from electroplating, 
 1. *Thermodynamic calculations* with three chromium-bearing PHREEQC databases.
 2. *Known-truth simulation benchmarks.* A multi-mechanism kinetic model generates virtual batch studies in which the true split between adsorption, reduction and precipitation is known. Five alternative mechanism scenarios, at least 100 replicate corpora and randomised family-level priors are used, so that conclusions do not rest on one assumed mechanism.
 
-**Status of empirical data.** The application to published experimental data is defined (schema, evidence classes, extraction protocol, seed dataset) but has not yet been carried out (Section 3.8). No result in this paper is an empirical finding about a real carbon.
+**Scope: a methodological benchmark, not an experimentally validated framework.** This paper is a computational-methodology study. It establishes, against a known truth, what the methods in CASSIA can and cannot recover and how reliable their outputs are. It does not establish that CASSIA interprets real chromium-removal experiments reliably; that requires the empirical application, which is defined (schema, evidence classes, extraction protocol, the open-access seed dataset of Ramirez et al., 2020) but has not been carried out (Section 3.8). No result in this paper is an empirical finding about a real carbon, and the framework should not be described as experimentally validated until that application is reported.
 
 ## 2. Methods
 
@@ -59,19 +59,37 @@ Negative apparent uptake (C_e,VI > C₀ within analytical error) is retained in 
 
 ### 2.2 Software architecture and release
 
-CASSIA 0.2.0 is organised in six layers (Table 1).
+CASSIA 0.3.2 is organised in six layers (Table 1). Analyses are run by scripts that are listed, with their outputs, in Table 2.
 
 **Table 1.** CASSIA layers, modules and responsibilities.
 
 | Layer | Module | Responsibility |
 |---|---|---|
-| 1 Data | `cassia.dataset` | 34-field schema with DOI and source location per row; validation and QC flags; endpoints; observation-level evidence classes |
-| 2 Chemistry | `cassia.chemistry` | PHREEQC adapter (phreeqpython 1.6.2): Cr(VI) speciation, a 4-D speciation grid, redox scenarios, Cr(III) saturation, database provenance |
-| 3 Simulator | `cassia.simulate` | Known-truth multi-mechanism batch model (scenarios A–E), mass and electron balances, measurement model |
-| 4 Identifiability | `cassia.identifiability` | Fisher information by measurement design, detection tests, equivalence tests, profile likelihood, metadata-bias propagation |
-| 5 Models and uncertainty | `cassia.fitting`, `cassia.validation` | Nonlinear isotherm/kinetic selection; RF, XGBoost and GPR under four validation schemes; study-level conformal prediction |
-| 6 Decision support | `scripts/run_v2.py` (design stage) | Two-endpoint dose/pH design under point, marginal and joint rules |
+| 1 Data | `cassia.dataset` | 37-field schema with DOI and source location per row; validation and QC flags; endpoints; observation-level evidence classes C, B, A1, A2 |
+| 2 Chemistry | `cassia.chemistry` | PHREEQC adapter (phreeqpython 1.6.2): Cr(VI) speciation, the 4-D speciation grid, redox scenarios, Cr(III) saturation indices, background electrolytes, database provenance |
+| 3 Simulator | `cassia.simulate`, `cassia.measurement` | Known-truth multi-mechanism batch model (scenarios A–E), mass and electron balances; analytical and solid-phase measurement models (XPS, XANES, inventory, phase evidence); parameter table (Table S1) |
+| 4 Identifiability | `cassia.identifiability` | Fisher information by measurement design (D1–D5), model-free detection tests, calibrated rejection and equivalence tests, profile likelihood, metadata-bias propagation |
+| 5 Models and uncertainty | `cassia.fitting`, `cassia.validation` | Nonlinear isotherm/kinetic selection; RF, XGBoost and GPR under four validation schemes; study-level conformal prediction (M0, M1, M2, M2s) |
+| 6 Decision support | `scripts/run_v2.py` (design stage), `scripts/run_v3.py` (seqver stage) | Two-endpoint dose/pH design under point, marginal and joint rules; sequential verification with simple and error-controlled acceptance |
 | auxiliary | `cassia.pores` | pyGAPS 4.x adapter: BET area (Rouquerol criteria) from published N₂ isotherms |
+
+**Table 2.** Scripts that regenerate the results (run in this order by `scripts/reproduce_all.sh`).
+
+| Script | Outputs |
+|---|---|
+| `scripts/run_v2.py --stage all` | `results/v2/`: chemistry (Tables S2–S4), mechanism benchmark (Table 4, Fig. 2), ML validation (Table 6, Fig. 4), interval methods M0–M2 (Table 7, Table S5), treatment design (Table 8), missing chemistry (Fig. 8), Fig. 1 |
+| `scripts/run_v3.py --stage chem3 … seqver` | `results/v3/`: electrolyte sensitivity (Table S10), identifiability and equivalence tests (Table 5, Table S8), M2s (Table 7b), ML across scenarios (Table S6), censoring (Table S7), learning curve, sequential verification (Table 8b) |
+| `scripts/run_v3.py --stage figures` | Figs. 3, 5, 6, 7 (must run after `run_v2.py`, whose older versions of these files it replaces) |
+| `scripts/typeI_validation.py` | independent negative-control cohort; type-I errors with Wilson intervals (Table S14) |
+| `scripts/seqver_oc.py` | operating characteristic of the verification rules (Table S9) |
+| `scripts/bench_partition.py` | true partition by scenario; Monte Carlo precision (Tables S11, S12) |
+| `scripts/endpoint_validation.py` | out-of-study accuracy of the four endpoint models (Table S13) |
+| `scripts/m2s_family.py` | M2s by material family (Table S5b) |
+| `scripts/verification_table.py` | accepted designs and unsafe rates with explicit denominators (Table 8c) |
+| `scripts/make_table_s1.py` | Table S1, generated from the implementation |
+| `scripts/make_supp_figs.py` | Supplementary Fig. S1 |
+| `manuscript/make_supplement_v3.py`, `manuscript/assemble_v3.py` | Supplementary Material and manuscript text with the code commit |
+| `scripts/make_release_manifest.py` | `release/MANIFEST.sha256`, `release/RELEASE.md` |
 
 **Reuse of existing packages.**
 - The isotherm and kinetic equations are taken from the `adsorption` package (Amvro23, MIT licence). Its gas-phase concentration transform and its fixed-temperature Temkin form are bypassed for aqueous data.
@@ -83,9 +101,9 @@ CASSIA 0.2.0 is organised in six layers (Table 1).
 - SHA-256 checksums and `$Id` revision lines for the bundled databases;
 - an end-to-end example workflow for user data (`examples/user_data_workflow.py`);
 - a release record (`release/RELEASE.md`, `release/MANIFEST.sha256`) with SHA-256 checksums of every code, database, data, result and figure file, the code commit hash and the exact commands;
-- 39 automated tests, covering mass and electron conservation for every scenario, saturation-index statuses, interpolation accuracy, the conformal constructions and a negative control for the equivalence test.
+- 40 automated tests, covering mass and electron conservation for every scenario, saturation-index statuses, interpolation accuracy, the conformal constructions and a negative control for the equivalence test, and agreement of Table S1 with the constants used by the code.
 
-Every number and figure in this paper is regenerated by `scripts/run_v2.py`, with seeds listed in the script.
+Every number, table and figure in this paper is regenerated by the scripts of Table 2, run in order by `scripts/reproduce_all.sh` (about 9–11 h on 4 cores). All random seeds are fixed in the scripts.
 
 ### 2.3 Chromium chemistry layer
 
@@ -211,6 +229,8 @@ Six cumulative measurement designs were defined:
 | D4n | D3 + XANES Cr(III) fraction on three solids + final pH | A1 (XANES) |
 | D5 | D4n + solid Cr inventory + phase evidence on the same solids | A2 |
 
+**Which D5 measurements enter which analysis.** The Fisher analysis and the precipitation-share estimate use all D5 measurements. The adsorption-only goodness-of-fit, rejection and equivalence tests use D5 *without* phase evidence (D4n + inventory): the phase measurement is the precipitated share of solid Cr(III), which is undefined when, as under the adsorption-only null, the solid holds no Cr(III). Phase evidence is therefore interpreted separately, as a discriminator of precipitation, and the reported rejection power and equivalence rates for D5 do not include it.
+
 (A further design, D4u, with an unbiased solid oxidation state, is used only for the profile likelihoods in Supplementary Fig. S1.)
 
 Four complementary analyses were applied.
@@ -315,7 +335,7 @@ Only M2s carries a proven study-level guarantee. The coverage of M0–M2 for uns
   - **(i) Simple rule:** duplicates; accept when both mean measured concentrations are ≤ 90% of their limits.
   - **(ii) error-controlled rule:** triplicates; accept when the one-sided upper confidence bound of each endpoint is ≤ its limit. The bound is mean × exp[z·√(σ_r²/n + σ_b²)], with σ_r = 0.03 random and σ_b = 0.05 calibration uncertainty. z is the 1 − α/(2R) normal quantile, with α = 0.05 and R = 4 rounds (Bonferroni over two endpoints and four looks).
 
-  The probability of accepting a non-compliant design was estimated with 1,000 simulated verification sequences per material and target. Two analytical-error models were used: calibration bias shared by both endpoints with correlated replicate errors (ρ = 0.5), and independent biases and errors.
+  The design cohort uses the simple rule with one realised verification sequence per material. Both rules were then compared on an independent verification cohort of 300 materials per target, drawn from the same hyper-priors: the probability of accepting a non-compliant design was estimated with 1,000 simulated verification sequences per material, target and rule. Two analytical-error models were used: calibration bias shared by both endpoints with correlated replicate errors (ρ = 0.5), and independent biases and errors.
 
 **Cohorts.** Twenty independent cohorts were used, each with its own 30-study training corpus and 15 new materials drawn from the same hyper-priors (300 materials per target).
 

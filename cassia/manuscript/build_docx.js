@@ -161,6 +161,15 @@ while (i < md.length) {
     afterTable = true;
     continue;
   }
+  if (line.startsWith("```")) {
+    i++;
+    while (i < md.length && !md[i].startsWith("```")) {
+      body.push(new Paragraph({ spacing: SINGLE, indent: { left: 567 }, keepLines: true,
+        children: [new TextRun({ text: md[i], font: "Courier New", size: 18 })] }));
+      i++;
+    }
+    i++; continue;
+  }
   if (line.startsWith("<center>")) {
     body.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { ...DOUBLE, before: 120, after: 120 }, children: runs(line.slice(8), { italics: true }) }));
     i++; continue;

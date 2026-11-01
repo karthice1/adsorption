@@ -1,4 +1,4 @@
-"""Operating characteristic of the sequential verification rules (Table 7b inset, Table S9).
+"""Operating characteristic of the sequential verification rules (Table 8b inset, Table S9).
 
     PYTHONPATH=. python scripts/seqver_oc.py   -> results/v3/T_seqver_oc.csv   (~10 min)
 

@@ -1,6 +1,6 @@
 ### 3.5 Study-level prediction intervals (synthetic)
 
-Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 300 test studies for Cr(VI) endpoints and 182 for total-Cr endpoints, which are measured only in Class A/B studies.
+Table 7 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 300 test studies for Cr(VI) endpoints and 182 for total-Cr endpoints, which are measured only in Class A/B studies.
 
 **Average coverage is the wrong criterion.**
 - The pooled-residual interval M0 (the conventional approach) reached its nominal *average* coverage for every endpoint (0.89–0.90 at 90%).
@@ -17,14 +17,14 @@ Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 - At 95%, intervals for the total-Cr endpoints were effectively unbounded. Only about 17 studies with total-Cr data were available for calibration, fewer than the 19 that a study-level 95% quantile requires.
 - This is a concrete data requirement: certifying total-Cr predictions at 95% needs at least 19 independent studies that report total Cr.
 
-**The exact split-conformal interval M2s behaved as its theorem predicts (Table 6b, Fig. 6).**
+**The exact split-conformal interval M2s behaved as its theorem predicts (Table 7b, Fig. 6).**
 - *Calibration.* Training studies were split in half, giving 14 calibration studies for Cr(VI) endpoints and 8.6 on average for total-Cr endpoints. The fraction of unseen studies with at least 90% of their observations covered tracked the nominal level for apparent uptake: 0.93, 0.80, 0.72 and 0.50 at nominal 0.90, 0.80, 0.70 and 0.50. Every value lies within the theoretical bounds of 1 − α and 1 − α + 1/(J + 1).
 - *Cost.* The price of exactness is width, 3.3 log₁₀ units at 90% for apparent uptake. Only half of the training studies are used to fit the model.
 - *Unbounded intervals.* At 95%, M2s is unbounded for every endpoint, because it needs J ≥ 19. At 90% it is unbounded for 63% of test studies on the total-Cr endpoints, because it needs J ≥ 9.
 - *Across mechanisms.* The guarantee held in all five scenarios (≥ 0.92 of studies covered at ≥ 90%; Fig. 5c).
 - *Interpretation.* Exact study-level guarantees are available, but with literature-scale numbers of studies they are too wide for low-effluent engineering decisions. This is a substantive negative result, not a defect of the method.
 
-**Table 6b.** M2s, exact study-level split conformal: fraction of unseen studies with ≥ 90% within-study coverage (10 corpora, leave-one-study-out).
+**Table 7b.** M2s, exact study-level split conformal: fraction of unseen studies with ≥ 90% within-study coverage (10 corpora, leave-one-study-out).
 
 | Endpoint | Calibration studies (mean) | 1 − α = 0.50 | 0.70 | 0.80 | 0.90 | 0.95 | Width at 0.90 (log₁₀; bounded intervals) |
 |---|---|---|---|---|---|---|---|
@@ -33,9 +33,9 @@ Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 | q_tot,aq | 8.6 | 0.52 | 0.78 | 0.88 | 0.97 (63% unbounded) | unbounded | 3.81 |
 | C_e,tot | 8.6 | 0.52 | 0.72 | 0.87 | 0.98 (63% unbounded) | unbounded | 2.18 |
 
-**Coverage is marginal over families, not conditional.** For apparent uptake, M0 covered 0.77 of hydrochar observations (0.85 with M1, 0.91 with M2), compared with 0.96–0.99 for the other families. Under M2s, only 84% of hydrochar studies met the 90% within-study target, against 90–98% for the other families (Table S5). Study-level calibration does not repair heterogeneity between families.
+**Coverage is marginal over families, not conditional.** For apparent uptake, M0 covered 0.77 of hydrochar observations (0.85 with M1, 0.91 with M2), compared with 0.96–0.99 for the other families. Under M2s, only 84% of hydrochar studies (42 of 50; Wilson 95% interval 72–92%) met the 90% within-study target, against 90–98% for the other families (Table S5b; mean within-study coverage 0.95 against 0.97–0.995). With 50 test studies per family the intervals of the families overlap, so this is a tendency, not a demonstrated family effect; it is consistent with the M0–M1 results (Table S5) and with the guarantee being marginal, not family-conditional. Study-level calibration does not repair heterogeneity between families.
 
-**Table 6.** Study-level coverage at a nominal 90% under leave-one-study-out validation (10 corpora; RF with speciation features). Coverage is the fraction of a test study's observations inside its interval.
+**Table 7.** Study-level coverage at a nominal 90% under leave-one-study-out validation (10 corpora; RF with speciation features). Coverage is the fraction of a test study's observations inside its interval.
 
 | Endpoint | Method | Mean | Median | 10th pct | Worst | Studies ≥ 0.90 | Width (log₁₀) | Calibration studies |
 |---|---|---|---|---|---|---|---|---|
@@ -58,7 +58,7 @@ Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 
 ### 3.6 Treatment design with two endpoints (synthetic)
 
-**Set-up.** Of the 300 new materials per target (20 cohorts × 15), 169 (S1) and 181 (S2) could truly meet both limits somewhere on the design grid (Table 7, Fig. 7).
+**Set-up.** Of the 300 new materials per target (20 cohorts × 15), 169 (S1) and 181 (S2) could truly meet both limits somewhere on the design grid (Table 8, Fig. 7).
 
 **Point predictions are unsafe.**
 - They recommended a design for 105 materials (S1). Only 41% of these complied in truth.
@@ -77,17 +77,19 @@ Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 
 **Model-guided, test-confirmed design worked.**
 - In this protocol the model proposes the pH and starting dose. Duplicate confirmatory batches are then run at the proposed design, and the dose is escalated until both measured concentrations fall below 90% of their limits (at most four rounds).
-- It accepted designs for 105 (S1) and 98 (S2) materials. Every accepted design complied in truth. No unsafe accepted design was observed in these simulated cohorts; the Wilson 95% upper bound on the unsafe rate is 1.3% of materials per target. This is an observed frequency, not a guarantee.
+- These designs were obtained with the **simple acceptance rule** (duplicates; mean ≤ 90% of each limit), with one realised verification sequence per material.
+- It accepted designs for 105 (S1) and 98 (S2) of 300 materials per target. Every accepted design complied in truth: no unsafe accepted designs were observed in the simulated test cohorts.
+- The upper confidence bound depends on the denominator (Table 8c). Over all 300 materials per target, the Wilson 95% upper bound on the unsafe rate is 1.3%. Among accepted designs only (0/105 and 0/98), it is 3.5% (S1) and 3.8% (S2). These are observed frequencies, not guarantees.
 - It found compliant designs for 62% (S1) and 54% (S2) of attainable materials, after a mean of 1.4–1.5 rounds.
 - The median dose was twice the true minimum dose, which is the price of escalating on a coarse dose grid.
 
-**Verification is a sequential decision, so its false-acceptance risk was evaluated explicitly (Table 7b, Fig. 7b,c).**
-- *Simulation.* For every material and target, 1,000 verification sequences were simulated, with up to four dose rounds and both endpoints measured each round. Each sequence drew a calibration bias and correlated replicate errors.
+**Verification is a sequential decision, so its false-acceptance risk was evaluated explicitly (Table 8b, Fig. 7b,c).**
+- *Simulation.* An independent cohort of 300 new materials per target was drawn from the same hyper-priors as the design cohort (20 training corpora × 15 materials; the material draws differ from those of the design stage). For every material, target and rule, 1,000 verification sequences were simulated, with up to four dose rounds and both endpoints measured each round. Each sequence drew a calibration bias and correlated replicate errors.
 - *Per material.* The probability of accepting a non-compliant design was:
   - simple rule (duplicates, mean ≤ 90% of each limit): mean 0.01% across materials, worst material 1.4–1.7%;
   - error-controlled rule (triplicates, one-sided upper confidence bound ≤ limit, Bonferroni over two endpoints and four rounds): worst material 0.1–0.7%.
 - *Overall.* No material exceeded 5% under either rule, with shared or independent calibration bias. The controlled rule needed about 50% more batches per material (4.7 against 3.1 for S1; 4.0 against 2.6 for S2).
-- *Operating characteristic.* Because these averages depend on how close true concentrations sit to the limits, Table 7b gives the acceptance probability over four rounds for a design whose true concentrations stay at a fixed ratio to both limits:
+- *Operating characteristic.* Because these averages depend on how close true concentrations sit to the limits, Table 8b gives the acceptance probability over four rounds for a design whose true concentrations stay at a fixed ratio to both limits:
 
 | True concentration / limit | Simple rule | Error-controlled rule |
 |---|---|---|
@@ -98,7 +100,7 @@ Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
   Both figures assume shared calibration bias. The controlled rule is about five times safer at the limit and less likely to accept compliant designs close to the limit.
 - *Scope.* These are properties under the assumed analytical-error model (3% random, 5% calibration uncertainty), not guarantees for real laboratories.
 
-**Table 7b.** Sequential verification: probability of accepting a non-compliant design (1,000 simulated sequences per material; 300 materials per target).
+**Table 8b.** Sequential verification: probability of accepting a non-compliant design (1,000 simulated sequences per material; 300 materials per target).
 
 | Target | Rule | Bias model | Mean P(false acceptance) | Worst material | Materials > 5% | Mean batches |
 |---|---|---|---|---|---|---|
@@ -108,6 +110,19 @@ Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 | S2 | controlled | shared | 0.0000 | 0.007 | 0 | 4.0 |
 | S1 | simple | independent | 0.0001 | 0.015 | 0 | 3.1 |
 | S1 | controlled | independent | 0.0000 | 0.002 | 0 | 4.7 |
+
+**Table 8c.** Accepted designs and unsafe acceptances by rule, with explicit denominators (synthetic; 300 materials per target in each cohort). Design cohort: one realised sequence per material; verification cohort: expected numbers over 1,000 sequences per material (shared calibration bias).
+
+| Cohort | Target | Rule | Accepted designs | Unsafe accepted | Unsafe rate, all materials (Wilson 95% upper) | Unsafe rate among accepted (Wilson 95% upper) |
+|---|---|---|---|---|---|---|
+| Design | S1 | simple | 105 | 0 | 0/300 (1.3%) | 0/105 (3.5%) |
+| Design | S2 | simple | 98 | 0 | 0/300 (1.3%) | 0/98 (3.8%) |
+| Verification | S1 | simple | 82.5 | 0.018 | 0.006% | 0.022% |
+| Verification | S1 | error-controlled | 81.6 | 0.002 | 0.001% | 0.003% |
+| Verification | S2 | simple | 100.2 | 0.036 | 0.012% | 0.036% |
+| Verification | S2 | error-controlled | 98.4 | 0.013 | 0.004% | 0.013% |
+
+The error-controlled rule accepted almost as many designs as the simple rule (81.6 against 82.5 for S1; 98.4 against 100.2 for S2), at about 50% more batches, and reduced the expected number of unsafe acceptances three- to ninefold. The numbers of accepted designs differ between the two cohorts because they contain different materials. Wilson bounds are given only for observed counts; the verification-cohort rates are model expectations under the assumed analytical-error model.
 
 **Sensitivity of accepted designs (S1).**
 - They tolerated a dose increase of 20% (100% compliance) and a pH increase of 0.25 (95%).
@@ -123,11 +138,11 @@ Table 6 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 | q_app,VI | 0.39 ± 0.16 | 0.77 | 0.51 |
 | q_tot,aq | 0.42 ± 0.17 | 0.75 | 0.52 |
 
-R² on the log scale weights low concentrations, which matter for compliance, more than the linear-scale R² of Table 5 (linear-scale LOSO R² here: 0.87, 0.85, 0.56 and 0.52). The total-Cr models are less accurate than the Cr(VI) models, as expected from fewer training studies, and both lose about 0.2–0.4 in R² between random and study-level validation. Their study-level intervals are reported in Table 6.
+R² on the log scale weights low concentrations, which matter for compliance, more than the linear-scale R² of Table 6 (linear-scale LOSO R² here: 0.87, 0.85, 0.56 and 0.52). The total-Cr models are less accurate than the Cr(VI) models, as expected from fewer training studies, and both lose about 0.2–0.4 in R² between random and study-level validation. Their study-level intervals are reported in Table 7.
 
 **Effluent predictions.** Predicted and true effluent concentrations on a design sub-grid were rank-correlated (Spearman 0.65 for Cr(VI), 0.55 for total Cr), with median absolute errors of 0.40 and 0.22 log₁₀ units. The 95% upper bounds held for 97.9% (Cr(VI)) and 100% (total Cr) of grid points.
 
-**Table 7.** Design outcomes for 300 new virtual materials per target (S1: C₀ = 20 mg L⁻¹, limits Cr(VI) ≤ 0.5 and total Cr ≤ 2 mg L⁻¹; S2: C₀ = 5 mg L⁻¹, limits 0.1 and 0.5 mg L⁻¹).
+**Table 8.** Design outcomes for 300 new virtual materials per target (S1: C₀ = 20 mg L⁻¹, limits Cr(VI) ≤ 0.5 and total Cr ≤ 2 mg L⁻¹; S2: C₀ = 5 mg L⁻¹, limits 0.1 and 0.5 mg L⁻¹).
 
 | Target | Rule | Designs recommended | Compliant (true) | Unsafe (of all materials) | Attainable materials found | Median dose (g L⁻¹) |
 |---|---|---|---|---|---|---|

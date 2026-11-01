@@ -35,7 +35,7 @@ In words: with probability at least $1-\alpha$, at least $\lceil\beta n_{J+1}\rc
 ## Appendix B. Goodness-of-fit and equivalence tests of the adsorption-only model
 
 **Observations and weights.**
-- *Vector.* The observation vector of a design (§2.6) contains residual Cr(VI) and, as the design requires, total aqueous Cr, the solid oxidation-state fraction, final pH and solid Cr inventory. Phase evidence is excluded, because it is undefined under adsorption only.
+- *Vector.* The observation vector of a design (§2.6) contains residual Cr(VI) and, as the design requires, total aqueous Cr, the solid oxidation-state fraction, final pH and solid Cr inventory. Phase evidence is excluded, because the precipitated share of solid Cr(III) is undefined under adsorption only (there is no Cr(III)). For D5 the test therefore uses D4n + solid Cr inventory; phase evidence enters only the Fisher analysis of the precipitation share (§2.6, §3.3). No observation model for phase evidence under the null is assumed.
 - *Error model.* Each observation $y_i$ carries an independent error with SD $\sigma_i$:
   - $\sigma_{\rm rel}y_i+0.01$ mg L⁻¹ for Cr(VI), with $\sigma_{\rm rel}$ = 0.03 or 0.10;
   - $\sigma_{\rm rel}y_i+0.02$ mg L⁻¹ for total Cr;

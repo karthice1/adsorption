@@ -4,7 +4,7 @@ Sections 3.1 and 3.7 report thermodynamic calculations. Sections 3.2–3.6 repor
 
 ### 3.1 Chromium chemistry across three databases
 
-**Cr(VI) speciation is robust to the database choice (Table 2, Fig. 1a,b).**
+**Cr(VI) speciation is robust to the database choice (Table 3, Fig. 1a,b).**
 - The log K values for HCrO₄⁻ and Cr₂O₇²⁻ agree to within 0.016 and 0.041 log units across the three databases.
 - Over pH 1.5–10 and 10–500 mg L⁻¹, species fractions differ from minteq.v4 by at most 0.031 (minteq; HCrO₄⁻ at pH 1.5, 500 mg L⁻¹) and 0.044 (llnl; CrO₄²⁻ at pH 10, 500 mg L⁻¹). The llnl difference reflects the alkali–chromate ion pairs (NaCrO₄⁻, KCrO₄⁻) that only the MINTEQ databases contain.
 - The HCrO₄⁻/CrO₄²⁻ crossover lies at pH 6.37–6.38 in all three databases (10 mg L⁻¹, I = 0.01 M).
@@ -17,7 +17,7 @@ Sections 3.1 and 3.7 report thermodynamic calculations. Sections 3.2–3.6 repor
 - A single isotherm spanning 5–300 mg L⁻¹ therefore samples materially different sorbate mixtures. This is why the revised simulator evaluates speciation at the current dissolved Cr(VI).
 - The four-dimensional speciation grid reproduced 300 direct PHREEQC solutions with a maximum absolute error of 0.011 and a mean error of 0.0011 in species fraction.
 
-**Table 2.** Equilibrium constants (25 °C) for CrO₄²⁻ + n H⁺ ⇌ product.
+**Table 3.** Equilibrium constants (25 °C) for CrO₄²⁻ + n H⁺ ⇌ product.
 
 | Product | minteq.v4 | minteq | llnl |
 |---|---|---|---|
@@ -72,9 +72,9 @@ In scenario E the removed chromium was distributed as follows (medians): 0.62 ad
 - *Residual diagnostics did not help.* The runs test flagged 4.9–7.9% of Langmuir fits in every scenario, including the control.
 - *Kinetic model choice did not help.* PSO was preferred over PFO in 25% of control series and 27–34% of reduction scenarios, so it carries no mechanistic information.
 
-**Publishable fits overstate capacity in proportion to reduction, and the size depends on the mechanism (Fig. 2c, Table 3).** Fits whose q_max reached the fitting bound because the isotherm never saturated (0.6–3.1%) were excluded.
+**Publishable fits overstate capacity in proportion to reduction, and the size depends on the mechanism (Fig. 2c, Table 4).** Fits whose q_max reached the fitting bound because the isotherm never saturated (0.6–3.1%) were excluded.
 
-**Table 3.** Fitted/true Langmuir q_max for publishable fits (R² ≥ 0.95), by scenario (synthetic; 3,000 studies per scenario).
+**Table 4.** Fitted/true Langmuir q_max for publishable fits (R² ≥ 0.95), by scenario (synthetic; 3,000 studies per scenario).
 
 | Scenario | Median ratio (IQR) | Median ratio, reduction share > 0.3 (n) | Spearman ρ, reduction share vs ratio (mean ± SD over replicates) |
 |---|---|---|---|
@@ -128,7 +128,7 @@ The prior SD was 0.04–0.28.
 - XPS false-alarms seven times as often as XANES because of the assumed beam/vacuum reduction and surface enrichment.
 - An XPS Cr(III) signal on its own is therefore weaker evidence of reduction than the same signal from XANES.
 
-**Adsorption-only fits: rejection, equivalence or neither (Table 4, Fig. 3c,d; Appendix B).** For 120 studies, each paired with a pure-adsorption control:
+**Adsorption-only fits: rejection, equivalence or neither (Table 5, Fig. 3c,d; Appendix B).** For 120 studies, each paired with a pure-adsorption control:
 - *The nominal χ² test over-rejects.* Its type-I error was 6.7–15%, because the empirical model only approximates the generating adsorption model.
 - *Calibration fixes this.* With thresholds calibrated on the controls, the cross-validated type-I error was 3.3–12.5%, mostly 3–7%. With 120 controls the Monte Carlo SE of these estimates is about 2 percentage points.
 - *Power with Class C data is low.* For high-reduction studies (share > 0.3), the calibrated test rejected adsorption-only in only 37% (D1) and 35% (D2) at 3% analytical noise, and 26% and 24% at 10% noise.
@@ -141,7 +141,7 @@ The prior SD was 0.04–0.28.
 - *More noise means more inconclusive outcomes.* At 10% analytical noise, equivalence could be demonstrated less often: under D1, 4% of high-reduction studies at ε = 5% and 43% at ε = 10%. The share of inconclusive outcomes rose to 31–71%.
 - *Conclusion.* In this benchmark, residual-Cr(VI) data from strongly reducing systems are typically *demonstrably* compatible with adsorption only within 5–10%, not merely 'not rejected'. Total-Cr and solid-phase data usually break that equivalence.
 
-**Table 4.** Adsorption-only model, high-reduction studies (true share > 0.3; n = 51): calibrated rejection, equivalence within ε = 10% and true within-margin status (synthetic).
+**Table 5.** Adsorption-only model, high-reduction studies (true share > 0.3; n = 51): calibrated rejection, equivalence within ε = 10% and true within-margin status (synthetic).
 
 | Design | Rejected, 3% noise | Rejected, 10% | Equivalent (ε = 10%), 3% | Equivalent, 10% | Truly within ε = 10% (noise-free) | Calibrated type-I, 3% / 10% |
 |---|---|---|---|---|---|---|
@@ -152,7 +152,7 @@ The prior SD was 0.04–0.28.
 | D4n (A1, XANES) | 0.94 | 0.92 | 0.06 | 0.08 | 0.28 / 0.16 | 0.125 / 0.033 |
 | D5 (A2) | 0.96 | 0.92 | 0.04 | 0.08 | 0.24 / 0.18 | 0.067 / 0.067 |
 
-'Truly within' depends on the noise level because the margin is expressed in units of the analytical SD.
+'Truly within' depends on the noise level because the margin is expressed in units of the analytical SD. For D5, the test uses D4n + solid Cr inventory; phase evidence is excluded from the test and contributes only to the precipitation-share estimate (§2.6).
 
 **These statements are conditional on the benchmark.** They hold under the assumed measurement models (§2.4), in particular the XPS and XANES bias distributions. They do not establish that total-Cr or solid-phase data make mechanisms distinguishable in every real carbonaceous system.
 

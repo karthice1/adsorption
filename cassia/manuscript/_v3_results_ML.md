@@ -1,6 +1,6 @@
 ### 3.4 Transferability of ML models across studies (synthetic)
 
-Fig. 4 and Table 5 summarise 20 independent scenario-E corpora (30 studies, six families, 840 observations each). The Gaussian process was run on 3 corpora. The target is apparent Cr(VI) uptake. About 40 observations per corpus (4.8%) had negative apparent uptake and were censored at zero.
+Fig. 4 and Table 6 summarise 20 independent scenario-E corpora (30 studies, six families, 840 observations each). The Gaussian process was run on 3 corpora. The target is apparent Cr(VI) uptake. About 40 observations per corpus (4.8%) had negative apparent uptake and were censored at zero.
 
 **Random splits overstate transferability.**
 
@@ -46,7 +46,7 @@ The hypothesis that chemistry-informed features improve predictive reliability i
 - Random-split R² stayed between 0.85 and 0.90 throughout.
 - The effective sample size for transferability is the number of independent studies. On this evidence, a literature corpus of 20–30 studies yields LOSO R² of about 0.5–0.6, and the plateau near 0.66 reflects irreducible between-study heterogeneity in the simulator, not a general property of real data.
 
-**Table 5.** Out-of-fold R² for apparent Cr(VI) uptake: mean (2.5–97.5% range across 20 corpora; GPR: 3 corpora).
+**Table 6.** Out-of-fold R² for apparent Cr(VI) uptake: mean (2.5–97.5% range across 20 corpora; GPR: 3 corpora).
 
 | Model | Features | Random 5-fold | Grouped 5-fold | LOSO | LOFO | External |
 |---|---|---|---|---|---|---|

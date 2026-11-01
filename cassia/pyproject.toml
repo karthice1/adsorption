@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cassia"
-version = "0.3.1"
+version = "0.3.2"
 description = "Speciation-constrained, provenance-aware analysis of Cr(VI) removal by carbonaceous adsorbents"
 readme = "README.md"
 requires-python = ">=3.10"

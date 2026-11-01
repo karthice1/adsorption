@@ -1,6 +1,6 @@
 """Write release/ files that identify and verify a CASSIA release.
 
-    python scripts/make_release_manifest.py 0.3.1
+    python scripts/make_release_manifest.py 0.3.2
 
 Creates release/MANIFEST.sha256 (every code, data, database, result-table and figure file),
 release/RELEASE.md (version, git commit of the code, commands, expected outputs), and copies the
@@ -15,7 +15,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 REL = ROOT / "release"
 REL.mkdir(exist_ok=True)
-version = sys.argv[1] if len(sys.argv) > 1 else "0.3.1"
+version = sys.argv[1] if len(sys.argv) > 1 else "0.3.2"
 include = ["cassia", "scripts", "tests", "examples", "data", "databases", "results/v2", "results/v3",
            "manuscript/figures", "pyproject.toml", "requirements-lock.txt", "LICENSE", "CITATION.cff", "README.md", "CHANGELOG.md"]
 files = []

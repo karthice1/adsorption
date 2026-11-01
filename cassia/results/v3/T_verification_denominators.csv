@@ -1,0 +1,11 @@
+source,target,rule,bias_model,materials,accepted,unsafe_accepted,unsafe_rate_all_materials,wilson95_upper_all,unsafe_rate_among_accepted,wilson95_upper_among_accepted,max_p_false_accept_material,mean_batches
+design stage (1 realisation),S1,"simple (n = 2, mean <= 0.9 limit)",shared within study,300,105.0,0.0,0.0,0.012642971224546036,0.0,0.035294076929109894,,
+design stage (1 realisation),S2,"simple (n = 2, mean <= 0.9 limit)",shared within study,300,98.0,0.0,0.0,0.012642971224546036,0.0,0.03771999012168061,,
+"seqver (1,000 sequences per material)",S1,"error-controlled (n = 3, UCB <= limit)",independent,300,81.57900000000001,0.004,1.3333333333333333e-05,,4.903222643082165e-05,,0.002,4.7118199999999995
+"seqver (1,000 sequences per material)",S1,"error-controlled (n = 3, UCB <= limit)",shared,300,81.623,0.002,6.666666666666667e-06,,2.4502897467625546e-05,,0.001,4.71162
+"seqver (1,000 sequences per material)",S1,"simple (n = 2, mean <= 0.9 limit)",independent,300,82.499,0.022,7.333333333333333e-05,,0.00026666989902907913,,0.015,3.1366466666666666
+"seqver (1,000 sequences per material)",S1,"simple (n = 2, mean <= 0.9 limit)",shared,300,82.548,0.018000000000000002,6.000000000000001e-05,,0.00021805494984736157,,0.014,3.1363600000000003
+"seqver (1,000 sequences per material)",S2,"error-controlled (n = 3, UCB <= limit)",independent,300,98.425,0.008,2.6666666666666667e-05,,8.128016256032513e-05,,0.004,3.96747
+"seqver (1,000 sequences per material)",S2,"error-controlled (n = 3, UCB <= limit)",shared,300,98.393,0.013000000000000001,4.3333333333333334e-05,,0.00013212322014777476,,0.007,3.96779
+"seqver (1,000 sequences per material)",S2,"simple (n = 2, mean <= 0.9 limit)",independent,300,100.229,0.036000000000000004,0.00012000000000000002,,0.0003591774835626416,,0.017,2.642093333333333
+"seqver (1,000 sequences per material)",S2,"simple (n = 2, mean <= 0.9 limit)",shared,300,100.19800000000001,0.036000000000000004,0.00012000000000000002,,0.000359288608555061,,0.015,2.6425933333333336

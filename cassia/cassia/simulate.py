@@ -76,16 +76,26 @@ PARAMETERS = {
     "Ea_ads": ("kJ/mol", "15 (fixed)"),
 }
 
-MEASUREMENT = {
-    "Ce_VI": "DPC: x(1 + N(0, 0.03)) * study bias; LOD 0.01 mg/L, values < LOD reported as LOD/2 and flagged",
-    "Ce_total": "AAS/ICP: (Cv + C3)(1 + N(0, 0.03)) * study bias; LOD 0.02 mg/L",
-    "xps_cr3_frac": "XPS (surface): e f/(e f + 1 - f) + b (1 - [.]) + N(0, 0.05), clipped; per-study enrichment e ~ LN(0, 0.4), beam reduction b ~ U(0, 0.15)",
-    "xanes_cr3_frac": "XANES (bulk, LCF): f + b (1 - f) + N(0, 0.03), clipped; b ~ U(0, 0.03); no enrichment",
-    "solid_cr_mgg": "digestion + total-Cr analysis of the solid: true inventory (1 + N(0, 0.05))",
-    "cr3_precip_frac": "phase/coordination evidence: precipitated share of solid Cr(III) + N(0, 0.10), clipped",
-    "pH_final": "true final pH + N(0, 0.05)",
-    "study bias": "exp(N(0, 0.05)), shared by Cr(VI) and total-Cr analyses within a study",
-}
+def _measurement_spec() -> dict:
+    """Measurement-model rows of Table S1, generated from the constants used by the code."""
+    x, n = ms.TECHNIQUES["XPS"], ms.TECHNIQUES["XANES"]
+    return {
+        "Ce_VI": "DPC: x(1 + N(0, 0.03)) * study bias; LOD 0.01 mg/L, values < LOD reported as LOD/2 and flagged",
+        "Ce_total": "AAS/ICP: (Cv + C3)(1 + N(0, 0.03)) * study bias; LOD 0.02 mg/L",
+        "xps_cr3_frac": (f"XPS (surface): f_obs = f_s + b (1 - f_s) + N(0, {x['noise']}), clipped to [0, 1]; "
+                         f"f_s = e f/(e f + 1 - f); per-study enrichment e ~ LN(0, {x['enrich_logsd']}), "
+                         f"beam/vacuum reduction b ~ U(0, {x['beam_max']})"),
+        "xanes_cr3_frac": (f"XANES (bulk, LCF): f_obs = f + b (1 - f) + N(0, {n['noise']}), clipped; "
+                           f"b ~ U(0, {n['beam_max']}); no enrichment"),
+        "solid_cr_mgg": f"solid Cr inventory (digestion + total-Cr analysis): true inventory (1 + N(0, {ms.INVENTORY_REL_SD}))",
+        "cr3_precip_frac": f"phase/coordination evidence: precipitated share of solid Cr(III) + N(0, {ms.PHASE_ABS_SD}), clipped",
+        "pH_final": "true final pH + N(0, 0.05)",
+        "study bias": "exp(N(0, 0.05)), shared by Cr(VI) and total-Cr analyses within a study",
+    }
+
+
+MEASUREMENT = _measurement_spec()
+
 
 
 # ---------------------------------------------------------------------------
@@ -425,10 +435,15 @@ STUDY_DESIGN = {
     "Vp, dp": ("cm3/g, nm", "Vp = SBET/1000 U(0.35, 0.75); dp ~ U(1.6, 6.0)"),
     "affinity": ("-", "K = K0 (f_base + f[HCrO4- + Cr2O7-2]) (e_base + 1/(1 + exp((pH - pHpzc)/w_elec))); "
                       "f_base 0.05, e_base 0.1, w_elec 0.8 (fixed)"),
-    "evidence class of a study": ("-", "C 0.40, B 0.30, A1 0.20, A2 0.10; B: total aqueous Cr on isotherm, pH-edge and dose "
-                                       "series; A1: B + solid oxidation state (XPS or XANES, equal odds) on 3 solids + final pH + "
-                                       "total Cr on kinetics; A2: A1 with XANES + solid Cr inventory + phase evidence on the 3 solids"),
+    "evidence class of a study": ("-", ", ".join(f"{k} {v:.2f}" for k, v in EVIDENCE_MIX.items())
+                                      + "; B: total aqueous Cr on isotherm, pH-edge and dose series; A1: B + solid oxidation "
+                                        "state on 3 solids (XPS or XANES, probability 0.5 each) + final pH + total Cr on kinetics; "
+                                        "A2: A1 with XANES + solid Cr inventory + phase evidence on the same 3 solids"),
     "I": ("mol/L", "one of 0.001, 0.005, 0.01, 0.05, 0.1; reported always (A1, A2), 50% (B), 30% (C)"),
+    "final pH reported": ("-", "always (A1, A2), 50% (B), never (C)"),
+    "corpus composition": ("-", "30 studies per corpus, families assigned in rotation (5 studies per family); one material per study"),
+    "family hyper-priors": ("-", "redrawn per corpus and family: q_f ~ LN(ln 35, 0.3), mu_R,f ~ U(-1.3, 0.3), mu_L,f ~ U(-2.5, -0.8)"),
+    "scenario switches": ("-", "A: kB = kC = kD = 0; B: kC = kD = 0; C: kB = kD = 0; D: kB = kC = 0; E: all pathways"),
     "T": ("K", "one of 293.15-313.15 in 5 K steps"),
     "D": ("g/L", "one of 0.5, 1, 2, 4 (dose series: 0.5, 1, 2, 4, 6, 8 at C0 = 20 mg/L)"),
     "pH_opt": ("-", "U(1.8, 3.5): pH of isotherm, kinetic and dose series"),

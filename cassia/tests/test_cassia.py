@@ -275,3 +275,17 @@ def test_equivalence_v3_control_and_reduction():
     ctrl = idf.equivalence_test_v3(sim.apply_scenario(m, "A"), meta, "D3", sd_rel=0.10, seed=1, n_starts=2)
     assert ctrl["lambda_true"] < ctrl["lambda0_0.1"]          # control is truly within the margin
     assert set(k for k in ctrl if k.startswith("equiv_")) == {"equiv_0.05", "equiv_0.1", "equiv_0.2"}
+
+
+def test_parameter_table_matches_implementation():
+    """Table S1 is generated from the constants the simulator and measurement models use."""
+    from cassia import measurement as ms
+    t = sim.parameter_table().set_index("parameter")["distribution"]
+    ev = t["evidence class of a study"]
+    for k, v in sim.EVIDENCE_MIX.items():
+        assert f"{k} {v:.2f}" in ev
+    x, n = ms.TECHNIQUES["XPS"], ms.TECHNIQUES["XANES"]
+    assert f"LN(0, {x['enrich_logsd']})" in t["xps_cr3_frac"] and f"U(0, {x['beam_max']})" in t["xps_cr3_frac"]
+    assert f"N(0, {x['noise']})" in t["xps_cr3_frac"] and "f_s = e f/(e f + 1 - f)" in t["xps_cr3_frac"]
+    assert f"U(0, {n['beam_max']})" in t["xanes_cr3_frac"] and f"N(0, {n['noise']})" in t["xanes_cr3_frac"]
+    assert f"N(0, {ms.INVENTORY_REL_SD})" in t["solid_cr_mgg"] and f"N(0, {ms.PHASE_ABS_SD})" in t["cr3_precip_frac"]
