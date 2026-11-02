@@ -1,4 +1,4 @@
-# CASSIA 0.3.3
+# CASSIA 0.3.4
 
 **CASSIA** (*Chromium Adsorption, Speciation and Surface-reduction Identifiability Analysis*) is an
 open Python framework for **evidence-constrained** analysis of Cr(VI) removal by carbonaceous
@@ -29,7 +29,7 @@ git clone https://github.com/karthice1/adsorption && cd adsorption
 git checkout claude/exciting-hawking-ayadsw
 pip install -e .                      # the 'adsorption' equation package (repository root)
 pip install -e cassia[ml,pores,dev]   # CASSIA, xgboost, pyGAPS, pytest
-pytest -q cassia/tests                # 41 tests
+pytest -q cassia/tests                # 42 tests
 ```
 
 Python 3.10+; the exact environment used for the paper is pinned in `requirements-lock.txt`
@@ -70,7 +70,7 @@ script can be run on its own; manuscript Table 2 lists the scripts and their out
 `run_v3.py --stage figures` must run after `run_v2.py --stage all`, which the script does.
 
 Main scripts: `run_v2.py` and `run_v3.py` (stage drivers), `typeI_validation.py` (Table S14), `typeI_corpus.py`
-(Table S14b, corpus-level type-I analysis), `m2s_family.py` (Table S5b), `seqver_oc.py` (Table S9),
+(Table S14b, corpus-level type-I analysis), `m2s_family.py` (Table S5b), `m2s_exchangeability.py` (Table S5c), `seqver_oc.py` (Table S9),
 `bench_partition.py` (Tables S11-S12), `endpoint_validation.py` (Table S13), `verification_table.py` (Table 8c),
 `make_table_s1.py` (Table S1 from the implementation), `make_supp_figs.py` (Fig. S1),
 `make_release_manifest.py` (release record). Outputs go to `results/v2/`, `results/v3/` and `manuscript/figures/`.
@@ -86,14 +86,14 @@ Verify a release: `sha256sum -c release/MANIFEST.sha256` (prints nothing when ev
   `data/PROTOCOL.md` the registered extraction protocol.
 - RASPA3 is not used (manuscript Section 4.6).
 
-## Release checklist for 0.3.3 (for the author)
+## Release checklist for 0.3.4 (for the author)
 
 These steps need the author's accounts and details and cannot be done from the build environment.
 
 1. Fill in surname, affiliation and ORCID in `CITATION.cff`, `LICENSE` and the manuscript title page
    (`manuscript/build_docx.js`); confirm funding, CRediT, the verification statement (manuscript Section 2.12)
    and the generative-AI declaration (`manuscript/_v3_back_matter.md`).
-2. Merge or push the release commit, then tag it `cassia-v0.3.3` and create a GitHub release.
+2. Merge or push the release commit, then tag it `cassia-v0.3.4` and create a GitHub release.
 3. Enable the repository in Zenodo (GitHub integration) before creating the release, so the release receives a DOI.
 4. Put the DOI in `CITATION.cff` (replacing `10.5281/zenodo.0000000`) and in the manuscript's Data and code
    availability section (`manuscript/_v3_back_matter.md`), rebuild the documents (HANDOFF.md section 4).

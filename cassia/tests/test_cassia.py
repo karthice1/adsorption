@@ -306,3 +306,23 @@ def test_cluster_conformal_threshold_unit_is_cluster():
         t = cluster_conformal_threshold(s[c < K], c[c < K], 0.05, rng)
         hits.append(rng.choice(s[c == K]) > t)
     assert np.mean(hits) <= 0.05 + 3 * np.sqrt(0.05 * 0.95 / 600)
+
+
+def test_split_conformal_random_roles_with_fixed_families_and_shared_effects():
+    """M2s exchangeability by random role assignment: fixed family rotation and a large shared family effect
+    within one realised corpus still give marginal coverage >= 1 - alpha (Appendix A), but not per family."""
+    rng = np.random.default_rng(8)
+    fam = np.arange(30) % 6
+    u = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 3.0])            # one family with much larger scores (shared effect)
+    s = np.abs(u[fam] + rng.normal(0, 1, 30))              # one realised corpus, scores held fixed
+    J, alpha = 14, 0.10
+    k = int(np.ceil((1 - alpha) * (J + 1)))
+    hits, fam_hits = [], []
+    for _ in range(4000):
+        perm = rng.permutation(30)                          # uniformly random roles: test, 15 proper, 14 calibration
+        t, cal = perm[0], perm[16:]
+        ok = s[t] <= np.sort(s[cal])[k - 1]
+        hits.append(ok); fam_hits.append((fam[t], ok))
+    assert np.mean(hits) >= 1 - alpha - 3 * np.sqrt(alpha * (1 - alpha) / 4000)
+    f5 = [ok for f, ok in fam_hits if f == 5]
+    assert np.mean(f5) < 1 - alpha                         # family-conditional coverage fails

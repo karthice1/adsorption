@@ -24,7 +24,7 @@ Hexavalent chromium is a priority contaminant in effluents from electroplating, 
 - *Chemistry.* Cr(VI) speciation depends on concentration through dichromate formation, and Cr(III) solubility depends strongly on pH. Both rest on thermodynamic data whose sources differ (Rai et al., 1987; Ball and Nordstrom, 1998). Yet adsorption studies rarely report the background electrolyte, the final pH or the redox state, and ML studies seldom propagate this missing information.
 - *Statistics.* Observations from one publication share an adsorbent, a laboratory and a protocol. Random train/test splits therefore leak study identity (Roberts et al., 2017). Prediction intervals calibrated on pooled observations carry no guarantee for a new study, because exchangeability holds, at best, between studies (Dunn et al., 2023).
 
-**Contribution.** This paper does not propose a new removal mechanism or another chromium-uptake predictor. It contributes an open framework, CASSIA (*Chromium Adsorption, Speciation and Surface-reduction Identifiability Analysis*), built to answer three questions:
+**Contribution.** This paper does not propose a new removal mechanism or another chromium-uptake predictor. Its contribution is a known-truth benchmark of how analytical measurement design, hierarchical study-to-study variation and uncertainty methods affect the identifiability of Cr(VI) adsorption, reduction and precipitation. It contributes an open framework, CASSIA (*Chromium Adsorption, Speciation and Surface-reduction Identifiability Analysis*), built to answer three questions:
 
 - **Q1.** What can actually be established about Cr(VI) removal from a given set of measurements?
 - **Q2.** What remains mechanistically unidentifiable without additional evidence, and which additional measurement resolves it?
@@ -59,7 +59,7 @@ Negative apparent uptake (C_e,VI > C₀ within analytical error) is retained in 
 
 ### 2.2 Software architecture and release
 
-CASSIA 0.3.3 is organised in six layers (Table 1). Analyses are run by scripts that are listed, with their outputs, in Table 2.
+CASSIA 0.3.4 is organised in six layers (Table 1). Analyses are run by scripts that are listed, with their outputs, in Table 2.
 
 **Table 1.** CASSIA layers, modules and responsibilities.
 
@@ -68,7 +68,7 @@ CASSIA 0.3.3 is organised in six layers (Table 1). Analyses are run by scripts t
 | 1 Data | `cassia.dataset` | 37-field schema with DOI and source location per row; validation and QC flags; endpoints; observation-level evidence classes C, B, A1, A2 |
 | 2 Chemistry | `cassia.chemistry` | PHREEQC adapter (phreeqpython 1.6.2): Cr(VI) speciation, the 4-D speciation grid, redox scenarios, Cr(III) saturation indices, background electrolytes, database provenance |
 | 3 Simulator | `cassia.simulate`, `cassia.measurement` | Known-truth multi-mechanism batch model (scenarios A–E), mass and electron balances; analytical and solid-phase measurement models (XPS, XANES, inventory, phase evidence); parameter table (Table S1) |
-| 4 Identifiability | `cassia.identifiability` | Fisher information by measurement design (D1–D5), model-free detection tests, calibrated rejection and equivalence tests, profile likelihood, metadata-bias propagation |
+| 4 Identifiability | `cassia.identifiability` | Fisher information by measurement design (D1–D5), model-free detection tests, empirically calibrated rejection and equivalence tests, profile likelihood, metadata-bias propagation |
 | 5 Models and uncertainty | `cassia.fitting`, `cassia.validation` | Nonlinear isotherm/kinetic selection; RF, XGBoost and GPR under four validation schemes; study-level conformal prediction (M0, M1, M2, M2s) |
 | 6 Decision support | `scripts/run_v2.py` (design stage), `scripts/run_v3.py` (seqver stage) | Two-endpoint dose/pH design under point, marginal and joint rules; sequential verification with simple and error-controlled acceptance |
 | auxiliary | `cassia.pores` | pyGAPS 4.x adapter: BET area (Rouquerol criteria) from published N₂ isotherms |
@@ -86,6 +86,7 @@ CASSIA 0.3.3 is organised in six layers (Table 1). Analyses are run by scripts t
 | `scripts/bench_partition.py` | true partition by scenario; Monte Carlo precision (Tables S11, S12) |
 | `scripts/endpoint_validation.py` | out-of-study accuracy of the four endpoint models (Table S13) |
 | `scripts/m2s_family.py` | M2s by material family, with corpus-cluster bootstrap and Wilson intervals (Table S5b) |
+| `scripts/m2s_exchangeability.py` | M2s under the hierarchical simulator design: within-corpus, family-conditional and new-corpus coverage (Table S5c) |
 | `scripts/verification_table.py` | accepted designs and unsafe rates with explicit denominators (Table 8c) |
 | `scripts/make_table_s1.py` | Table S1, generated from the implementation |
 | `scripts/make_supp_figs.py` | Supplementary Fig. S1 |
@@ -102,7 +103,7 @@ CASSIA 0.3.3 is organised in six layers (Table 1). Analyses are run by scripts t
 - SHA-256 checksums and `$Id` revision lines for the bundled databases;
 - an end-to-end example workflow for user data (`examples/user_data_workflow.py`);
 - a release record (`release/RELEASE.md`, `release/MANIFEST.sha256`) with SHA-256 checksums of every code, database, data, result and figure file, the code commit hash and the exact commands;
-- 40 automated tests, covering mass and electron conservation for every scenario, saturation-index statuses, interpolation accuracy, the conformal constructions and a negative control for the equivalence test, and agreement of Table S1 with the constants used by the code.
+- 42 automated tests, covering mass and electron conservation for every scenario, saturation-index statuses, interpolation accuracy, the conformal constructions and a negative control for the equivalence test, and agreement of Table S1 with the constants used by the code.
 
 Every number, table and figure in this paper is regenerated by the scripts of Table 2, run in order by `scripts/reproduce_all.sh` (about 9–11 h on 4 cores). All random seeds are fixed in the scripts.
 
@@ -308,7 +309,7 @@ Only M2s carries a proven study-level guarantee. The coverage of M0–M2 for uns
   - *Status:* no coverage guarantee is claimed. The CV+ bound is proven for scalar scores of exchangeable points, and its extension to within-study quantile scores is not established (Appendix A).
 - **M2s – study-level split conformal (exact).**
   - *Construction:* the training studies are split at random into halves, one for model fitting and J for calibration. Each calibration study is scored by s_j as above, and the half-width is the ⌈(1−α)(J+1)⌉-th smallest score.
-  - *Guarantee (Appendix A):* under exchangeability of studies, with probability ≥ 1 − α at least ⌈0.9 n⌉ of a new study's n observations are covered. The guarantee is marginal over the study population (families, study sizes), not conditional on a family.
+  - *Guarantee (Appendix A):* if the test study and the calibration studies are exchangeable given the proper-training studies, then with probability ≥ 1 − α at least ⌈0.9 n⌉ of the test study's n observations are covered. In the simulated corpora, whose family allocation is fixed and whose studies share family hyper-priors, this exchangeability comes from the random assignment of the test, proper-training and calibration roles within a corpus (Appendix A). The guarantee therefore applies to a study drawn at random from the same corpus, marginally over its families and study sizes. It does not apply conditionally on a family, or to a study from a new, independent corpus.
   - *Requirement:* J ≥ (1 − α)/α calibration studies. With fewer, the interval is unbounded.
 
 **Evaluation.** Each construction was evaluated by outer LOSO on 10 corpora for all four targets, at nominal levels 0.50–0.95. There were 29 training studies per test study; for M2s, about 14 of these were used for calibration. Reported for each:

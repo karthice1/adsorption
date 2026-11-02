@@ -14,9 +14,10 @@ INTRO = """All results in this supplement are synthetic (known-truth simulations
 
 | Tables | Generating script | CSV files |
 |---|---|---|
-| S1 | `scripts/make_table_s1.py` (from `cassia.simulate.parameter_table()`, CASSIA 0.3.3) | `results/v3/T_S1_simulator_parameters.csv` |
+| S1 | `scripts/make_table_s1.py` (from `cassia.simulate.parameter_table()`, CASSIA 0.3.4) | `results/v3/T_S1_simulator_parameters.csv` |
 | S2–S5 | `scripts/run_v2.py` | `results/v2/` |
 | S5b | `scripts/m2s_family.py` (from `run_v3.py` stage m2s) | `results/v3/T_m2s_family_full.csv` |
+| S5c | `scripts/m2s_exchangeability.py` | `results/v3/T_m2s_exchangeability.csv` |
 | S6–S8, S10 | `scripts/run_v3.py` (stages mlscen, censor, equiv3, chem3) | `results/v3/` |
 | S9 | `scripts/seqver_oc.py` | `results/v3/T_seqver_oc.csv` |
 | S11–S12 | `scripts/bench_partition.py` | `results/v3/T_bench_partition.csv`, `T_bench_mcse.csv` |
@@ -31,7 +32,7 @@ base = re.sub(r"^Tables S1.*$|^All tables are generated.*$", "@@INTRO@@", base, 
 base = base.replace("@@INTRO@@", INTRO)
 
 t1 = pd.read_csv(R + "T_S1_simulator_parameters.csv")
-s1 = ("## Table S1. Simulator parameters, distributions, measurement models, evidence-class probabilities and numerical settings (CASSIA 0.3.3)\n\n"
+s1 = ("## Table S1. Simulator parameters, distributions, measurement models, evidence-class probabilities and numerical settings (CASSIA 0.3.4)\n\n"
       "Generated from the implementation by `scripts/make_table_s1.py`; a unit test checks that the evidence-class probabilities and "
       "measurement-model constants in this table are those used by the code. LN(m, s): log-normal with log-mean m and log-SD s; "
       "U(a, b): uniform; N(0, s): normal.\n\n" + md(t1) + "\n\n")
@@ -53,6 +54,22 @@ s5b = ("## Table S5b. M2s (exact study-level split conformal) by material family
        "independent Bernoulli observations; and the envelope of the two (lower = smaller, upper = larger), which is the interval reported in the text. With only 10 "
        "independent corpora the cluster bootstrap is itself imprecise and collapses to a point when every study of a family covers, "
        "so the family comparisons remain descriptive.\n\n" + md(F) + "\n\n")
+import os
+if os.path.exists(R + "T_m2s_exchangeability.csv"):
+    X = pd.read_csv(R + "T_m2s_exchangeability.csv")
+    famcols = [c for c in X.columns if c.startswith("family_") and c not in ("family_min", "family_max")]
+    X = X[["target", "J_mean", "frac_unbounded", "within_rate", "within_min_corpus", "within_max_corpus", *famcols, "new_corpus_rate",
+           "new_corpus_min_corpus"]]
+    X.columns = (["target", "calibration studies J", "fraction unbounded", "within corpus (guaranteed ≥ 0.90)", "within: lowest corpus",
+                  "within: highest corpus"] + [c.replace("family_", "") for c in famcols] + ["new corpus", "new corpus: lowest"])
+    s5b += ("## Table S5c. M2s coverage under the hierarchical simulator design (nominal 90%, β = 0.9; 10 corpora × 20 random "
+            "proper-training sets, every role assignment enumerated)\n\n`scripts/m2s_exchangeability.py`. Fraction of test studies "
+            "with ≥ 90% of their observations covered. Within corpus: the test study and the J calibration studies are the studies of the "
+            "same corpus not used for model fitting, with every one of them taken as test in turn; this is the role assignment under which "
+            "Appendix A proves coverage ≥ 0.90 in expectation for every corpus (the per-corpus values are single realisations of 20 "
+            "proper-training sets). Family columns: the same rate conditional on the test study's family, which the theorem does not "
+            "cover. New corpus: model and calibration from one corpus, test studies from the next corpus (different hyper-prior draws), "
+            "also not covered. Unbounded intervals count as covering.\n\n" + md(X) + "\n\n")
 a = base.index("## Table S5.")
 b = base.find("## Table S6", a)
 base = (base[:b] + s5b + base[b:]) if b > 0 else (base.rstrip() + "\n\n" + s5b)

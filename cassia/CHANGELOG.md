@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.4 (2026-11-02) - sixth revision
+- M2s exchangeability under the hierarchical simulator (fixed family rotation, shared hyper-priors): Appendix A proves
+  the required exchangeability from the random role assignment within a corpus and states the scope of the guarantee;
+  `scripts/m2s_exchangeability.py` (Table S5c) enumerates role assignments on the 10 m2s corpora and reports
+  within-corpus, family-conditional and new-corpus coverage; new unit test (42 tests).
+- Manuscript: study-pooled versus corpus-level calibration named consistently; novelty claim narrowed; Highlights state
+  that coverage is marginal; hydrochar Wilson interval corrected to 71-92%; test count 42 throughout.
+
 ## 0.3.3 (2026-11-02) - fifth revision
 - Type-I error of the rejection test: new corpus-level analysis from the existing 360 controls, no refitting
   (`scripts/typeI_corpus.py`, Table S14b). Includes a corpus-level split-conformal threshold
