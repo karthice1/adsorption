@@ -20,7 +20,7 @@ if [ -z "$COMMIT" ]; then
 fi
 export CASSIA_COMMIT="$COMMIT"
 echo "CASSIA commit cited in the documents: $CASSIA_COMMIT"
-pytest -q tests | tee release/test_log.txt                     # 41 tests
+python -m pytest -v tests | tee release/test_log.txt           # 41 tests (same interpreter as the scripts)
 python scripts/run_v2.py --stage all                           # results/v2: chemistry, benchmark, ML, UQ, design, missing chemistry; Figs 1, 2, 4, 8
 python scripts/run_v3.py --stage chem3                         # electrolyte sensitivity (Table S10), thresholds (Table S4)
 python scripts/run_v3.py --stage ident3                        # Fisher analysis, model-free diagnostics (Sect. 3.3)
