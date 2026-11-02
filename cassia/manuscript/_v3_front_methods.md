@@ -59,7 +59,7 @@ Negative apparent uptake (C_e,VI > C₀ within analytical error) is retained in 
 
 ### 2.2 Software architecture and release
 
-CASSIA 0.3.4 is organised in six layers (Table 1). Analyses are run by scripts that are listed, with their outputs, in Table 2.
+CASSIA 0.3.5 is organised in six layers (Table 1). Analyses are run by scripts that are listed, with their outputs, in Table 2.
 
 **Table 1.** CASSIA layers, modules and responsibilities.
 
@@ -78,7 +78,7 @@ CASSIA 0.3.4 is organised in six layers (Table 1). Analyses are run by scripts t
 | Script | Outputs |
 |---|---|
 | `scripts/run_v2.py --stage all` | `results/v2/`: chemistry (Tables S2–S4), mechanism benchmark (Table 4, Fig. 2), ML validation (Table 6, Fig. 4), interval methods M0–M2 (Table 7, Table S5), treatment design (Table 8), missing chemistry (Fig. 8), Fig. 1 |
-| `scripts/run_v3.py --stage chem3 … seqver` | `results/v3/`: electrolyte sensitivity (Table S10), identifiability and equivalence tests (Table 5, Table S8), M2s (Table 7b), ML across scenarios (Table S6), censoring (Table S7), learning curve, sequential verification (Table 8b) |
+| `scripts/run_v3.py --stage chem3 … seqver` | `results/v3/`: electrolyte sensitivity (Table S10), identifiability and equivalence tests (Table 5, Table S8), M2s single fixed-seed realisation (Table 7b, last column), ML across scenarios (Table S6), censoring (Table S7), learning curve, sequential verification (Table 8b) |
 | `scripts/run_v3.py --stage figures` | Figs. 3, 5, 6, 7 (must run after `run_v2.py`, whose older versions of these files it replaces) |
 | `scripts/typeI_validation.py` | independent negative-control cohort; type-I errors with Wilson intervals (Table S14) |
 | `scripts/typeI_corpus.py` | corpus-level type-I analysis: corpus-level split conformal, heterogeneity, calibration-set sensitivity (Table S14b) |
@@ -86,7 +86,7 @@ CASSIA 0.3.4 is organised in six layers (Table 1). Analyses are run by scripts t
 | `scripts/bench_partition.py` | true partition by scenario; Monte Carlo precision (Tables S11, S12) |
 | `scripts/endpoint_validation.py` | out-of-study accuracy of the four endpoint models (Table S13) |
 | `scripts/m2s_family.py` | M2s by material family, with corpus-cluster bootstrap and Wilson intervals (Table S5b) |
-| `scripts/m2s_exchangeability.py` | M2s under the hierarchical simulator design: within-corpus, family-conditional and new-corpus coverage (Table S5c) |
+| `scripts/m2s_exchangeability.py` | Main M2s evaluation by random role assignment (50 proper-training sets per corpus); within-corpus, family-conditional and new-corpus coverage (Table 7b, Table S5c, Fig. 6) |
 | `scripts/verification_table.py` | accepted designs and unsafe rates with explicit denominators (Table 8c) |
 | `scripts/make_table_s1.py` | Table S1, generated from the implementation |
 | `scripts/make_supp_figs.py` | Supplementary Fig. S1 |
@@ -99,7 +99,7 @@ CASSIA 0.3.4 is organised in six layers (Table 1). Analyses are run by scripts t
 
 **Release contents.** The release includes:
 - the MIT licence, a `CITATION.cff` file and a changelog;
-- a pinned environment (`requirements-lock.txt`, Python 3.13.17);
+- a pinned environment (`requirements-lock.txt`; CPython 3.13.18, with the same package versions as the CPython 3.13.17 environment used for earlier analyses);
 - SHA-256 checksums and `$Id` revision lines for the bundled databases;
 - an end-to-end example workflow for user data (`examples/user_data_workflow.py`);
 - a release record (`release/RELEASE.md`, `release/MANIFEST.sha256`) with SHA-256 checksums of every code, database, data, result and figure file, the code commit hash and the exact commands;
@@ -294,7 +294,7 @@ Four interval constructions were compared. All are calibrated on out-of-study re
 | M0 | one score per observation, pooled | inner grouped K-fold residuals (cross-validation residual method; neither split nor cross-conformal in the formal sense) | none for a new study |
 | M1 | one score per observation, weighted 1/n_j per study | study-level CV+ (Barber et al., 2021) with group weights | none claimed; targets coverage of a random observation of a new study |
 | M2 | one score per study (within-study 0.9-quantile) | study-level CV+ | none claimed (Appendix A, Remark 5) |
-| M2s | one score per study (within-study 0.9-quantile) | split conformal over studies | exact: P(≥ ⌈0.9 n⌉ of a new study's n observations covered) ≥ 1 − α (Appendix A) |
+| M2s | one score per study (within-study 0.9-quantile) | split conformal over studies | exact, for a randomly selected held-out study from the same realised corpus: P(≥ ⌈0.9 n⌉ of its n observations covered) ≥ 1 − α, over the random role assignment and marginally over family and study size (Appendix A) |
 
 Only M2s carries a proven study-level guarantee. The coverage of M0–M2 for unseen studies is established empirically, by outer leave-one-study-out evaluation, and reported per study.
 
@@ -312,7 +312,7 @@ Only M2s carries a proven study-level guarantee. The coverage of M0–M2 for uns
   - *Guarantee (Appendix A):* if the test study and the calibration studies are exchangeable given the proper-training studies, then with probability ≥ 1 − α at least ⌈0.9 n⌉ of the test study's n observations are covered. In the simulated corpora, whose family allocation is fixed and whose studies share family hyper-priors, this exchangeability comes from the random assignment of the test, proper-training and calibration roles within a corpus (Appendix A). The guarantee therefore applies to a study drawn at random from the same corpus, marginally over its families and study sizes. It does not apply conditionally on a family, or to a study from a new, independent corpus.
   - *Requirement:* J ≥ (1 − α)/α calibration studies. With fewer, the interval is unbounded.
 
-**Evaluation.** Each construction was evaluated by outer LOSO on 10 corpora for all four targets, at nominal levels 0.50–0.95. There were 29 training studies per test study; for M2s, about 14 of these were used for calibration. Reported for each:
+**Evaluation.** Each construction was evaluated by outer LOSO on 10 corpora for all four targets, at nominal levels 0.50–0.95. There were 29 training studies per test study; for M2s, about 14 of these were used for calibration. For M2s, the reported results (Table 7b, Table S5c, Fig. 6) use the random role assignment of the theorem directly (`scripts/m2s_exchangeability.py`): in each corpus, 50 proper-training sets were drawn uniformly and independently, and for each, every remaining study was taken as the test study in turn, calibrated on the others. This is a Monte Carlo average over uniformly random (test, proper-training, calibration) partitions. The original LOSO run (one calibration subset per fold, drawn with the same fixed seed in every fold of a corpus) is reported only as a single realisation (Table 7b, Table S5b). Reported for each construction:
 - mean, median, 10th-percentile and worst per-study coverage;
 - the fraction of studies covered at the nominal level;
 - the observation-weighted coverage;

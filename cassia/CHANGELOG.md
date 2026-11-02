@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.5 (2026-11-02) - seventh revision
+- M2s: the reported evaluation is now the random role assignment of Appendix A (`scripts/m2s_exchangeability.py`,
+  50 proper-training sets per corpus, all nominal levels; Table 7b, Table S5d, Fig. 6), with corpus-cluster bootstrap
+  intervals for family-conditional rates (Table S5c). The original fixed-seed LOSO run is reported as a single realisation.
+- Manuscript: guarantee stated for "a randomly selected held-out study from the same realised corpus"; extra-binomial
+  type-I results marked nominal and exploratory; §4.4 items required per evidence class; §4.5 separates results from
+  mathematics, the kinetic simulator and assumed measurement-error models; PHREEQC database agreement not presented as
+  accuracy; electrolyte sensitivity limited to the electrolytes tested; Fig. 6 caption corrected.
+- `requirements-lock.txt` records the interpreter used (CPython 3.13.18) with unchanged package versions.
+
 ## 0.3.4 (2026-11-02) - sixth revision
 - M2s exchangeability under the hierarchical simulator (fixed family rotation, shared hyper-priors): Appendix A proves
   the required exchangeability from the random role assignment within a corpus and states the scope of the guarantee;

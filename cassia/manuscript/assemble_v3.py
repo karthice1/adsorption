@@ -28,8 +28,8 @@ AB = ("This methodological study uses known-truth simulations to establish what 
       "43–73%. With a threshold empirically calibrated on 360 negative-control studies from 18 corpora, the rejection test had power of "
       "80–88% with total Cr and 92–98% with XPS or XANES; its type-I error averaged about 5% (4.7–5.6%) over held-out corpora, "
       "reaching 15–25% in some individual corpora: an empirical average, not a guarantee. Random cross-validation overstated transferability (random-forest R² 0.86–0.89 versus 0.48–0.65 "
-      "leave-one-study-out). Observed coverage of an exact study-level split-conformal interval matched its guarantee, which is marginal over studies; the 90% interval "
-      "for apparent Cr(VI) uptake spanned 3.3 log₁₀ units; total-chromium intervals were often "
+      "leave-one-study-out). Observed coverage of an exact study-level split-conformal interval agreed with its guarantee, marginal over studies; the 90% interval "
+      "for apparent Cr(VI) uptake spanned 3.5 log₁₀ units; total-chromium intervals were often "
       "unbounded with literature-scale calibration samples. With sequential confirmatory testing, no unsafe accepted design was observed in the simulated cohorts "
       "(Wilson 95% upper bound 1.3% of materials, 3.5–3.8% of accepted designs). No published experimental data were analysed; the "
       "framework is benchmarked, not experimentally validated.")

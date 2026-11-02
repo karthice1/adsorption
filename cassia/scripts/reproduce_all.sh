@@ -32,6 +32,7 @@ python scripts/run_v3.py --stage mlscen                        # ML across scena
 python scripts/run_v3.py --stage censor                        # censoring sensitivity (Table S7)
 python scripts/run_v3.py --stage lc3                           # learning curve (Fig. 5b)
 python scripts/run_v3.py --stage seqver                        # sequential verification (Table 8b)
+python scripts/m2s_exchangeability.py                          # M2s by random role assignment: Table 7b, Table S5c (~15 min)
 python scripts/run_v3.py --stage figures                       # Figs 3, 5, 6, 7 (overwrites the run_v2 versions)
 CTRL_PART=1 python scripts/typeI_validation.py                 # independent negative controls, part 1 (~45 min)
 CTRL_PART=2 python scripts/typeI_validation.py                 # part 2 (~45 min)
@@ -41,7 +42,6 @@ python scripts/seqver_oc.py                                    # Table S9
 python scripts/bench_partition.py                              # Tables S11-S12
 python scripts/endpoint_validation.py                          # Table S13 (~15 min)
 python scripts/m2s_family.py                                   # Table S5b
-python scripts/m2s_exchangeability.py                          # Table S5c: M2s under the hierarchical design (~30 min)
 python scripts/verification_table.py                           # Table 8c
 python scripts/make_table_s1.py                                # Table S1 from the implementation
 python scripts/make_supp_figs.py                               # Fig. S1

@@ -4,10 +4,11 @@ All results in this supplement are synthetic (known-truth simulations) or thermo
 
 | Tables | Generating script | CSV files |
 |---|---|---|
-| S1 | `scripts/make_table_s1.py` (from `cassia.simulate.parameter_table()`, CASSIA 0.3.4) | `results/v3/T_S1_simulator_parameters.csv` |
+| S1 | `scripts/make_table_s1.py` (from `cassia.simulate.parameter_table()`, CASSIA 0.3.5) | `results/v3/T_S1_simulator_parameters.csv` |
 | S2–S5 | `scripts/run_v2.py` | `results/v2/` |
 | S5b | `scripts/m2s_family.py` (from `run_v3.py` stage m2s) | `results/v3/T_m2s_family_full.csv` |
 | S5c | `scripts/m2s_exchangeability.py` | `results/v3/T_m2s_exchangeability.csv` |
+| S5d | `scripts/m2s_exchangeability.py` | `results/v3/T_m2s_roles_summary.csv` |
 | S6–S8, S10 | `scripts/run_v3.py` (stages mlscen, censor, equiv3, chem3) | `results/v3/` |
 | S9 | `scripts/seqver_oc.py` | `results/v3/T_seqver_oc.csv` |
 | S11–S12 | `scripts/bench_partition.py` | `results/v3/T_bench_partition.csv`, `T_bench_mcse.csv` |
@@ -17,7 +18,7 @@ All results in this supplement are synthetic (known-truth simulations) or thermo
 | Fig. S1 | `scripts/make_supp_figs.py` | `results/v2/ident_profiles.csv` |
 
 
-## Table S1. Simulator parameters, distributions, measurement models, evidence-class probabilities and numerical settings (CASSIA 0.3.4)
+## Table S1. Simulator parameters, distributions, measurement models, evidence-class probabilities and numerical settings (CASSIA 0.3.5)
 
 Generated from the implementation by `scripts/make_table_s1.py`; a unit test checks that the evidence-class probabilities and measurement-model constants in this table are those used by the code. LN(m, s): log-normal with log-mean m and log-SD s; U(a, b): uniform; N(0, s): normal.
 
@@ -174,7 +175,7 @@ Status codes: `bracketed` (solubility found; |SI| < 0.01 at the solution); `unde
 | q_tot_aq | M1 | 0.99 | 0.99 | 0.95 | 0.94 | 0.83 | 0.99 |
 | q_tot_aq | M2 | 0.99 | 1.0 | 0.97 | 0.96 | 0.93 | 0.99 |
 
-## Table S5b. M2s (exact study-level split conformal) by material family at nominal 90% (10 corpora, outer leave-one-study-out)
+## Table S5b. M2s (exact study-level split conformal) by material family at nominal 90% (10 corpora, outer leave-one-study-out; one fixed-seed calibration split per corpus, a single realisation of the role assignment; role-averaged family rates are in Table S5c)
 
 Fraction of test studies with ≥ 90% within-study coverage, mean within-study coverage, fraction of unbounded intervals (counted as full coverage) and mean width of bounded intervals (log₁₀). Three 95% intervals for the fraction: a corpus-cluster percentile bootstrap (the 10 corpora resampled with replacement, 4,000 resamples), which respects the sharing of family hyper-priors by the studies of a corpus; the Wilson interval, descriptive only, which treats the studies of a family as independent Bernoulli observations; and the envelope of the two (lower = smaller, upper = larger), which is the interval reported in the text. With only 10 independent corpora the cluster bootstrap is itself imprecise and collapses to a point when every study of a family covers, so the family comparisons remain descriptive.
 
@@ -205,9 +206,9 @@ Fraction of test studies with ≥ 90% within-study coverage, mean within-study c
 | q_tot_aq | hydrochar | 31 | 9 | 0.986 | 0.903 | 0.68–1.00 | 0.68–1.00 | 0.75–0.97 | 0.645 | 3.821 |
 | q_tot_aq | porous_carbon | 30 | 10 | 0.995 | 0.967 | 0.83–1.00 | 0.91–1.00 | 0.83–0.99 | 0.533 | 3.733 |
 
-## Table S5c. M2s coverage under the hierarchical simulator design (nominal 90%, β = 0.9; 10 corpora × 20 random proper-training sets, every role assignment enumerated)
+## Table S5c. M2s coverage under the hierarchical simulator design (nominal 90%, β = 0.9; 10 corpora × 50 random proper-training sets, every role assignment enumerated)
 
-`scripts/m2s_exchangeability.py`. Fraction of test studies with ≥ 90% of their observations covered. Within corpus: the test study and the J calibration studies are the studies of the same corpus not used for model fitting, with every one of them taken as test in turn; this is the role assignment under which Appendix A proves coverage ≥ 0.90 in expectation for every corpus (the per-corpus values are single realisations of 20 proper-training sets). Family columns: the same rate conditional on the test study's family, which the theorem does not cover. New corpus: model and calibration from one corpus, test studies from the next corpus (different hyper-prior draws), also not covered. Unbounded intervals count as covering.
+`scripts/m2s_exchangeability.py`. Fraction of test studies with ≥ 90% of their observations covered, averaged over role assignments. Within corpus: the test study and the J calibration studies are the studies of the same corpus not used for model fitting, with every one of them taken as test in turn; this is the role assignment under which Appendix A proves coverage ≥ 0.90 for a randomly selected held-out study of the same realised corpus, and the enumerated rate equals k/(J + 1) by construction. Family columns: the same rate conditional on the test study's family, which the theorem does not cover, with a corpus-cluster percentile bootstrap 95% interval in parentheses (10 corpora resampled, 4,000 resamples). New corpus: model and calibration from one corpus, test studies from the next corpus (different hyper-prior draws), also not covered. Unbounded intervals count as covering.
 
 | quantity | Ce VI | Ce total | q app VI | q tot aq |
 |---|---|---|---|---|
@@ -216,14 +217,41 @@ Fraction of test studies with ≥ 90% within-study coverage, mean within-study c
 | within corpus (guaranteed ≥ 0.90) | 0.933 | 0.968 | 0.933 | 0.968 |
 | within: lowest corpus | 0.933 | 0.909 | 0.933 | 0.909 |
 | within: highest corpus | 0.933 | 1.000 | 0.933 | 1.000 |
-| family: AC chemical | 0.941 | 0.942 | 0.990 | 1.000 |
-| family: AC physical | 0.941 | 0.967 | 0.980 | 0.978 |
-| family: biochar manure | 0.937 | 0.988 | 0.874 | 0.959 |
-| family: biochar wood | 0.940 | 0.997 | 0.930 | 0.990 |
-| family: hydrochar | 0.950 | 0.981 | 0.843 | 0.925 |
-| family: porous carbon | 0.892 | 0.929 | 0.980 | 0.957 |
-| new corpus | 0.922 | 0.984 | 0.929 | 0.983 |
-| new corpus: lowest corpus pair | 0.880 | 0.910 | 0.852 | 0.893 |
+| family: AC chemical | 0.936 (0.90–0.98) | 0.934 (0.90–1.00) | 0.983 (0.96–1.00) | 1.000 (1.00–1.00) |
+| family: AC physical | 0.952 (0.90–0.99) | 0.965 (0.88–1.00) | 0.973 (0.94–1.00) | 0.971 (0.95–1.00) |
+| family: biochar manure | 0.952 (0.92–0.98) | 0.993 (0.99–1.00) | 0.891 (0.85–0.93) | 0.972 (0.94–1.00) |
+| family: biochar wood | 0.907 (0.85–0.96) | 1.000 (1.00–1.00) | 0.923 (0.88–0.96) | 0.987 (0.98–1.00) |
+| family: hydrochar | 0.955 (0.91–0.99) | 0.979 (0.95–1.00) | 0.846 (0.76–0.91) | 0.917 (0.79–0.99) |
+| family: porous carbon | 0.899 (0.84–0.95) | 0.932 (0.90–1.00) | 0.981 (0.95–1.00) | 0.962 (0.93–1.00) |
+| new corpus | 0.928 | 0.979 | 0.930 | 0.984 |
+| new corpus: lowest corpus pair | 0.885 | 0.901 | 0.844 | 0.927 |
+
+## Table S5d. M2s by random role assignment at all nominal levels (10 corpora × 50 proper-training sets)
+
+`scripts/m2s_exchangeability.py`; source of Table 7b. The observed fraction equals k/(J + 1) by construction once every role assignment is enumerated (Appendix A); it confirms the implementation, not the usefulness of the intervals. Unbounded intervals count as covering; read the coverage together with the unbounded fraction.
+
+| target | nominal 1 − α | calibration studies J (mean) | studies with ≥ 90% covered | k/(J + 1) | lowest corpus | fraction unbounded | mean within-study coverage | mean width, bounded (log₁₀) |
+|---|---|---|---|---|---|---|---|---|
+| Ce VI | 0.500 | 14.000 | 0.533 | 0.533 | 0.533 | 0.000 | 0.837 | 1.50 |
+| Ce VI | 0.700 | 14.000 | 0.733 | 0.733 | 0.733 | 0.000 | 0.916 | 2.14 |
+| Ce VI | 0.800 | 14.000 | 0.800 | 0.800 | 0.800 | 0.000 | 0.938 | 2.44 |
+| Ce VI | 0.900 | 14.000 | 0.933 | 0.933 | 0.933 | 0.000 | 0.981 | 3.71 |
+| Ce VI | 0.950 | 14.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | all unbounded |
+| Ce total | 0.500 | 8.300 | 0.548 | 0.548 | 0.500 | 0.000 | 0.810 | 0.98 |
+| Ce total | 0.700 | 8.300 | 0.753 | 0.753 | 0.714 | 0.000 | 0.909 | 1.51 |
+| Ce total | 0.800 | 8.300 | 0.860 | 0.860 | 0.818 | 0.000 | 0.952 | 2.07 |
+| Ce total | 0.900 | 8.300 | 0.968 | 0.968 | 0.909 | 0.624 | 0.990 | 2.10 |
+| Ce total | 0.950 | 8.300 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | all unbounded |
+| q app VI | 0.500 | 14.000 | 0.533 | 0.533 | 0.533 | 0.000 | 0.837 | 1.20 |
+| q app VI | 0.700 | 14.000 | 0.733 | 0.733 | 0.733 | 0.000 | 0.915 | 1.97 |
+| q app VI | 0.800 | 14.000 | 0.800 | 0.800 | 0.800 | 0.000 | 0.936 | 2.33 |
+| q app VI | 0.900 | 14.000 | 0.933 | 0.933 | 0.933 | 0.000 | 0.979 | 3.46 |
+| q app VI | 0.950 | 14.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | all unbounded |
+| q tot aq | 0.500 | 8.300 | 0.548 | 0.548 | 0.500 | 0.000 | 0.825 | 1.51 |
+| q tot aq | 0.700 | 8.300 | 0.753 | 0.753 | 0.714 | 0.000 | 0.915 | 2.31 |
+| q tot aq | 0.800 | 8.300 | 0.860 | 0.860 | 0.818 | 0.000 | 0.954 | 3.08 |
+| q tot aq | 0.900 | 8.300 | 0.968 | 0.968 | 0.909 | 0.624 | 0.989 | 3.68 |
+| q tot aq | 0.950 | 8.300 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | all unbounded |
 
 
 

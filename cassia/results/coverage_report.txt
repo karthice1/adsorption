@@ -15,4 +15,4 @@ cassia/simulate.py            265     12    95%
 cassia/validation.py          252     40    84%
 -----------------------------------------------
 TOTAL                        1332    246    82%
-42 passed in 68.82s (0:01:08)
+42 passed in 62.29s (0:01:02)

@@ -40,4 +40,4 @@ tests/test_cassia.py::test_equivalence_v3_control_and_reduction PASSED   [ 92%]
 tests/test_cassia.py::test_parameter_table_matches_implementation PASSED [ 95%]
 tests/test_cassia.py::test_cluster_conformal_threshold_unit_is_cluster PASSED [ 97%]
 tests/test_cassia.py::test_split_conformal_random_roles_with_fixed_families_and_shared_effects PASSED [100%]
-============================= 42 passed in 38.65s ==============================
+============================= 42 passed in 38.58s ==============================

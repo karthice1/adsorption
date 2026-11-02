@@ -1,4 +1,4 @@
-# CASSIA 0.3.4
+# CASSIA 0.3.5
 
 **CASSIA** (*Chromium Adsorption, Speciation and Surface-reduction Identifiability Analysis*) is an
 open Python framework for **evidence-constrained** analysis of Cr(VI) removal by carbonaceous
@@ -33,7 +33,7 @@ pytest -q cassia/tests                # 42 tests
 ```
 
 Python 3.10+; the exact environment used for the paper is pinned in `requirements-lock.txt`
-(Python 3.13.17). PHREEQC databases ship in `databases/` with checksums (`sha256sum -c databases/SHA256SUMS`).
+(CPython 3.13.18; earlier results used 3.13.17 with the same package versions). PHREEQC databases ship in `databases/` with checksums (`sha256sum -c databases/SHA256SUMS`).
 
 ## Minimal API
 
@@ -86,14 +86,14 @@ Verify a release: `sha256sum -c release/MANIFEST.sha256` (prints nothing when ev
   `data/PROTOCOL.md` the registered extraction protocol.
 - RASPA3 is not used (manuscript Section 4.6).
 
-## Release checklist for 0.3.4 (for the author)
+## Release checklist for 0.3.5 (for the author)
 
 These steps need the author's accounts and details and cannot be done from the build environment.
 
 1. Fill in surname, affiliation and ORCID in `CITATION.cff`, `LICENSE` and the manuscript title page
    (`manuscript/build_docx.js`); confirm funding, CRediT, the verification statement (manuscript Section 2.12)
    and the generative-AI declaration (`manuscript/_v3_back_matter.md`).
-2. Merge or push the release commit, then tag it `cassia-v0.3.4` and create a GitHub release.
+2. Merge or push the release commit, then tag it `cassia-v0.3.5` and create a GitHub release.
 3. Enable the repository in Zenodo (GitHub integration) before creating the release, so the release receives a DOI.
 4. Put the DOI in `CITATION.cff` (replacing `10.5281/zenodo.0000000`) and in the manuscript's Data and code
    availability section (`manuscript/_v3_back_matter.md`), rebuild the documents (HANDOFF.md section 4).

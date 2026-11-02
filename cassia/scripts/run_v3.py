@@ -541,7 +541,10 @@ def figures():
 
     # Fig 5 (v3): conformal incl. M2s
     U2 = pd.read_csv(v2.RES / "uq_per_study.csv")
-    S2 = pd.read_csv(RES / "m2s_per_study.csv")
+    # M2s: role-randomised evaluation of Appendix A (scripts/m2s_exchangeability.py) if available,
+    # otherwise the single fixed-seed leave-one-study-out realisation of stage m2s
+    roles = RES / "m2s_roles_per_study.csv.gz"
+    S2 = pd.read_csv(roles).query("kind == 'within'") if roles.exists() else pd.read_csv(RES / "m2s_per_study.csv")
     fig, ax = plt.subplots(1, 3, figsize=(7.6, 2.9), constrained_layout=True)
     u = U2[U2.target == "q_app_VI"]
     names = {"M0": C[0], "M1": C[1], "M2": C[2]}
@@ -550,7 +553,7 @@ def figures():
         ax[0].plot(1 - gg.index.values, gg.values, "-o", ms=3.5, color=col, label=meth)
     s = S2[S2.target == "q_app_VI"]
     gg = s.groupby("alpha").coverage.apply(lambda c: (c >= 0.9 - 1e-9).mean())
-    ax[0].plot(1 - gg.index.values, gg.values, "-s", ms=3.5, color=C[5], label="M2s (split, exact)")
+    ax[0].plot(1 - gg.index.values, gg.values, "-s", ms=3.5, color=C[5], label="M2s (random roles)" if roles.exists() else "M2s (split, exact)")
     ax[0].plot([0.45, 1], [0.45, 1], color=MUTED, lw=1, ls=":")
     ax[0].set(xlabel="Nominal 1 − α", ylabel="Studies with ≥ 90% coverage", title="Study-level guarantee, q$_{app,VI}$")
     ax[0].legend(fontsize=6.5)
