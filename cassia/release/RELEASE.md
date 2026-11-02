@@ -1,7 +1,7 @@
 # CASSIA 0.3.3 release record
 
 - Date: 2026-11-02
-- Code commit at manifest generation (parent of the commit that adds this file): `816b7830e1d2901917bda5f261c3433d4fe5b10e`
+- Code commit at manifest generation (parent of the commit that adds this file): `94bfbfffb3a2438d3ec7b46a749ca9820672a754`
 - Content identity: `release/MANIFEST.sha256` (123 files); verify with `sha256sum -c release/MANIFEST.sha256`
 - Environment: `requirements-lock.txt` (Python 3.13.17); PHREEQC databases with checksums and provenance in `databases/`
 - Tests: `release/test_log.txt`; coverage: `results/coverage_report.txt`

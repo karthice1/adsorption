@@ -19,7 +19,7 @@ Handoff date: 2026-11-01. This file is the complete state of the work done in th
   - study-level conformal prediction;
   - two-endpoint treatment design with sequential verification.
 - **No experiments and no empirical data.** No laboratory experiments were done, and **no published experimental data have been analysed yet**. The paper is positioned as a *methodological, known-truth benchmark*.
-- **Review history.** The manuscript has been through five reviewer rounds; the current software is **CASSIA 0.3.3** (fifth revision, 2026-11-02; branch `claude/project-thread-2l93r3`, code commit `816b783`).
+- **Review history.** The manuscript has been through five reviewer rounds; the current software is **CASSIA 0.3.3** (fifth revision, 2026-11-02; branch `claude/project-thread-2l93r3`, code commit `94bfbff`).
 
 ## 2. Where everything is
 

@@ -1,6 +1,6 @@
 # Response to the Reviewer (fifth round)
 
-**Manuscript:** CASSIA: A Provenance-Aware Computational Framework and Known-Truth Benchmark for Evidence-Constrained Analysis of Cr(VI) Removal by Carbonaceous Materials (revision 5; software CASSIA 0.3.3, code commit `816b7830e1d2901917bda5f261c3433d4fe5b10e`)
+**Manuscript:** CASSIA: A Provenance-Aware Computational Framework and Known-Truth Benchmark for Evidence-Constrained Analysis of Cr(VI) Removal by Carbonaceous Materials (revision 5; software CASSIA 0.3.3, code commit `94bfbfffb3a2438d3ec7b46a749ca9820672a754`)
 
 We thank the reviewer for checking the response against the source code itself. The reviewer found a real gap between what we claimed and what we implemented. The rejection threshold pooled individual control studies. The finite-sample rank guarantee we cited holds only if the corpus, not the study, is the exchangeable unit. We accept this criticism in full and have done both things the reviewer proposed.
 - **Option 1.** We implemented a corpus-level split-conformal calibration. It shows that a distribution-free 5% threshold is unbounded with 18 corpora.
