@@ -39,14 +39,18 @@ a, b = base.index("## Table S1."), base.index("## Table S2.")
 base = base[:a] + s1 + base[b:]
 F = pd.read_csv(R + "T_m2s_family_full.csv")
 F = F[F.target.isin(["q_app_VI", "Ce_VI", "q_tot_aq", "Ce_total"])]
-F = F[["target", "family", "n_studies", "n_corpora", "mean_coverage", "frac_studies_cov_ge_0.9", "envelope95_lo", "envelope95_hi",
-       "cluster95_lo", "cluster95_hi", "wilson95_lo", "wilson95_hi", "frac_unbounded", "mean_width_log10_bounded"]]
+F = F.assign(**{k: F[f"{k}_lo"].map("{:.2f}".format) + "–" + F[f"{k}_hi"].map("{:.2f}".format)
+                for k in ("envelope95", "cluster95", "wilson95")})
+F = F[["target", "family", "n_studies", "n_corpora", "mean_coverage", "frac_studies_cov_ge_0.9", "envelope95", "cluster95",
+       "wilson95", "frac_unbounded", "mean_width_log10_bounded"]]
+F.columns = ["target", "family", "studies", "corpora", "mean coverage", "fraction ≥ 0.90", "95% envelope (reported)",
+             "95% cluster bootstrap", "95% Wilson (descriptive)", "fraction unbounded", "mean width (log₁₀, bounded)"]
 s5b = ("## Table S5b. M2s (exact study-level split conformal) by material family at nominal 90% (10 corpora, outer leave-one-study-out)\n\n"
        "Fraction of test studies with ≥ 90% within-study coverage, mean within-study coverage, fraction of unbounded intervals "
-       "(counted as full coverage) and mean width of bounded intervals (log₁₀). Three 95% intervals for the fraction: cluster95, a "
+       "(counted as full coverage) and mean width of bounded intervals (log₁₀). Three 95% intervals for the fraction: a "
        "corpus-cluster percentile bootstrap (the 10 corpora resampled with replacement, 4,000 resamples), which respects the sharing of "
-       "family hyper-priors by the studies of a corpus; wilson95, descriptive only, which treats the studies of a family as independent "
-       "Bernoulli observations; and envelope95, the wider of the two, which is the interval reported in the text. With only 10 "
+       "family hyper-priors by the studies of a corpus; the Wilson interval, descriptive only, which treats the studies of a family as "
+       "independent Bernoulli observations; and the envelope of the two (lower = smaller, upper = larger), which is the interval reported in the text. With only 10 "
        "independent corpora the cluster bootstrap is itself imprecise and collapses to a point when every study of a family covers, "
        "so the family comparisons remain descriptive.\n\n" + md(F) + "\n\n")
 a = base.index("## Table S5.")
@@ -99,26 +103,34 @@ if os.path.exists(R + "T_typeI_validation.csv"):
              "`scripts/typeI_validation.py`.\n\n" + md(TI[keep]))
 if os.path.exists(R + "T_typeI_corpus.csv"):
     TC = pd.read_csv(R + "T_typeI_corpus.csv")
-    ka = ["sd_rel", "design", "pooled_loco_typeI", "pooled_max_corpus", "pooled_n_corpora_ge_0.15",
-          "binom_P_max_ge_observed", "dispersion_chi2_p", "icc_log_chi2", "icc_F_p", "split6_observed_typeI", "split6_p025",
-          "split6_p975", "split6_P_ge_observed"]
-    kb = ["sd_rel", "design", "corpus_loco_typeI", "corpus_loco_max_corpus", "corpus_thr_p05", "corpus_thr_p95",
-          "power_pooled|>30%", "power_corpus|>30%", "power_pooled|5-30%", "power_corpus|5-30%"]
+    TC["noise"] = TC.sd_rel.map("{:.0%}".format)
+    TC["split6_range"] = TC.split6_p025.map("{:.3f}".format) + "–" + TC.split6_p975.map("{:.3f}".format)
+    TC["thr_range"] = TC.corpus_thr_p05.map("{:.0f}".format) + "–" + TC.corpus_thr_p95.map("{:.0f}".format)
+    ka = {"noise": "noise", "design": "design", "pooled_loco_typeI": "LOCO type-I (mean)", "pooled_max_corpus": "max per corpus",
+          "pooled_n_corpora_ge_0.15": "corpora ≥ 0.15", "binom_P_max_ge_observed": "binomial P(max ≥ observed)",
+          "dispersion_chi2_p": "extra-binomial p", "icc_log_chi2": "ICC log χ²", "icc_F_p": "ICC F-test p",
+          "split6_observed_typeI": "6-corpus calibration: observed", "split6_range": "6-corpus: 2.5–97.5%",
+          "split6_P_ge_observed": "6-corpus: P(≥ observed)"}
+    kb = {"noise": "noise", "design": "design", "corpus_loco_typeI": "LOCO type-I (level 1/18)", "corpus_loco_max_corpus": "max per corpus",
+          "thr_range": "threshold, 5th–95th pct", "power_pooled|>30%": "power >30%, study-pooled", "power_corpus|>30%": "power >30%, corpus-level",
+          "power_pooled|5-30%": "power 5–30%, study-pooled", "power_corpus|5-30%": "power 5–30%, corpus-level"}
     S.append("## Table S14b. Corpus-level analysis of the type-I error (360 negative controls, 18 corpora of 20 controls)\n\n"
-             "`scripts/typeI_corpus.py`; all values are simulated. pooled_*: study-pooled conformal threshold from 17 corpora applied to "
-             "the held-out corpus (leave-one-corpus-out, LOCO): average type-I (interval in Table S14), largest per-corpus value, "
-             "and number of corpora at ≥ 15%. binom_P_max_ge_observed: probability that the largest of 18 per-corpus rates reaches the "
-             "observed maximum if each control were rejected independently with probability 0.05 (20 controls per corpus). "
-             "dispersion_chi2_p: test of extra-binomial variation of the per-corpus rejection counts. icc_log_chi2, icc_F_p: between-corpus "
-             "share of the variance of log χ² (one-way ANOVA) and its F test. corpus_*: corpus-level split conformal with one randomly "
-             "drawn control per corpus; at α = 0.05 the threshold is unbounded for every design (a finite threshold needs ≥ 19 corpora); "
-             "at the smallest attainable level, 1/19 = 5.3%, the threshold is the largest of the 18 draws (5th–95th percentiles over "
-             "2,000 draws shown), corpus_loco_typeI is its LOCO type-I (17 corpora, level 1/18 = 5.6%, averaged over draws) and "
-             "power_corpus its power on the 101 reduction studies of stage equiv3 (power_pooled: study-pooled threshold from all 360 "
-             "controls). split6_*: type-I on 12 corpora when the threshold is calibrated on 6 corpora: observed for the calibration "
-             "cohort of Table S14, 2.5–97.5% range and probability of a value at least as large over 2,000 random choices of 6 corpora.\n\n"
-             "**(a) Study-pooled threshold: empirical cross-corpus performance, heterogeneity and calibration-set sensitivity**\n\n" + md(TC[ka])
-             + "\n\n**(b) Corpus-level split conformal at level 1/19 against the study-pooled threshold**\n\n" + md(TC[kb]))
+             "`scripts/typeI_corpus.py`; all values are simulated. (a) Study-pooled threshold (the threshold used in the main text) "
+             "computed from 17 corpora and applied to the held-out corpus (leave-one-corpus-out, LOCO): mean type-I error (95% interval in "
+             "Table S14), largest per-corpus value and number of corpora at ≥ 15%. Binomial P(max ≥ observed): probability that the "
+             "largest of 18 per-corpus rates reaches the observed maximum if each control were rejected independently with probability "
+             "0.05 (20 controls per corpus). Extra-binomial p: test of extra-binomial variation of the per-corpus rejection counts. ICC "
+             "log χ²: between-corpus share of the variance of log χ² (one-way ANOVA), with its F test. 6-corpus calibration: type-I error "
+             "on 12 corpora when the threshold is calibrated on 6, observed for the calibration cohort of Table S14, and its 2.5–97.5% "
+             "range and the probability of a value at least as large over 2,000 random choices of 6 corpora. (b) Corpus-level split "
+             "conformal (one randomly drawn control per corpus; Appendix B). At α = 0.05 its threshold is unbounded for every design, "
+             "because a finite threshold needs ≥ 19 corpora. At the smallest attainable level, 1/19 = 5.3%, the threshold is the largest "
+             "of the 18 draws (5th–95th percentiles over 2,000 draws shown). LOCO type-I uses 17 corpora (level 1/18 = 5.6%), averaged "
+             "over draws. Power is for the reduction studies of stage equiv3 (share 5–30%, n = 50; > 30%, n = 51), against the "
+             "study-pooled threshold from all 360 controls.\n\n"
+             "**(a) Study-pooled threshold: empirical cross-corpus performance, heterogeneity and calibration-set sensitivity**\n\n"
+             + md(TC[list(ka)].rename(columns=ka))
+             + "\n\n**(b) Corpus-level split conformal at level 1/19 against the study-pooled threshold**\n\n" + md(TC[list(kb)].rename(columns=kb)))
 S.append("## Fig. S1. Profile likelihoods of the reductant capacity\n\n![Fig. S1](figures/figS1_profiles.png)\n\n**Fig. S1.** Profile of Δ(−2 log L) against log₁₀ R₀ relative to its true value for two virtual studies (true reduction share 0.15 and 0.60) under designs D1, D3 and D4u (D4u: unbiased solid oxidation state). Dotted line: χ²₁ 95% threshold (3.84); symmetric-log axis. Non-smooth peaks indicate local optima at individual profile points; the true profile lies at or below the plotted curve, so the profiles are indicative only. The mechanistic model structure is assumed known.")
 open("CASSIA_supplementary.md", "w").write("\n\n".join(S) + "\n")
 print("supplement words", len(open("CASSIA_supplementary.md").read().split()))

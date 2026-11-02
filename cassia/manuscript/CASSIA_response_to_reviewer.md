@@ -1,164 +1,134 @@
-# Response to the Reviewer (fourth round)
+# Response to the Reviewer (fifth round)
 
-**Manuscript:** CASSIA: A Provenance-Aware Computational Framework and Known-Truth Benchmark for Evidence-Constrained Analysis of Cr(VI) Removal by Carbonaceous Materials (revision 4; software CASSIA 0.3.2)
+**Manuscript:** CASSIA: A Provenance-Aware Computational Framework and Known-Truth Benchmark for Evidence-Constrained Analysis of Cr(VI) Removal by Carbonaceous Materials (revision 5; software CASSIA 0.3.3, code commit `816b7830e1d2901917bda5f261c3433d4fe5b10e`)
 
-We thank the reviewer for a careful report that checked the supplement against the manuscript line by line. All eight comments are accepted. Seven are resolved in this revision. Comment 1 is resolved by repositioning the paper, as the reviewer suggested, while the empirical application itself remains outstanding. Section, table and figure numbers refer to the revised manuscript. Main-text tables were renumbered because a new Table 2 (reproduction scripts) was added: the former Tables 2–7 are now Tables 3–8.
+We thank the reviewer for checking the response against the source code itself. The reviewer found a real gap between what we claimed and what we implemented. The rejection threshold pooled individual control studies. The finite-sample rank guarantee we cited holds only if the corpus, not the study, is the exchangeable unit. We accept this criticism in full and have done both things the reviewer proposed.
+- **Option 1.** We implemented a corpus-level split-conformal calibration. It shows that a distribution-free 5% threshold is unbounded with 18 corpora.
+- **Option 2.** We withdrew the finite-sample guarantee for the threshold actually used. Its leave-one-corpus-out results are now reported as empirical average performance under the simulator, with the 15–25% maximum per-corpus rate shown prominently.
+
+We also explain the D1 results of 14.2% and 10.8%. The other points are addressed as listed below. Several submission items need the author's personal details or accounts and are listed in the last section. Section, table and figure numbers refer to the revised manuscript.
 
 **Summary of changes.**
 
-| Comment | Change | Where |
+| Reviewer point | Change | Where |
 |---|---|---|
-| 1 Empirical validation | Paper repositioned as a methodological, known-truth benchmark (title, keywords, Abstract, §1 scope statement, §4.5); empirical application still outstanding | Title, Abstract, §1, §3.8, §4.5, §4.7 |
-| 2 Table S1 | Regenerated from the implementation by a new script; a unit test checks it against the code constants | Table S1, `scripts/make_table_s1.py`, `tests/` |
-| 3 Table S5 / M2s | New Table S5b: M2s by family, with study counts, mean coverage, fraction ≥ 90% with Wilson intervals, unbounded share and width | Table S5b, §3.5 |
-| 4 Type-I error | Independent cohort of 240 new negative controls; conformal (rank-based) threshold; Wilson intervals for every type-I estimate; "calibration fixes this" removed | §2.6, §3.3, Table 5, Table S14, Appendix B, Abstract |
-| 5 D5 phase evidence | Option A: the test uses D5 without phase evidence; phase evidence is interpreted separately | §2.6, §3.3, Appendix B |
-| 6 Denominators | Overall and conditional Wilson bounds; the 105/98 designs identified as simple-rule results; new consolidated Table 8c for both rules | §3.6, Table 8c, §5 |
-| 7 Abstract and Highlights | Endpoint-specific conformal statement; highlight replaced | Abstract, Highlights |
-| 8 Versions and reproducibility | CASSIA 0.3.2 throughout; Table 1 updated; new Table 2 lists every script and its outputs; one script reproduces everything; source archive supplied | §2.2, Tables 1–2, Data availability, Supplement cover |
+| 3.4 / Priority 1: type-I guarantee | Corpus-level split conformal implemented (unbounded at 5% with 18 corpora; guarantee at 1/19 = 5.3% with power cost). Study-pooled threshold kept as the primary analysis but reported as empirical average cross-corpus performance; finite-sample guarantee withdrawn. D1 14.2%/10.8% explained. Between-corpus heterogeneity and calibration-set sensitivity analysed. | §2.6, §3.3, Table 5, §4.7, §5.1, Appendix B, Table S14b, `scripts/typeI_corpus.py` |
+| 5 / Priority 2: Table S5b intervals | Corpus-cluster bootstrap intervals added; Wilson intervals labelled descriptive; the wider envelope is reported | Table S5b, §3.5, `scripts/m2s_family.py` |
+| 3.8 / Priority 3: reproducibility | `reproduce_all.sh` no longer needs git (argument, `CASSIA_COMMIT`, git, or `release/RELEASE.md`), checked from a `git archive`; README updated to 0.3.3 | `scripts/reproduce_all.sh`, `README.md`, Data availability |
+| 3.7 / Priority 5: Highlights and Abstract | Type-I highlight replaced with the reviewer's wording; Abstract states the per-corpus 15–25% and that the 5% is an empirical average; treatment-design safety labelled simulated | Highlights, Abstract |
+| 7 / Priority 4: submission metadata | Cannot be completed by us without the author's details and accounts; listed below | Title page, back matter, `CITATION.cff` |
 
 ---
 
-## Major Comment 1 – Empirical validation remains the decisive barrier
+## 3.4 (Priority 1) – Type-I error calibration
 
-**Response: the paper is repositioned as a methodological benchmark; the empirical application remains outstanding.**
+**Response: accepted. We implemented the corpus-level calibration (Option 1) and withdrew the finite-sample guarantee for the threshold used (Option 2). The reported procedure is Option 2.**
 
-We agree with the reviewer's assessment and take the second route the reviewer describes.
-- **Title.** The title now reads "…Computational Framework and Known-Truth Benchmark…".
-- **Keywords.** "known-truth simulation benchmark" was added.
-- **Abstract.** It now opens by stating that this is a methodological benchmark, and it ends by stating that no published experimental data were analysed.
-- **Introduction.** A new paragraph, "Scope: a methodological benchmark, not an experimentally validated framework" (§1), states what the paper does and does not establish. It also says that the framework should not be described as experimentally validated until the empirical application is reported.
-- **Discussion.** §4.5 states that the quantitative findings are properties of the methods under the simulated data-generating processes.
+**The reviewer is right about the implementation.** `conformal_threshold()` in `scripts/typeI_validation.py` takes the ⌈0.95(n + 1)⌉-th smallest of the pooled study-level statistics. The rank lemma then guarantees P(χ²_new > t̂) ≤ 0.05 only for a new study that is exchangeable with those n studies. Studies within a corpus share redrawn family hyper-priors, so a study from a new corpus does not satisfy this premise by construction. Leave-one-corpus-out evaluation and the cluster bootstrap measure the consequence; they do not restore the premise. The revised manuscript no longer states or implies a finite-sample 5% guarantee for this threshold (§2.6, §3.3, Appendix B, §4.7 item 5, §5.1 item 3, Abstract, Highlights).
 
-**Why the empirical application could not be carried out.** We retried on 1 November 2026. The computational environment's network policy still rejects every host that serves Ramirez et al. (2020) and its raw files (pmc.ncbi.nlm.nih.gov, www.ncbi.nlm.nih.gov, europepmc.org, doi.org), as well as the hosts serving further studies. No values were transcribed from memory, estimated or digitised.
+**Option 1: corpus-level split conformal (new; Appendix B, Table S14b).**
+- *Construction.* One control is drawn at random from each of the K calibration corpora. The threshold is the ⌈(1 − α)(K + 1)⌉-th smallest of these K scores (`cassia.validation.cluster_conformal_threshold`). This is the single-subsample construction of Dunn et al. (2023), already cited, with the corpus as the group.
+- *Guarantee.* If corpora are i.i.d. draws from the simulator, P(score of a random study in a new corpus > threshold) ≤ α. Appendix B gives a short proof. The guarantee is marginal over corpora and does not bound the rate within any one corpus.
+- *Why corpora are exchangeable here.* All 18 control corpora come from the same generator. Material properties are drawn before the scenario switches are applied, and every control is then set to scenario A. They differ only in their seeds.
+- *Result, reported as the reviewer anticipated.* With K = 18 corpora the 95% threshold is **unbounded for every design and noise level**, because a finite threshold needs K ≥ 19. The smallest attainable level is 1/19 = 5.3%, where the threshold is the largest of the 18 draws.
+- *Behaviour at that level.* Evaluated leave-one-corpus-out (K = 17, level 1/18 = 5.6%), its type-I error was 5.3–5.7%, consistent with the guarantee; the largest per-corpus rate was 12–19%.
+- *Cost.* The threshold is unstable: for D3–D5 at 3% noise its 5th–95th percentiles over random draws span 47–9,752. Power for high-reduction studies falls from 88–98% to 75–85% under D3–D5 at 3% noise, and from 80–94% to 59–88% at 10% noise.
+- *Conclusion.* With the number of corpora available, a corpus-level finite-sample guarantee exists only at 5.3%, with materially lower power. We report this limitation rather than working around it.
 
-**What is ready.** §3.8 lists, as an ordered protocol, the steps the reviewer specifies:
-- import of the observations;
-- provenance and DOI recording;
-- observation-level classification;
-- apparent uptake;
-- nonlinear isotherm and kinetic fitting;
-- comparison with the original publication;
-- the 20–30-study extension, prioritising data quality and identifying total-Cr, XPS/XANES, inventory, final-pH and electrolyte information.
+**Option 2: empirical cross-corpus performance (primary analysis).**
+- *Primary procedure.* The study-pooled threshold from all 360 controls remains the threshold used for power and equivalence. Its leave-one-corpus-out type-I error (4.7–5.6% on average; corpus-bootstrap 95% intervals within 2.5–8.6%) is described as *empirical average performance under the specified simulator*. It is not described as a guarantee, and not as applying to a new real corpus.
+- *Maximum per-corpus rate.* The 15–25% maximum per-corpus rate is now shown wherever the average is quoted: in the Abstract, a Highlight, the Table 5 footnote (in bold), §3.3, §4.7 and §5.1. One to two of the 18 corpora reached ≥ 15% in every design.
+- *Context for that maximum.* With 20 controls per corpus, and even if every control had an independent 5% rejection probability, the largest of 18 per-corpus rates would reach 15% with probability 0.76, 20% with probability 0.25 and 25% with probability 0.045.
+- *Extra-binomial variation.* It was detected in only 2 of 12 design × noise cells (p = 0.017 and 0.030).
+- *No corpus variance component in the null statistic.* The between-corpus share of the variance of log χ² was indistinguishable from zero in all cells (intraclass correlation ≤ 0.008; F-test p ≥ 0.30).
+- *How we use these analyses.* They help interpret the spread. They do not turn the average into a guarantee, and the manuscript says so.
 
-The tested pipeline performs all of these steps without code changes. We would be glad to add the empirical section if the editor prefers that route, as soon as the source files can be obtained.
+**Correction of an earlier statement.** The previous revision asserted that "the null χ² distribution differs between corpora" and that "6 corpora are too few to estimate its 95th percentile". The heterogeneity analysis does not support the first statement as an observed fact. The corpus remains the unit that can be *assumed* exchangeable by design, but no between-corpus variance component was detected. Both sentences have been replaced.
 
-## Major Comment 2 – Supplementary Table S1 inconsistent with the manuscript
+**The D1 results of 14.2% and 10.8% (§3.3, Appendix B, Table S14b).**
+- *Facts.* With the conformal order statistic of the same 120 calibration controls, D1 had a type-I error of 14.2% (Wilson 95% interval 10.3–19.1%) and 10.8% (7.5–15.4%) on the 240 independent controls. D2–D5 had 1.7–5.4% with either the empirical or the conformal threshold.
+- *Why the conformal threshold does not prevent this.* Its guarantee requires the independent controls to be exchangeable with the 120 calibration controls. They come from 12 different corpora, so that is not guaranteed. In addition, the guarantee holds on average over calibration sets, not for a particular one.
+- *What happened.* At 3% noise the largest D1 statistic among the 120 calibration controls was 23.6, whereas 6 of the 240 independent controls exceeded it (maximum 49.8). Refitting the two largest with 20 instead of 3 optimiser starts reproduced their χ² exactly, so they are not optimisation failures. They are genuine upper-tail values that the calibration cohort happened not to contain.
+- *How unusual this is.* Over 2,000 random allocations of 6 of the 18 corpora to calibration, a D1 type-I error ≥ 14.2% occurred in 0.1% of allocations (2.5–97.5% range 0.8–12.1%), and ≥ 10.8% at 10% noise in 0.7%. Random allocation of 120 of the 360 controls, ignoring corpora, gave similar probabilities (0.1% and 2%). For at least one of the 12 design × noise cells, the probability was about 1%.
+- *Interpretation in the manuscript.* The observed calibration set was an unfavourable draw for D1. It is not explained by a detectable corpus effect. We did not identify any further cause and say so. The two noise levels share the calibration studies and the standardised noise draws, so the two D1 values are not independent confirmations.
 
-**Response: corrected; Table S1 is now generated from the implementation.**
-- **The cause.** The parameter table was generated by the code (`cassia.simulate.parameter_table()`), but the supplement still printed an older CSV produced by the v0.2 run. The code itself already used the revised models.
-- **The fix.**
-  - `scripts/make_table_s1.py` writes Table S1 from `parameter_table()` of CASSIA 0.3.2.
-  - The supplement builder reads only that output.
-  - The measurement-model and evidence-class rows are no longer hand-written text. They are built from the constants the code uses: `EVIDENCE_MIX`, `cassia.measurement.TECHNIQUES`, `INVENTORY_REL_SD` and `PHASE_ABS_SD`.
-  - A new unit test (`test_parameter_table_matches_implementation`) fails if the table and the constants ever disagree.
-- **What Table S1 now contains (44 rows).**
-  - Evidence-class probabilities: C 0.40, B 0.30, A1 0.20, A2 0.10.
-  - The measurements that define each class, and the A1 allocation (XPS or XANES with probability 0.5 each; A2 always XANES).
-  - The XPS model, f_obs = f_s + b(1 − f_s) + N(0, 0.05) with f_s = ef/(ef + 1 − f), e ~ LN(0, 0.4) and b ~ U(0, 0.15).
-  - The separate XANES model, f_obs = f + b(1 − f) + N(0, 0.03) with b ~ U(0, 0.03).
-  - Solid-inventory error, 5% relative; phase-evidence error, 0.10 absolute.
-  - Reporting probabilities for ionic strength and final pH; corpus composition; family hyper-priors; scenario switches.
-  - All kinetic parameter distributions and the ODE solver settings.
-
-## Major Comment 3 – Table S5 does not support the M2s statement
-
-**Response: corrected.** The 84% figure was computed from `results/v3/m2s_per_study.csv`, which the supplement did not report.
-- **New table.** Table S5b (`scripts/m2s_family.py`) reports, for each material family and each of the four endpoints at nominal 90%:
-  - the number of test studies;
-  - mean within-study coverage;
-  - the fraction of studies with ≥ 90% coverage, with a Wilson 95% interval;
-  - the fraction of unbounded intervals;
-  - the mean width of bounded intervals.
-- **The statistic.** As the reviewer notes, the 84% is a *fraction of studies* meeting the 90% target. Mean coverage is a different statistic, and both are now given.
-- **Revised §3.5 text.** For apparent uptake, 42 of 50 hydrochar studies (84%; Wilson 72–92%) met the target, against 90–98% for the other families. Mean coverage was 0.95, against 0.97–0.995.
-- **Interpretation.** With 50 studies per family these intervals overlap. The text now calls the family difference a tendency, not a demonstrated effect.
-
-## Major Comment 4 – The calibrated rejection test does not consistently control type-I error
-
-**Response: accepted. The calibration procedure was changed and validated on an independent cohort.**
-
-We followed all five recommendations. The result changes the paper's statement, and it uncovered a real problem with the earlier calibration.
-
-1. **More independent negative controls.** We added 240 controls from 12 new, independent simulator corpora (`scripts/typeI_validation.py`). They were fitted with exactly the same procedure as the 120 paired controls. In total there are 360 controls in 18 corpora.
-2. **Evaluation on independent cohorts (Table S14).** We applied the previous threshold, the 95th percentile of the 120 paired controls from 6 corpora, to the 240 new controls:
-
-   | Design | Type-I error, 3% noise (Wilson 95% interval) | Type-I error, 10% noise (Wilson 95% interval) |
-   |---|---|---|
-   | D1 | **15.4%** (11.4–20.5%) | **13.8%** (10.0–18.7%) |
-   | D2–D5 | 2.5–4.2% | 2.1–5.4% |
-
-   - *D4n.* The 12.5% value that concerned the reviewer was not reproduced on independent controls (2.5%, 1.2–5.3%); it was a noisy split-half estimate from 60 controls.
-   - *D1.* The real failure is D1, which the earlier split-half estimate (6.7%) missed.
-   - *The cause.* The null χ² distribution differs between corpora, because family hyper-priors are redrawn per corpus. Controls from 6 corpora are therefore not exchangeable with a new corpus, and their 95th percentile is too low for D1, which has only 7 degrees of freedom.
-3. **Improved calibration.** The threshold is now conformal: the ⌈0.95(n + 1)⌉-th smallest control χ². This gives a finite-sample type-I error ≤ 0.05 for an exchangeable null study. It is estimated across corpora, with the corpus as the unit of exchangeability.
-   - Leave-one-corpus-out over all 18 corpora, the type-I error was **4.7–5.6% for every design and noise level**, with corpus-bootstrap 95% intervals within 2.5–8.6% (Table 5, Table S14).
-   - For D4n it was 5.0% (3.3–6.7%) at 3% noise and 5.6% (3.1–8.6%) at 10% noise.
-4. **Confidence intervals.** Every type-I estimate now has an interval: Wilson for the independent cohort, and corpus-bootstrap for the leave-one-corpus-out estimates. Power is reported at the final threshold from all 360 controls:
-   - D1/D2 (Class C): 22–35%;
-   - D3: 80–88%;
-   - D4x, D4n and D5: 92–98%.
-5. **Two error rates.** The manuscript now distinguishes the type-I error of the rejection test from the false-equivalence probability of the equivalence test (0–4.3%) in §2.6, §3.3 and Appendix B. The second does not depend on the rejection threshold.
-
-**Wording and limitations.** "Calibration fixes this" has been removed. §3.3 now reports the observed rates. A new limitation (§4.7, item 5) states that the 5% level holds on average over corpora, not within every corpus: single held-out corpora reached 15–25%. It also states that the level holds only if a real study is exchangeable with the simulated corpora, and that the threshold would need recalibration before use on literature data.
-
-**Abstract.** The Abstract now reports the type-I error for all measurement designs ("4.7–5.6% for every measurement design on average across corpora (95% intervals within 2.5–8.6%)") next to the power figures.
-
-**Figures.** Fig. 3c,d were redrawn at the new threshold.
-
-## Major Comment 5 – D5 phase evidence and the equivalence-test observation vector
-
-**Response: clarified as Option A, which matches the implementation.**
-- The goodness-of-fit, rejection and equivalence tests for D5 use D4n + solid Cr inventory, without phase evidence.
-- Phase evidence is the precipitated share of solid Cr(III). It is undefined under the adsorption-only null, where the solid holds no Cr(III), and no null observation model is assumed for it.
-- Phase evidence enters only the Fisher analysis of the precipitation share, where D5 was the only design that constrained it (posterior SD 0.026).
-- This is now stated in a paragraph after the design table in §2.6 ("Which D5 measurements enter which analysis"), in the Table 5 note and in Appendix B. The reported D5 rejection power and equivalence rates are explicitly said to exclude phase evidence.
-
-## Major Comment 6 – Denominators of the treatment-design safety claim
-
-**Response: corrected (§3.6, new Table 8c, §5.1).**
-1. **Denominators.** The text now gives both bounds:
-   - the Wilson 95% upper bound over all 300 materials per target: 0/300, 1.3%;
-   - the conditional bound among accepted designs: 0/105, 3.5% (S1); 0/98, 3.8% (S2).
-
-   The Conclusions quote both.
-2. **Which rule.** The 105 and 98 accepted designs were obtained with the **simple rule**: duplicates, mean ≤ 90% of each limit, with one realised verification sequence per material. This is now stated where the numbers are given.
-3. **Consolidated table (Table 8c).** For both rules it gives accepted designs, unsafe acceptances, and unsafe rates over all materials and among accepted designs.
-4. **A correction found while building Table 8c.** The comparison of the two rules (1,000 sequences per material) was run on a different set of 300 materials per target, drawn from the same hyper-priors, not on the design-stage materials. The material identifiers coincide, but the draws differ. The manuscript previously implied the same materials. It now describes this as an independent verification cohort.
-
-   In that cohort the expected number of accepted designs was 82.5 (simple) against 81.6 (error-controlled) for S1, and 100.2 against 98.4 for S2. The expected numbers of unsafe acceptances were 0.018 against 0.002 (S1) and 0.036 against 0.013 (S2). The error-controlled rule therefore accepts almost as many designs at about 50% more batches, with three- to ninefold fewer expected unsafe acceptances.
-
-## Major Comment 7 – Endpoint-specific conformal performance in the Abstract and Highlights
-
-**Response: adopted.**
-- **Abstract.** The Abstract now uses the reviewer's wording: "An exact study-level split-conformal interval achieved its stated coverage guarantee, but the 90% interval for apparent Cr(VI) uptake spanned approximately 3.3 log₁₀ units; intervals for total-chromium endpoints were frequently unbounded with literature-scale calibration samples."
-- **Highlight.** The highlight now reads: "Exact study-level coverage holds; intervals are too wide for some engineering uses". The reviewer's suggested sentence exceeds Elsevier's 85-character limit, so we shortened it while keeping its meaning.
-
-## Major Comment 8 – Software versions and reproducibility
-
-**Response: corrected.**
-
-| Location | Correction |
-|---|---|
-| §2.2 | "CASSIA 0.3.2 is organised in six layers" |
-| Table 1 | Updated: `cassia.measurement` added; decision support now names both design and verification stages; evidence classes C/B/A1/A2; interval methods M0–M2s |
-| New Table 2 | Every script and the tables and figures it produces, in run order, including `bench_partition.py` (S11–S12), `endpoint_validation.py` (S13), `typeI_validation.py` (S14), `m2s_family.py` (S5b), `verification_table.py` (Table 8c), `make_table_s1.py` (S1), `seqver_oc.py` (S9), `make_supp_figs.py` (Fig. S1) |
-| Regeneration statement | "Every number, table and figure … is regenerated by the scripts of Table 2, run in order by `scripts/reproduce_all.sh`" |
-| Data availability | Full installation, test and reproduction commands |
-| Supplement cover | A table mapping every supplementary table (S1–S14, Fig. S1) to its generating script and CSV file |
-| Release | Code commit `72a0b175c07b676093673cbf2b1e8c976de87142`; manifest regenerated; **tag and Zenodo DOI remain an author action** |
-
-**An ordering pitfall.** While writing Table 2 we found one: `run_v2.py --stage all` writes older versions of Figs. 3, 5, 6 and 7, which `run_v3.py --stage figures` then replaces. `reproduce_all.sh` runs them in the required order, and Table 2 states it.
-
-**Verifiability.** A source archive of the submission commit, which descends from code commit `72a0b17` and adds only the manuscript documents and release logs, (`git archive` of the repository root) is supplied with this response, so the reviewer can run `pytest -q tests` (40 tests) and check the manifest with `sha256sum -c release/MANIFEST.sha256`. The test log and coverage report (81% line coverage) are included in it.
+**Recommendation stated in the manuscript (§3.3, "Reporting choice"; §4.7 item 5).** We report the study-pooled threshold with its empirical leave-one-corpus-out average and maximum per-corpus rate as the primary analysis. The corpus-level threshold is reported as the procedure that carries a guarantee, at 5.3%, not 5%. Neither is claimed to give 5% type-I control for a new independent corpus. Both would need recalibration, for example on real negative controls, before use on literature data.
 
 ---
 
-## Items that remain open
+## 5 (Priority 2) – Confidence intervals in Table S5b
 
-| Item | Reason | Remedy |
+**Response: accepted.** `scripts/m2s_family.py` now adds a corpus-cluster percentile bootstrap: the 10 corpora are resampled with replacement, 4,000 times. Table S5b reports three intervals:
+- the cluster interval;
+- the Wilson interval, labelled descriptive under the study-level independence approximation;
+- the wider envelope of the two, which is the interval quoted in the text.
+
+We report the envelope because a percentile bootstrap over only 10 clusters can itself be too narrow, and it collapses to a single point when every study of a family covers.
+- *Hydrochar.* The cluster interval was 76–90% and the Wilson interval 72–92%, so the reported interval is 72–92%.
+- *Within-corpus dependence.* In these data it did not widen the intervals. With 10 independent corpora, the family comparison is still described as a tendency, not a demonstrated effect (§3.5).
+
+---
+
+## 3.8 and 4 (Priority 3) – Source reproducibility
+
+**Problem A: `git rev-parse HEAD` in an archive. Corrected.**
+- *Commit resolution.* `scripts/reproduce_all.sh` now takes the commit cited in the manuscript, in this order, from:
+  1. its first argument;
+  2. the environment variable `CASSIA_COMMIT`;
+  3. `git rev-parse HEAD`;
+  4. the commit documented in `release/RELEASE.md`.
+- *Fail early.* The commit is resolved at the start, and the script stops before any computation if none is found, so it can no longer fail after hours of calculation.
+- *Manifest.* `scripts/make_release_manifest.py` uses the same rule. Without git or `CASSIA_COMMIT` it records the commit as unknown instead of failing.
+- *Check.* We tested this from a `git archive` of the release commit, which has no `.git`:
+  - with no argument, the script found the commit in `release/RELEASE.md`;
+  - with an argument and with `CASSIA_COMMIT`, it used that value;
+  - with `release/RELEASE.md` removed and nothing else given, it stopped before the tests ran;
+  - the final assembly and manifest commands then completed in the archive.
+- *Full rerun.* The long numerical stages (about 9–11 h on 4 cores) were not rerun from the archive for this check; apart from the two scripts changed in this revision (scripts/typeI_corpus.py and scripts/m2s_family.py, both run in full), they are unchanged since the previous release.
+
+**Problem B: outdated README. Corrected.** `README.md` now refers to CASSIA 0.3.3. It has a reproduction section with the archive usage, a list of the scripts with their tables, the manifest check and a 0.3.3 release checklist; the old v0.2.0 checklist was removed.
+
+**Test execution in the reviewer's runtime.** We cannot change the reviewer's environment. Test collection needs phreeqpython (PHREEQC), which is a declared dependency (`pyproject.toml`, `requirements-lock.txt`), so the tests cannot run without it. With `pip install -e .` at the repository root and `pip install -e cassia[ml,pores,dev]`, the 41 tests pass, now including a test of the corpus-level conformal threshold. Line coverage is 82% (`release/test_log.txt`, `results/coverage_report.txt`). These were run in our environment with Python 3.13.18, a patch release later than the locked 3.13.17; we agree that a supplied log is not an independently reproduced result.
+
+**Tagged release and DOI.** These need the author's GitHub and Zenodo accounts (see the last section).
+
+---
+
+## 3.7 and Priority 5 – Abstract and Highlights
+
+**Response: accepted.**
+- *Highlight.* The type-I highlight now uses the reviewer's wording: "Average type-I error was about 5%, with higher rates in some individual corpora". Power is stated separately: "Total-Cr and solid-phase data gave 80–98% rejection power in simulated studies". To stay within five highlights, the first two highlights were merged.
+- *Abstract.* It now states that the type-I error averaged about 5% (4.7–5.6%) over held-out corpora, with 15–25% in some individual corpora, and that this is an empirical average, not a guarantee.
+- *Treatment design (3.6).* The treatment-design statement now reads "no unsafe accepted design was observed in the simulated cohorts". The corresponding highlight already reads "in the simulated test cohorts".
+
+---
+
+## Points the reviewer marked as resolved (3.1, 3.2, 3.3, 3.5, 3.6)
+
+No further changes, apart from the cluster intervals added to Table S5b (point 3.3) and the word "simulated" added in the Abstract (point 3.6). Table S1 is regenerated from the implementation and is identical except for the version label.
+
+## 6 – Remaining scientific limitations
+
+We agree with the reviewer's list and keep every item in §4.7. The type-I limitation (item 5) has been rewritten as described above. We also agree that the paper's most valuable conclusions, about what measurements can establish regarding adsorption versus reduction, are properties of the assumed simulator and measurement models, and the manuscript says so (§3.3, §4.5, §4.7).
+
+## 7 (Priority 4) – Submission metadata: items the author must supply
+
+The following items cannot be completed without information or actions that only the author can provide. We have not filled them in or invented them. The placeholders are kept visible so that none is overlooked.
+
+| Item | Where | Status |
 |---|---|---|
-| Empirical application (Ramirez et al. + 20–30 studies) | Source hosts blocked by the computational environment's network policy | Author supplies the files, or the hosts are allowed; the pipeline is ready |
-| Validation against Ball and Nordstrom (1998) / Rai et al. (1987) | Same | Same |
-| Release tag and Zenodo DOI | Requires the author's account | Author action |
-| Author name, affiliation, ORCID, CRediT, funding | Author-specific | Author to complete |
+| Author surname, affiliation, ORCID | Title page (`build_docx.js`), `CITATION.cff`, `LICENSE` | Placeholder; awaiting author |
+| Funding statement | Back matter | "No specific grant" text marked [Author to confirm] |
+| CRediT statement, co-authors | Back matter | Awaiting author confirmation |
+| Author's own verification of code and results | §2.12 | Instruction kept as a placeholder; it must be written by the author and cannot be drafted on their behalf |
+| Generative-AI declaration | Back matter | Wording drafted; must be confirmed against the target journal's policy |
+| GitHub release `cassia-v0.3.3`, Zenodo DOI | Data availability, `CITATION.cff` | Requires the author's GitHub and Zenodo accounts; steps listed in `README.md` |
+
+---
+
+## Other changes
+
+- *Supplement tables.* Column headers containing `|` broke the Word table parser in Table S14; fixed for all supplementary tables.
+- *New table.* Table S14b (two parts) is new, and Table 2 lists `scripts/typeI_corpus.py`.
+- *No new simulation.* All new analyses reuse the existing 360 negative controls and 120 paired studies; no new simulations were run and no previously reported number changed except where stated above.
+- *Status of all results.* All results remain synthetic or thermodynamic; no empirical data were analysed.

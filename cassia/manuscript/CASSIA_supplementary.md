@@ -4,7 +4,7 @@ All results in this supplement are synthetic (known-truth simulations) or thermo
 
 | Tables | Generating script | CSV files |
 |---|---|---|
-| S1 | `scripts/make_table_s1.py` (from `cassia.simulate.parameter_table()`, CASSIA 0.3.2) | `results/v3/T_S1_simulator_parameters.csv` |
+| S1 | `scripts/make_table_s1.py` (from `cassia.simulate.parameter_table()`, CASSIA 0.3.3) | `results/v3/T_S1_simulator_parameters.csv` |
 | S2–S5 | `scripts/run_v2.py` | `results/v2/` |
 | S5b | `scripts/m2s_family.py` (from `run_v3.py` stage m2s) | `results/v3/T_m2s_family_full.csv` |
 | S6–S8, S10 | `scripts/run_v3.py` (stages mlscen, censor, equiv3, chem3) | `results/v3/` |
@@ -16,7 +16,7 @@ All results in this supplement are synthetic (known-truth simulations) or thermo
 | Fig. S1 | `scripts/make_supp_figs.py` | `results/v2/ident_profiles.csv` |
 
 
-## Table S1. Simulator parameters, distributions, measurement models, evidence-class probabilities and numerical settings (CASSIA 0.3.2)
+## Table S1. Simulator parameters, distributions, measurement models, evidence-class probabilities and numerical settings (CASSIA 0.3.3)
 
 Generated from the implementation by `scripts/make_table_s1.py`; a unit test checks that the evidence-class probabilities and measurement-model constants in this table are those used by the code. LN(m, s): log-normal with log-mean m and log-SD s; U(a, b): uniform; N(0, s): normal.
 
@@ -175,34 +175,34 @@ Status codes: `bracketed` (solubility found; |SI| < 0.01 at the solution); `unde
 
 ## Table S5b. M2s (exact study-level split conformal) by material family at nominal 90% (10 corpora, outer leave-one-study-out)
 
-Fraction of test studies with ≥ 90% within-study coverage, mean within-study coverage, fraction of unbounded intervals (counted as full coverage) and mean width of bounded intervals (log₁₀). Three 95% intervals for the fraction: cluster95, a corpus-cluster percentile bootstrap (the 10 corpora resampled with replacement, 4,000 resamples), which respects the sharing of family hyper-priors by the studies of a corpus; wilson95, descriptive only, which treats the studies of a family as independent Bernoulli observations; and envelope95, the wider of the two, which is the interval reported in the text. With only 10 independent corpora the cluster bootstrap is itself imprecise and collapses to a point when every study of a family covers, so the family comparisons remain descriptive.
+Fraction of test studies with ≥ 90% within-study coverage, mean within-study coverage, fraction of unbounded intervals (counted as full coverage) and mean width of bounded intervals (log₁₀). Three 95% intervals for the fraction: a corpus-cluster percentile bootstrap (the 10 corpora resampled with replacement, 4,000 resamples), which respects the sharing of family hyper-priors by the studies of a corpus; the Wilson interval, descriptive only, which treats the studies of a family as independent Bernoulli observations; and the envelope of the two (lower = smaller, upper = larger), which is the interval reported in the text. With only 10 independent corpora the cluster bootstrap is itself imprecise and collapses to a point when every study of a family covers, so the family comparisons remain descriptive.
 
-| target | family | n_studies | n_corpora | mean_coverage | frac_studies_cov_ge_0.9 | envelope95_lo | envelope95_hi | cluster95_lo | cluster95_hi | wilson95_lo | wilson95_hi | frac_unbounded | mean_width_log10_bounded |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Ce_VI | AC_chemical | 50 | 10 | 0.990 | 0.960 | 0.865 | 1.000 | 0.900 | 1.000 | 0.865 | 0.989 | 0.000 | 3.995 |
-| Ce_VI | AC_physical | 50 | 10 | 0.999 | 1.000 | 0.929 | 1.000 | 1.000 | 1.000 | 0.929 | 1.000 | 0.000 | 4.007 |
-| Ce_VI | biochar_manure | 50 | 10 | 0.993 | 0.960 | 0.865 | 1.000 | 0.900 | 1.000 | 0.865 | 0.989 | 0.000 | 3.920 |
-| Ce_VI | biochar_wood | 50 | 10 | 0.979 | 0.920 | 0.812 | 0.980 | 0.860 | 0.980 | 0.812 | 0.968 | 0.000 | 3.913 |
-| Ce_VI | hydrochar | 50 | 10 | 0.992 | 0.940 | 0.838 | 1.000 | 0.880 | 1.000 | 0.838 | 0.979 | 0.000 | 3.941 |
-| Ce_VI | porous_carbon | 50 | 10 | 0.959 | 0.900 | 0.786 | 0.980 | 0.800 | 0.980 | 0.786 | 0.957 | 0.000 | 3.882 |
-| Ce_total | AC_chemical | 29 | 10 | 0.993 | 1.000 | 0.883 | 1.000 | 1.000 | 1.000 | 0.883 | 1.000 | 0.621 | 2.045 |
-| Ce_total | AC_physical | 29 | 10 | 0.988 | 0.931 | 0.780 | 1.000 | 0.839 | 1.000 | 0.780 | 0.981 | 0.655 | 2.118 |
-| Ce_total | biochar_manure | 31 | 10 | 0.997 | 0.968 | 0.838 | 1.000 | 0.909 | 1.000 | 0.838 | 0.994 | 0.645 | 2.240 |
-| Ce_total | biochar_wood | 29 | 10 | 1.000 | 1.000 | 0.883 | 1.000 | 1.000 | 1.000 | 0.883 | 1.000 | 0.655 | 2.282 |
-| Ce_total | hydrochar | 31 | 9 | 0.994 | 1.000 | 0.890 | 1.000 | 1.000 | 1.000 | 0.890 | 1.000 | 0.645 | 2.163 |
-| Ce_total | porous_carbon | 30 | 10 | 0.988 | 0.967 | 0.833 | 1.000 | 0.906 | 1.000 | 0.833 | 0.994 | 0.533 | 2.207 |
-| q_app_VI | AC_chemical | 50 | 10 | 0.995 | 0.980 | 0.895 | 1.000 | 0.940 | 1.000 | 0.895 | 0.996 | 0.000 | 3.268 |
-| q_app_VI | AC_physical | 50 | 10 | 0.984 | 0.960 | 0.865 | 1.000 | 0.900 | 1.000 | 0.865 | 0.989 | 0.000 | 3.257 |
-| q_app_VI | biochar_manure | 50 | 10 | 0.970 | 0.900 | 0.786 | 0.980 | 0.800 | 0.980 | 0.786 | 0.957 | 0.000 | 3.392 |
-| q_app_VI | biochar_wood | 50 | 10 | 0.976 | 0.900 | 0.786 | 0.960 | 0.840 | 0.960 | 0.786 | 0.957 | 0.000 | 3.316 |
-| q_app_VI | hydrochar | 50 | 10 | 0.953 | 0.840 | 0.715 | 0.917 | 0.760 | 0.900 | 0.715 | 0.917 | 0.000 | 3.231 |
-| q_app_VI | porous_carbon | 50 | 10 | 0.988 | 0.980 | 0.895 | 1.000 | 0.940 | 1.000 | 0.895 | 0.996 | 0.000 | 3.239 |
-| q_tot_aq | AC_chemical | 29 | 10 | 1.000 | 1.000 | 0.883 | 1.000 | 1.000 | 1.000 | 0.883 | 1.000 | 0.621 | 3.811 |
-| q_tot_aq | AC_physical | 29 | 10 | 0.993 | 0.966 | 0.828 | 1.000 | 0.900 | 1.000 | 0.828 | 0.994 | 0.655 | 3.735 |
-| q_tot_aq | biochar_manure | 31 | 10 | 0.978 | 0.968 | 0.838 | 1.000 | 0.903 | 1.000 | 0.838 | 0.994 | 0.645 | 3.842 |
-| q_tot_aq | biochar_wood | 29 | 10 | 1.000 | 1.000 | 0.883 | 1.000 | 1.000 | 1.000 | 0.883 | 1.000 | 0.655 | 3.968 |
-| q_tot_aq | hydrochar | 31 | 9 | 0.986 | 0.903 | 0.679 | 1.000 | 0.679 | 1.000 | 0.751 | 0.967 | 0.645 | 3.821 |
-| q_tot_aq | porous_carbon | 30 | 10 | 0.995 | 0.967 | 0.833 | 1.000 | 0.906 | 1.000 | 0.833 | 0.994 | 0.533 | 3.733 |
+| target | family | studies | corpora | mean coverage | fraction ≥ 0.90 | 95% envelope (reported) | 95% cluster bootstrap | 95% Wilson (descriptive) | fraction unbounded | mean width (log₁₀, bounded) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Ce_VI | AC_chemical | 50 | 10 | 0.990 | 0.960 | 0.86–1.00 | 0.90–1.00 | 0.86–0.99 | 0.000 | 3.995 |
+| Ce_VI | AC_physical | 50 | 10 | 0.999 | 1.000 | 0.93–1.00 | 1.00–1.00 | 0.93–1.00 | 0.000 | 4.007 |
+| Ce_VI | biochar_manure | 50 | 10 | 0.993 | 0.960 | 0.86–1.00 | 0.90–1.00 | 0.86–0.99 | 0.000 | 3.920 |
+| Ce_VI | biochar_wood | 50 | 10 | 0.979 | 0.920 | 0.81–0.98 | 0.86–0.98 | 0.81–0.97 | 0.000 | 3.913 |
+| Ce_VI | hydrochar | 50 | 10 | 0.992 | 0.940 | 0.84–1.00 | 0.88–1.00 | 0.84–0.98 | 0.000 | 3.941 |
+| Ce_VI | porous_carbon | 50 | 10 | 0.959 | 0.900 | 0.79–0.98 | 0.80–0.98 | 0.79–0.96 | 0.000 | 3.882 |
+| Ce_total | AC_chemical | 29 | 10 | 0.993 | 1.000 | 0.88–1.00 | 1.00–1.00 | 0.88–1.00 | 0.621 | 2.045 |
+| Ce_total | AC_physical | 29 | 10 | 0.988 | 0.931 | 0.78–1.00 | 0.84–1.00 | 0.78–0.98 | 0.655 | 2.118 |
+| Ce_total | biochar_manure | 31 | 10 | 0.997 | 0.968 | 0.84–1.00 | 0.91–1.00 | 0.84–0.99 | 0.645 | 2.240 |
+| Ce_total | biochar_wood | 29 | 10 | 1.000 | 1.000 | 0.88–1.00 | 1.00–1.00 | 0.88–1.00 | 0.655 | 2.282 |
+| Ce_total | hydrochar | 31 | 9 | 0.994 | 1.000 | 0.89–1.00 | 1.00–1.00 | 0.89–1.00 | 0.645 | 2.163 |
+| Ce_total | porous_carbon | 30 | 10 | 0.988 | 0.967 | 0.83–1.00 | 0.91–1.00 | 0.83–0.99 | 0.533 | 2.207 |
+| q_app_VI | AC_chemical | 50 | 10 | 0.995 | 0.980 | 0.90–1.00 | 0.94–1.00 | 0.90–1.00 | 0.000 | 3.268 |
+| q_app_VI | AC_physical | 50 | 10 | 0.984 | 0.960 | 0.86–1.00 | 0.90–1.00 | 0.86–0.99 | 0.000 | 3.257 |
+| q_app_VI | biochar_manure | 50 | 10 | 0.970 | 0.900 | 0.79–0.98 | 0.80–0.98 | 0.79–0.96 | 0.000 | 3.392 |
+| q_app_VI | biochar_wood | 50 | 10 | 0.976 | 0.900 | 0.79–0.96 | 0.84–0.96 | 0.79–0.96 | 0.000 | 3.316 |
+| q_app_VI | hydrochar | 50 | 10 | 0.953 | 0.840 | 0.71–0.92 | 0.76–0.90 | 0.71–0.92 | 0.000 | 3.231 |
+| q_app_VI | porous_carbon | 50 | 10 | 0.988 | 0.980 | 0.90–1.00 | 0.94–1.00 | 0.90–1.00 | 0.000 | 3.239 |
+| q_tot_aq | AC_chemical | 29 | 10 | 1.000 | 1.000 | 0.88–1.00 | 1.00–1.00 | 0.88–1.00 | 0.621 | 3.811 |
+| q_tot_aq | AC_physical | 29 | 10 | 0.993 | 0.966 | 0.83–1.00 | 0.90–1.00 | 0.83–0.99 | 0.655 | 3.735 |
+| q_tot_aq | biochar_manure | 31 | 10 | 0.978 | 0.968 | 0.84–1.00 | 0.90–1.00 | 0.84–0.99 | 0.645 | 3.842 |
+| q_tot_aq | biochar_wood | 29 | 10 | 1.000 | 1.000 | 0.88–1.00 | 1.00–1.00 | 0.88–1.00 | 0.655 | 3.968 |
+| q_tot_aq | hydrochar | 31 | 9 | 0.986 | 0.903 | 0.68–1.00 | 0.68–1.00 | 0.75–0.97 | 0.645 | 3.821 |
+| q_tot_aq | porous_carbon | 30 | 10 | 0.995 | 0.967 | 0.83–1.00 | 0.91–1.00 | 0.83–0.99 | 0.533 | 3.733 |
 
 
 
@@ -420,41 +420,41 @@ Columns typeI_nominal, typeI_empirical and typeI_conformal: thresholds from the 
 
 ## Table S14b. Corpus-level analysis of the type-I error (360 negative controls, 18 corpora of 20 controls)
 
-`scripts/typeI_corpus.py`; all values are simulated. pooled_*: study-pooled conformal threshold from 17 corpora applied to the held-out corpus (leave-one-corpus-out, LOCO): average type-I with corpus-bootstrap 95% interval, largest per-corpus value, and number of corpora at ≥ 15%. binom_P_max_ge_observed: probability that the largest of 18 per-corpus rates reaches the observed maximum if each control were rejected independently with probability 0.05 (20 controls per corpus). dispersion_chi2_p: test of extra-binomial variation of the per-corpus rejection counts. icc_log_chi2, icc_F_p: between-corpus share of the variance of log χ² (one-way ANOVA) and its F test. corpus_*: corpus-level split conformal with one randomly drawn control per corpus; at α = 0.05 the threshold is unbounded for every design (a finite threshold needs ≥ 19 corpora); at the smallest attainable level, 1/19 = 5.3%, the threshold is the largest of the 18 draws (5th–95th percentiles over 2,000 draws shown), corpus_loco_typeI is its LOCO type-I (17 corpora, level 1/18 = 5.6%, averaged over draws) and power_corpus its power on the 101 reduction studies of stage equiv3 (power_pooled: study-pooled threshold from all 360 controls). split6_*: type-I on 12 corpora when the threshold is calibrated on 6 corpora: observed for the calibration cohort of Table S14, 2.5–97.5% range and probability of a value at least as large over 2,000 random choices of 6 corpora.
+`scripts/typeI_corpus.py`; all values are simulated. (a) Study-pooled threshold (the threshold used in the main text) computed from 17 corpora and applied to the held-out corpus (leave-one-corpus-out, LOCO): mean type-I error (95% interval in Table S14), largest per-corpus value and number of corpora at ≥ 15%. Binomial P(max ≥ observed): probability that the largest of 18 per-corpus rates reaches the observed maximum if each control were rejected independently with probability 0.05 (20 controls per corpus). Extra-binomial p: test of extra-binomial variation of the per-corpus rejection counts. ICC log χ²: between-corpus share of the variance of log χ² (one-way ANOVA), with its F test. 6-corpus calibration: type-I error on 12 corpora when the threshold is calibrated on 6, observed for the calibration cohort of Table S14, and its 2.5–97.5% range and the probability of a value at least as large over 2,000 random choices of 6 corpora. (b) Corpus-level split conformal (one randomly drawn control per corpus; Appendix B). At α = 0.05 its threshold is unbounded for every design, because a finite threshold needs ≥ 19 corpora. At the smallest attainable level, 1/19 = 5.3%, the threshold is the largest of the 18 draws (5th–95th percentiles over 2,000 draws shown). LOCO type-I uses 17 corpora (level 1/18 = 5.6%), averaged over draws. Power is for the reduction studies of stage equiv3 (share 5–30%, n = 50; > 30%, n = 51), against the study-pooled threshold from all 360 controls.
 
 **(a) Study-pooled threshold: empirical cross-corpus performance, heterogeneity and calibration-set sensitivity**
 
-| sd_rel | design | pooled_loco_typeI | pooled_loco_lo | pooled_loco_hi | pooled_max_corpus | pooled_n_corpora_ge_0.15 | binom_P_max_ge_observed | dispersion_chi2_p | icc_log_chi2 | icc_F_p | split6_observed_typeI | split6_p025 | split6_p975 | split6_P_ge_observed |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 0.030 | D1 | 0.047 | 0.025 | 0.069 | 0.150 | 2 | 0.757 | 0.338 | 0.008 | 0.299 | 0.142 | 0.008 | 0.121 | 0.001 |
-| 0.030 | D2 | 0.050 | 0.022 | 0.083 | 0.250 | 2 | 0.045 | 0.017 | -0.003 | 0.521 | 0.037 | 0.008 | 0.104 | 0.674 |
-| 0.030 | D3 | 0.047 | 0.028 | 0.072 | 0.200 | 1 | 0.251 | 0.338 | -0.015 | 0.789 | 0.037 | 0.017 | 0.083 | 0.695 |
-| 0.030 | D4n | 0.050 | 0.033 | 0.067 | 0.150 | 1 | 0.757 | 0.880 | -0.007 | 0.611 | 0.021 | 0.017 | 0.092 | 0.957 |
-| 0.030 | D4x | 0.047 | 0.031 | 0.067 | 0.150 | 1 | 0.757 | 0.790 | -0.009 | 0.664 | 0.021 | 0.017 | 0.092 | 0.965 |
-| 0.030 | D5 | 0.050 | 0.033 | 0.067 | 0.150 | 1 | 0.757 | 0.880 | -0.005 | 0.564 | 0.025 | 0.017 | 0.096 | 0.939 |
-| 0.100 | D1 | 0.053 | 0.031 | 0.078 | 0.200 | 1 | 0.251 | 0.458 | -0.007 | 0.621 | 0.108 | 0.017 | 0.092 | 0.007 |
-| 0.100 | D2 | 0.047 | 0.031 | 0.067 | 0.150 | 1 | 0.757 | 0.790 | -0.022 | 0.919 | 0.046 | 0.017 | 0.092 | 0.598 |
-| 0.100 | D3 | 0.050 | 0.025 | 0.083 | 0.250 | 2 | 0.045 | 0.030 | -0.009 | 0.670 | 0.029 | 0.017 | 0.108 | 0.794 |
-| 0.100 | D4n | 0.056 | 0.031 | 0.086 | 0.200 | 2 | 0.251 | 0.105 | -0.022 | 0.914 | 0.017 | 0.008 | 0.117 | 0.948 |
-| 0.100 | D4x | 0.053 | 0.028 | 0.081 | 0.200 | 2 | 0.251 | 0.096 | -0.024 | 0.934 | 0.025 | 0.008 | 0.096 | 0.876 |
-| 0.100 | D5 | 0.050 | 0.028 | 0.078 | 0.200 | 2 | 0.251 | 0.224 | -0.020 | 0.879 | 0.021 | 0.008 | 0.125 | 0.879 |
+| noise | design | LOCO type-I (mean) | max per corpus | corpora ≥ 0.15 | binomial P(max ≥ observed) | extra-binomial p | ICC log χ² | ICC F-test p | 6-corpus calibration: observed | 6-corpus: 2.5–97.5% | 6-corpus: P(≥ observed) |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 3% | D1 | 0.047 | 0.150 | 2 | 0.757 | 0.338 | 0.008 | 0.299 | 0.142 | 0.008–0.121 | 0.001 |
+| 3% | D2 | 0.050 | 0.250 | 2 | 0.045 | 0.017 | -0.003 | 0.521 | 0.037 | 0.008–0.104 | 0.674 |
+| 3% | D3 | 0.047 | 0.200 | 1 | 0.251 | 0.338 | -0.015 | 0.789 | 0.037 | 0.017–0.083 | 0.695 |
+| 3% | D4n | 0.050 | 0.150 | 1 | 0.757 | 0.880 | -0.007 | 0.611 | 0.021 | 0.017–0.092 | 0.957 |
+| 3% | D4x | 0.047 | 0.150 | 1 | 0.757 | 0.790 | -0.009 | 0.664 | 0.021 | 0.017–0.092 | 0.965 |
+| 3% | D5 | 0.050 | 0.150 | 1 | 0.757 | 0.880 | -0.005 | 0.564 | 0.025 | 0.017–0.096 | 0.939 |
+| 10% | D1 | 0.053 | 0.200 | 1 | 0.251 | 0.458 | -0.007 | 0.621 | 0.108 | 0.017–0.092 | 0.007 |
+| 10% | D2 | 0.047 | 0.150 | 1 | 0.757 | 0.790 | -0.022 | 0.919 | 0.046 | 0.017–0.092 | 0.598 |
+| 10% | D3 | 0.050 | 0.250 | 2 | 0.045 | 0.030 | -0.009 | 0.670 | 0.029 | 0.017–0.108 | 0.794 |
+| 10% | D4n | 0.056 | 0.200 | 2 | 0.251 | 0.105 | -0.022 | 0.914 | 0.017 | 0.008–0.117 | 0.948 |
+| 10% | D4x | 0.053 | 0.200 | 2 | 0.251 | 0.096 | -0.024 | 0.934 | 0.025 | 0.008–0.096 | 0.876 |
+| 10% | D5 | 0.050 | 0.200 | 2 | 0.251 | 0.224 | -0.020 | 0.879 | 0.021 | 0.008–0.125 | 0.879 |
 
 **(b) Corpus-level split conformal at level 1/19 against the study-pooled threshold**
 
-| sd_rel | design | corpus_loco_typeI | corpus_loco_max_corpus | corpus_thr_p05 | corpus_thr_p95 | power_pooled >30% | power_corpus >30% | power_pooled 5-30% | power_corpus 5-30% |
-|---|---|---|---|---|---|---|---|---|---|
-| 0.030 | D1 | 0.056 | 0.123 | 13.449 | 49.820 | 0.275 | 0.299 | 0.220 | 0.204 |
-| 0.030 | D2 | 0.055 | 0.155 | 20.508 | 3995.951 | 0.353 | 0.234 | 0.200 | 0.160 |
-| 0.030 | D3 | 0.053 | 0.155 | 47.158 | 7882.088 | 0.882 | 0.748 | 0.760 | 0.617 |
-| 0.030 | D4n | 0.056 | 0.148 | 61.669 | 9751.741 | 0.941 | 0.808 | 0.820 | 0.669 |
-| 0.030 | D4x | 0.056 | 0.139 | 62.598 | 7639.536 | 0.961 | 0.799 | 0.800 | 0.652 |
-| 0.030 | D5 | 0.057 | 0.144 | 63.774 | 7061.122 | 0.980 | 0.848 | 0.820 | 0.671 |
-| 0.100 | D1 | 0.054 | 0.123 | 13.877 | 25.534 | 0.216 | 0.178 | 0.100 | 0.082 |
-| 0.100 | D2 | 0.055 | 0.135 | 19.211 | 600.613 | 0.216 | 0.159 | 0.160 | 0.120 |
-| 0.100 | D3 | 0.056 | 0.192 | 43.242 | 1176.995 | 0.804 | 0.590 | 0.580 | 0.442 |
-| 0.100 | D4n | 0.054 | 0.181 | 58.761 | 1222.196 | 0.941 | 0.857 | 0.780 | 0.665 |
-| 0.100 | D4x | 0.055 | 0.141 | 59.282 | 1036.167 | 0.922 | 0.816 | 0.720 | 0.611 |
-| 0.100 | D5 | 0.055 | 0.152 | 62.112 | 1077.675 | 0.922 | 0.877 | 0.760 | 0.676 |
+| noise | design | LOCO type-I (level 1/18) | max per corpus | threshold, 5th–95th pct | power >30%, study-pooled | power >30%, corpus-level | power 5–30%, study-pooled | power 5–30%, corpus-level |
+|---|---|---|---|---|---|---|---|---|
+| 3% | D1 | 0.056 | 0.123 | 13–50 | 0.275 | 0.299 | 0.220 | 0.204 |
+| 3% | D2 | 0.055 | 0.155 | 21–3996 | 0.353 | 0.234 | 0.200 | 0.160 |
+| 3% | D3 | 0.053 | 0.155 | 47–7882 | 0.882 | 0.748 | 0.760 | 0.617 |
+| 3% | D4n | 0.056 | 0.148 | 62–9752 | 0.941 | 0.808 | 0.820 | 0.669 |
+| 3% | D4x | 0.056 | 0.139 | 63–7640 | 0.961 | 0.799 | 0.800 | 0.652 |
+| 3% | D5 | 0.057 | 0.144 | 64–7061 | 0.980 | 0.848 | 0.820 | 0.671 |
+| 10% | D1 | 0.054 | 0.123 | 14–26 | 0.216 | 0.178 | 0.100 | 0.082 |
+| 10% | D2 | 0.055 | 0.135 | 19–601 | 0.216 | 0.159 | 0.160 | 0.120 |
+| 10% | D3 | 0.056 | 0.192 | 43–1177 | 0.804 | 0.590 | 0.580 | 0.442 |
+| 10% | D4n | 0.054 | 0.181 | 59–1222 | 0.941 | 0.857 | 0.780 | 0.665 |
+| 10% | D4x | 0.055 | 0.141 | 59–1036 | 0.922 | 0.816 | 0.720 | 0.611 |
+| 10% | D5 | 0.055 | 0.152 | 62–1078 | 0.922 | 0.877 | 0.760 | 0.676 |
 
 ## Fig. S1. Profile likelihoods of the reductant capacity
 

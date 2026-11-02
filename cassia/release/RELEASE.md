@@ -1,22 +1,23 @@
-# CASSIA 0.3.2 release record
+# CASSIA 0.3.3 release record
 
-- Date: 2026-11-01
-- Code commit at manifest generation (parent of the commit that adds this file): `72a0b175c07b676093673cbf2b1e8c976de87142`
-- Content identity: `release/MANIFEST.sha256` (120 files); verify with `sha256sum -c release/MANIFEST.sha256`
+- Date: 2026-11-02
+- Code commit at manifest generation (parent of the commit that adds this file): `816b7830e1d2901917bda5f261c3433d4fe5b10e`
+- Content identity: `release/MANIFEST.sha256` (123 files); verify with `sha256sum -c release/MANIFEST.sha256`
 - Environment: `requirements-lock.txt` (Python 3.13.17); PHREEQC databases with checksums and provenance in `databases/`
 - Tests: `release/test_log.txt`; coverage: `results/coverage_report.txt`
-- Permanent archive: to be created by the author (GitHub release `cassia-v0.3.2` + Zenodo DOI); not available from the build environment
+- Permanent archive: to be created by the author (GitHub release `cassia-v0.3.3` + Zenodo DOI); not available from the build environment
 
 ## Reproduce
 
 ```
 pip install -e ..                      # adsorption equation package (repository root)
 pip install -e .[ml,pores,dev]
-pytest -q tests                        # expected: 40 tests pass (see release/test_log.txt)
-bash scripts/reproduce_all.sh          # every table, figure and number, in dependency order (~9-11 h, 4 cores)
+pytest -q tests                        # expected: 41 tests pass (see release/test_log.txt)
+bash scripts/reproduce_all.sh          # every table, figure and number, in dependency order (~9-11 h, 4 cores);
+                                       # without .git: pass the commit as argument or set CASSIA_COMMIT
 ```
 
-## Expected output tables (70)
+## Expected output tables (72)
 
 - `results/v2/T_S1_simulator_parameters.csv`
 - `results/v2/T_S3_hyperparameters.csv`
@@ -65,6 +66,7 @@ bash scripts/reproduce_all.sh          # every table, figure and number, in depe
 - `results/v3/T_mlscen_uq.csv`
 - `results/v3/T_seqver_oc.csv`
 - `results/v3/T_seqver_summary.csv`
+- `results/v3/T_typeI_corpus.csv`
 - `results/v3/T_typeI_validation.csv`
 - `results/v3/T_verification_denominators.csv`
 - `results/v3/censor.json`
@@ -86,5 +88,6 @@ bash scripts/reproduce_all.sh          # every table, figure and number, in depe
 - `results/v3/mlscen_uq.csv`
 - `results/v3/seqver.csv`
 - `results/v3/seqver.json`
+- `results/v3/typeI_corpus.json`
 - `results/v3/typeI_ctrl_part1.csv.gz`
 - `results/v3/typeI_ctrl_part2.csv.gz`
