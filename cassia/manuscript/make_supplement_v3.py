@@ -60,8 +60,11 @@ if os.path.exists(R + "T_m2s_exchangeability.csv"):
     famcols = [c for c in X.columns if c.startswith("family_") and c not in ("family_min", "family_max")]
     X = X[["target", "J_mean", "frac_unbounded", "within_rate", "within_min_corpus", "within_max_corpus", *famcols, "new_corpus_rate",
            "new_corpus_min_corpus"]]
-    X.columns = (["target", "calibration studies J", "fraction unbounded", "within corpus (guaranteed ≥ 0.90)", "within: lowest corpus",
-                  "within: highest corpus"] + [c.replace("family_", "") for c in famcols] + ["new corpus", "new corpus: lowest"])
+    X.columns = (["target", "calibration studies J (mean)", "fraction unbounded", "within corpus (guaranteed ≥ 0.90)", "within: lowest corpus",
+                  "within: highest corpus"] + ["family: " + c.replace("family_", "").replace("_", " ") for c in famcols]
+                 + ["new corpus", "new corpus: lowest corpus pair"])
+    X = X.set_index("target").T.reset_index().rename(columns={"index": "quantity"})
+    X.columns = [str(c).replace("_", " ") for c in X.columns]
     s5b += ("## Table S5c. M2s coverage under the hierarchical simulator design (nominal 90%, β = 0.9; 10 corpora × 20 random "
             "proper-training sets, every role assignment enumerated)\n\n`scripts/m2s_exchangeability.py`. Fraction of test studies "
             "with ≥ 90% of their observations covered. Within corpus: the test study and the J calibration studies are the studies of the "

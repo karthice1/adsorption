@@ -1,23 +1,23 @@
-# CASSIA 0.3.3 release record
+# CASSIA 0.3.4 release record
 
 - Date: 2026-11-02
-- Code commit at manifest generation (parent of the commit that adds this file): `94bfbfffb3a2438d3ec7b46a749ca9820672a754`
-- Content identity: `release/MANIFEST.sha256` (123 files); verify with `sha256sum -c release/MANIFEST.sha256`
+- Code commit at manifest generation (parent of the commit that adds this file): `76f7fc1f3bd3c45432476a0d545e829ea8910db6`
+- Content identity: `release/MANIFEST.sha256` (127 files); verify with `sha256sum -c release/MANIFEST.sha256`
 - Environment: `requirements-lock.txt` (Python 3.13.17); PHREEQC databases with checksums and provenance in `databases/`
 - Tests: `release/test_log.txt`; coverage: `results/coverage_report.txt`
-- Permanent archive: to be created by the author (GitHub release `cassia-v0.3.3` + Zenodo DOI); not available from the build environment
+- Permanent archive: to be created by the author (GitHub release `cassia-v0.3.4` + Zenodo DOI); not available from the build environment
 
 ## Reproduce
 
 ```
 pip install -e ..                      # adsorption equation package (repository root)
 pip install -e .[ml,pores,dev]
-pytest -q tests                        # expected: 41 tests pass (see release/test_log.txt)
+pytest -q tests                        # expected: 42 tests pass (see release/test_log.txt)
 bash scripts/reproduce_all.sh          # every table, figure and number, in dependency order (~9-11 h, 4 cores);
                                        # without .git: pass the commit as argument or set CASSIA_COMMIT
 ```
 
-## Expected output tables (72)
+## Expected output tables (75)
 
 - `results/v2/T_S1_simulator_parameters.csv`
 - `results/v2/T_S3_hyperparameters.csv`
@@ -59,6 +59,7 @@ bash scripts/reproduce_all.sh          # every table, figure and number, in depe
 - `results/v3/T_endpoint_validation.csv`
 - `results/v3/T_equiv3_summary.csv`
 - `results/v3/T_lc3.csv`
+- `results/v3/T_m2s_exchangeability.csv`
 - `results/v3/T_m2s_family.csv`
 - `results/v3/T_m2s_family_full.csv`
 - `results/v3/T_m2s_summary.csv`
@@ -82,6 +83,8 @@ bash scripts/reproduce_all.sh          # every table, figure and number, in depe
 - `results/v3/lc3.csv`
 - `results/v3/lc3.json`
 - `results/v3/m2s.json`
+- `results/v3/m2s_exchangeability.csv.gz`
+- `results/v3/m2s_exchangeability.json`
 - `results/v3/m2s_per_study.csv`
 - `results/v3/mlscen.json`
 - `results/v3/mlscen_metrics.csv`

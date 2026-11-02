@@ -4,9 +4,10 @@ All results in this supplement are synthetic (known-truth simulations) or thermo
 
 | Tables | Generating script | CSV files |
 |---|---|---|
-| S1 | `scripts/make_table_s1.py` (from `cassia.simulate.parameter_table()`, CASSIA 0.3.3) | `results/v3/T_S1_simulator_parameters.csv` |
+| S1 | `scripts/make_table_s1.py` (from `cassia.simulate.parameter_table()`, CASSIA 0.3.4) | `results/v3/T_S1_simulator_parameters.csv` |
 | S2–S5 | `scripts/run_v2.py` | `results/v2/` |
 | S5b | `scripts/m2s_family.py` (from `run_v3.py` stage m2s) | `results/v3/T_m2s_family_full.csv` |
+| S5c | `scripts/m2s_exchangeability.py` | `results/v3/T_m2s_exchangeability.csv` |
 | S6–S8, S10 | `scripts/run_v3.py` (stages mlscen, censor, equiv3, chem3) | `results/v3/` |
 | S9 | `scripts/seqver_oc.py` | `results/v3/T_seqver_oc.csv` |
 | S11–S12 | `scripts/bench_partition.py` | `results/v3/T_bench_partition.csv`, `T_bench_mcse.csv` |
@@ -16,7 +17,7 @@ All results in this supplement are synthetic (known-truth simulations) or thermo
 | Fig. S1 | `scripts/make_supp_figs.py` | `results/v2/ident_profiles.csv` |
 
 
-## Table S1. Simulator parameters, distributions, measurement models, evidence-class probabilities and numerical settings (CASSIA 0.3.3)
+## Table S1. Simulator parameters, distributions, measurement models, evidence-class probabilities and numerical settings (CASSIA 0.3.4)
 
 Generated from the implementation by `scripts/make_table_s1.py`; a unit test checks that the evidence-class probabilities and measurement-model constants in this table are those used by the code. LN(m, s): log-normal with log-mean m and log-SD s; U(a, b): uniform; N(0, s): normal.
 
@@ -203,6 +204,26 @@ Fraction of test studies with ≥ 90% within-study coverage, mean within-study c
 | q_tot_aq | biochar_wood | 29 | 10 | 1.000 | 1.000 | 0.88–1.00 | 1.00–1.00 | 0.88–1.00 | 0.655 | 3.968 |
 | q_tot_aq | hydrochar | 31 | 9 | 0.986 | 0.903 | 0.68–1.00 | 0.68–1.00 | 0.75–0.97 | 0.645 | 3.821 |
 | q_tot_aq | porous_carbon | 30 | 10 | 0.995 | 0.967 | 0.83–1.00 | 0.91–1.00 | 0.83–0.99 | 0.533 | 3.733 |
+
+## Table S5c. M2s coverage under the hierarchical simulator design (nominal 90%, β = 0.9; 10 corpora × 20 random proper-training sets, every role assignment enumerated)
+
+`scripts/m2s_exchangeability.py`. Fraction of test studies with ≥ 90% of their observations covered. Within corpus: the test study and the J calibration studies are the studies of the same corpus not used for model fitting, with every one of them taken as test in turn; this is the role assignment under which Appendix A proves coverage ≥ 0.90 in expectation for every corpus (the per-corpus values are single realisations of 20 proper-training sets). Family columns: the same rate conditional on the test study's family, which the theorem does not cover. New corpus: model and calibration from one corpus, test studies from the next corpus (different hyper-prior draws), also not covered. Unbounded intervals count as covering.
+
+| quantity | Ce VI | Ce total | q app VI | q tot aq |
+|---|---|---|---|---|
+| calibration studies J (mean) | 14.000 | 8.300 | 14.000 | 8.300 |
+| fraction unbounded | 0.000 | 0.624 | 0.000 | 0.624 |
+| within corpus (guaranteed ≥ 0.90) | 0.933 | 0.968 | 0.933 | 0.968 |
+| within: lowest corpus | 0.933 | 0.909 | 0.933 | 0.909 |
+| within: highest corpus | 0.933 | 1.000 | 0.933 | 1.000 |
+| family: AC chemical | 0.941 | 0.942 | 0.990 | 1.000 |
+| family: AC physical | 0.941 | 0.967 | 0.980 | 0.978 |
+| family: biochar manure | 0.937 | 0.988 | 0.874 | 0.959 |
+| family: biochar wood | 0.940 | 0.997 | 0.930 | 0.990 |
+| family: hydrochar | 0.950 | 0.981 | 0.843 | 0.925 |
+| family: porous carbon | 0.892 | 0.929 | 0.980 | 0.957 |
+| new corpus | 0.922 | 0.984 | 0.929 | 0.983 |
+| new corpus: lowest corpus pair | 0.880 | 0.910 | 0.852 | 0.893 |
 
 
 
