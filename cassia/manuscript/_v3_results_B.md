@@ -30,14 +30,14 @@ Table 7 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 - *Conditional on the test study's family.* For apparent uptake the rate was 0.85 for hydrochar (corpus-cluster bootstrap 95% interval 0.76–0.91) and 0.89 for manure biochar (0.85–0.93), against 0.92–0.98 for the other families.
 - *Model and calibration from one corpus, test studies from another.* The rate averaged 0.93 for apparent uptake but was 0.84 in the worst corpus pair (0.89 for C_e,VI).
 
-**Table 7b.** M2s, exact study-level split conformal: fraction of test studies with ≥ 90% within-study coverage. Role-averaged over 50 random proper-training sets per corpus with every remaining study as test study (10 corpora); these values equal k/(J + 1) by construction. Last column: the single fixed-seed leave-one-study-out realisation.
+**Table 7b.** M2s, exact study-level split conformal: fraction of test studies with ≥ 90% within-study coverage. Role-averaged over 50 random proper-training sets per corpus with every remaining study as test study (10 corpora); these values equal k/(J + 1) by construction. ∞: unbounded for every test study. Last column: the single fixed-seed leave-one-study-out realisation.
 
 | Endpoint | Calibration studies J (mean) | 1 − α = 0.50 | 0.70 | 0.80 | 0.90 | 0.95 | Width at 0.90 (log₁₀; bounded intervals) | Single realisation at 0.90 |
 |---|---|---|---|---|---|---|---|---|
-| q_app,VI | 14 | 0.53 | 0.73 | 0.80 | 0.93 | unbounded | 3.46 | 0.93 |
-| C_e,VI | 14 | 0.53 | 0.73 | 0.80 | 0.93 | unbounded | 3.71 | 0.95 |
-| q_tot,aq | 8.3 | 0.55 | 0.75 | 0.86 | 0.97, of which 62% unbounded | unbounded | 3.68 | 0.97, of which 63% unbounded |
-| C_e,tot | 8.3 | 0.55 | 0.75 | 0.86 | 0.97, of which 62% unbounded | unbounded | 2.10 | 0.98, of which 63% unbounded |
+| q_app,VI | 14 | 0.53 | 0.73 | 0.80 | 0.93 | ∞ | 3.46 | 0.93 |
+| C_e,VI | 14 | 0.53 | 0.73 | 0.80 | 0.93 | ∞ | 3.71 | 0.95 |
+| q_tot,aq | 8.3 | 0.55 | 0.75 | 0.86 | 0.97, of which 62% unbounded | ∞ | 3.68 | 0.97, of which 63% unbounded |
+| C_e,tot | 8.3 | 0.55 | 0.75 | 0.86 | 0.97, of which 62% unbounded | ∞ | 2.10 | 0.98, of which 63% unbounded |
 
 **Coverage is marginal over families, not conditional.** For apparent uptake, M0 covered 0.77 of hydrochar observations (0.85 with M1, 0.91 with M2), compared with 0.96–0.99 for the other families. Under M2s the role-averaged rate for hydrochar studies was 0.85 (above). In the single fixed-seed realisation, 84% of hydrochar studies (42 of 50) met the 90% within-study target, against 90–98% for the other families (Table S5b; mean within-study coverage 0.95 against 0.97–0.995). The 50 hydrochar studies come from 10 corpora that each redraw the family hyper-priors, so they are not 50 independent observations. For this realisation a corpus-cluster bootstrap gave a 95% interval of 76–90%, and the Wilson interval, which treats the studies as independent and is descriptive only, 71–92%; we report the wider envelope, 71–92%. With 10 independent corpora the intervals of the families overlap, so this is a tendency, not a demonstrated family effect; it is consistent with the M0–M1 results (Table S5) and with the guarantee being marginal, not family-conditional. Study-level calibration does not repair heterogeneity between families.
 

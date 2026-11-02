@@ -1,11 +1,11 @@
-# Response to the Reviewer (sixth round)
+# Response to the Reviewer (seventh round)
 
-**Manuscript:** CASSIA: A Provenance-Aware Computational Framework and Known-Truth Benchmark for Evidence-Constrained Analysis of Cr(VI) Removal by Carbonaceous Materials (revision 6; software CASSIA 0.3.4, code commit `76f7fc1f3bd3c45432476a0d545e829ea8910db6`)
+**Manuscript:** CASSIA: A Provenance-Aware Computational Framework and Known-Truth Benchmark for Evidence-Constrained Analysis of Cr(VI) Removal by Carbonaceous Materials (revision 7; software CASSIA 0.3.5, code commit `12de11c7d722cf875d0474d7a3934cd739955a9b`)
 
-We thank the reviewer for another careful report. The main new point is that the M2s guarantee had been justified by a sentence in Appendix A ("independent draws of studies from a common population") that the hierarchical simulator does not satisfy. We agree. In this revision:
-- we establish the exchangeability M2s actually uses under the exact simulation design, which is random role assignment within a corpus, and prove it;
-- we restrict the guarantee to the population for which that holds;
-- we report numerically what happens outside that scope.
+We thank the reviewer for a precise report. The main point is that the M2s results we reported came from one fixed-seed calibration split per corpus, whereas the guarantee we proved in Appendix A rests on random role assignment. We agree that the evaluation should match the theorem. In this revision:
+- the reported M2s results are now the random role assignment itself, averaged over 50 proper-training sets per corpus with every remaining study as test study, at every nominal level;
+- the original leave-one-study-out run is reported only as one realisation of that procedure;
+- the scope of the guarantee is stated in the reviewer's words wherever it appears.
 
 The other comments are addressed point by point below. Items that need the author's own details or accounts are listed at the end; we have not filled them in. Section, table and figure numbers refer to the revised manuscript.
 
@@ -13,103 +13,81 @@ The other comments are addressed point by point below. Items that need the autho
 
 | Comment | Change | Where |
 |---|---|---|
-| 1 M2s exchangeability | Exchangeability derived from the random assignment of test, proper-training and calibration roles within a corpus, with a short proof; the reviewer's five questions answered explicitly; guarantee restricted to a study drawn at random from the same corpus; family-stratified alternative shown to be unbounded; new numerical check (Table S5c) and unit test | Appendix A, §2.8, §3.5, §4.7 item 7, Table S5c, `scripts/m2s_exchangeability.py` |
-| 2 Calibration wording | "Study-pooled, empirically calibrated" and "corpus-level conformal" used consistently; "as guaranteed" replaced by the reviewer's wording | Abstract, Table 1, §2.6, §3.3, §4.1, §5.1, Appendix B |
-| 3 Novelty claim | Narrowed to the methodological integration demonstrated (the reviewer's option 2); claim about existing databases removed | §1 Contribution, §4.5 |
-| 4 Reproducibility | 42 tests throughout; locked package versions confirmed; source archive supplied | §2.2, Data availability, archive |
-| 5 Empirical validation | Unchanged positioning; no values introduced | §3.8, §4.7 |
-| Minor 1–4 | Highlight states that coverage is marginal; hydrochar Wilson interval corrected to 71–92%; Appendix A wording; "as guaranteed" | Highlights, §3.5, Table S5b, Appendix A, §3.3 |
+| 1 M2s evaluation | Reported M2s results are role-averaged (50 proper-training sets per corpus, all levels); the theoretical rate k/(J + 1) is shown beside them; the fixed-seed run is labelled a single realisation | §2.8, §3.5, Table 7b, Fig. 6, Tables S5b–S5d, Appendix A |
+| 2 Scope wording | "A randomly selected held-out study from the same realised corpus, marginally over family and study size" | §2.8 (table of constructions), §3.5, §4.5, §4.7 item 7, Appendix A |
+| 3 Type-I error | 15–25% single-corpus rates kept in the Abstract, Highlights, §3.3 and §4.7; recalibration on real negative controls required; extra-binomial results described as nominal and exploratory | Abstract, §3.3, §4.7 item 5 |
+| 4 Empirical application | Unchanged; no values introduced | §3.8, §4.7 |
+| 5 What each result depends on | New paragraph separating mathematical properties, simulator-dependent results and results that also depend on the assumed analytical error models | §4.5 |
+| 6 PHREEQC | Database agreement no longer presented as evidence of accuracy; electrolyte statement restricted to the electrolytes tested; independent validation remains an open limitation | §3.1, §4.7 |
+| 7 Coverage and width | Width and unbounded share reported beside every coverage value; intervals described as not practically reliable for treatment design; design rests on confirmatory testing | §3.5, Table 7b, §5.1 |
+| Minor | §4.4 items per evidence class; Appendix A wording; §2.8 fixed-split clarification; Fig. 6 caption corrected; response-letter typo; length | see table below |
 
 ---
 
-## Major Comment 1 – Exchangeability for the M2s guarantee under the hierarchical simulator
+## Major Comment 1 – Align the M2s evaluation with the random-role procedure
 
-**Response: accepted.** The previous Appendix A sentence was wrong for our design and has been removed. The exchangeability the theorem needs does hold in the simulation, but for a different reason than we gave: it comes from the random assignment of roles. The guarantee is now stated only for the population this argument covers.
+**Response: accepted.** The reviewer is right that `StudySplitConformal(seed=k)` used the same fixed seed in every leave-one-study-out fold of a corpus, so each fold had one calibration subset. That run is one realisation of the random role assignment, not the procedure the theorem describes.
 
-**The design, stated exactly (Appendix A, "Exchangeability under the simulator design").**
-- A corpus has 30 studies.
-- Material families are assigned in a fixed rotation: study *i* has family *i* mod 6, so there are five studies per family. Families are not randomised.
-- Family hyper-priors are drawn once per corpus and are shared by the corpus's studies.
-- Materials and study conditions are then drawn independently for each study.
-- Consequently, studies of different families are not identically distributed, and studies of one corpus are dependent through the shared hyper-priors.
+**What the reported M2s results now are (§2.8, §3.5, Table 7b, Table S5d, Fig. 6).**
+- *Procedure.* In each of the 10 corpora we drew 50 proper-training sets uniformly and independently (half of the studies other than the test study). For each, every remaining study was taken in turn as the test study, calibrated on the others. This is a Monte Carlo average over uniformly random (test, proper-training, calibration) partitions, which is the setting of the proposition in Appendix A.
+- *Levels and endpoints.* All five nominal levels (0.50, 0.70, 0.80, 0.90, 0.95) and all four endpoints, with 7,500 role assignments for each Cr(VI) endpoint and 4,650 for each total-Cr endpoint.
+- *Results.* For apparent uptake the fraction of test studies with at least 90% of their observations covered was 0.53, 0.73, 0.80 and 0.93 at nominal 0.50, 0.70, 0.80 and 0.90, and the interval was unbounded at 0.95. The mean width of the 90% interval was 3.46 log₁₀ units (3.71 for C_e,VI, 3.68 and 2.10 for the total-Cr endpoints, bounded intervals only). For the total-Cr endpoints the 90% rate was 0.97, of which 62% of intervals were unbounded.
 
-**Where the exchangeability comes from.**
-- *Evaluation procedure.* In the M2s evaluation each study is the test study in turn, with equal weight. The remaining studies are split at random into proper-training and calibration sets, independently of which study is the test study.
-- *Consequence.* Over the test index and the split, (test study, proper-training set, calibration set) is a uniformly random partition of the corpus's studies.
-- *Proposition and proof.* Given the realised corpus and the proper-training set, the test study is therefore a uniformly random member of the J + 1 non-training studies. Their scores are computed by a model that does not depend on them, so the test score is exchangeable with the J calibration scores. The theorem's assumption thus holds *conditionally on the realised corpus*, whatever the family allocation and the shared random effects. The proof takes three lines and is now in Appendix A.
-- *Code check.* We checked `cassia.validation.StudySplitConformal` and `run_v3.py` (stage m2s). The model is fitted on the proper-training studies only. The calibration subset is drawn by a random generator whose draw does not depend on the test index, and every study serves as the test study once.
+**Theory and realisation are distinguished explicitly.**
+- *Theoretical rate.* Once every role assignment is enumerated, the observed rate equals k/(J + 1) exactly when scores are distinct. Table 7b and Table S5d show this value beside the observed rate, and §3.5 and Appendix A say plainly that the agreement is an identity: it confirms the implementation, and it is not independent evidence that the intervals are useful.
+- *Single fixed-seed realisation.* The original run is retained as the last column of Table 7b (0.93, 0.95, 0.97 and 0.98 at 90%) and as Table S5b, and both are labelled as one realisation of the procedure. The methods (§2.8) say that the original run drew one calibration subset per fold with the same fixed seed in every fold of a corpus.
+- *Family-conditional and new-corpus rates.* These now use the same 50 role assignments per corpus, with corpus-cluster bootstrap intervals (Table S5c). For apparent uptake: hydrochar 0.85 (95% interval 0.76–0.91), manure biochar 0.89 (0.85–0.93), other families 0.92–0.98. With model and calibration from one corpus and test studies from another, the rate averaged 0.93 and was 0.84 in the worst corpus pair.
 
-**Answers to the reviewer's five questions.**
-1. *Family assignment.* It is fixed, in rotation, not randomised. The proof does not use it.
-2. *Exchangeability given the proper-training set.* Calibration and test studies are exchangeable conditional on the proper-training set, and on the corpus, because of the random role assignment.
-3. *Shared family random effects.* They change the distribution of the study scores; for example, one family's scores can be systematically larger. They do not change the scores' exchangeability under random role assignment. What they do change is family-conditional coverage.
-4. *Which population.* The guarantee concerns a study drawn at random from the corpus that supplied the training and calibration studies, i.e. from the same realised hierarchical population. It is not a guarantee for a study from a new, independent corpus, nor for a new study whose family is chosen non-randomly. §2.8, §3.5 and §4.7 now say so.
-5. *Held-out study from another family.* The guarantee is an average over the corpus's family mix. It does not hold conditionally on the test study's family, including a family that is rare or absent among the calibration studies.
-
-**Numerical check (new Table S5c, `scripts/m2s_exchangeability.py`).**
-- *Method.* On the same 10 corpora, model and β = 0.9, we drew 20 random proper-training sets per corpus and took every remaining study as the test study in turn.
-- *Within-corpus rate.* It equals J/(J + 1) = 0.933 for the Cr(VI) endpoints in every corpus. We say plainly in Appendix A that this is an identity once all role assignments are enumerated. It confirms that the implementation realises the proposition; it is not independent evidence.
-- *Outside the theorem's scope (informative).* For apparent uptake, coverage conditional on the test study's family was:
-  - 0.84 for hydrochar and 0.87 for manure biochar, i.e. below 0.90;
-  - 0.93–0.99 for the other families.
-
-  With model and calibration from one corpus and test studies from another, the rate averaged 0.93 but fell to 0.85 in the worst corpus pair.
-
-  These results show concretely why the guarantee must not be read as family-conditional or as transferring to a new corpus.
-
-**The other two acceptable approaches.**
-- *Hierarchical (Mondrian, family-stratified) conformal.* With five studies per family and corpus, it has at most four calibration studies per family. Its 90% interval is therefore unbounded, because it needs at least 9. This is stated in Appendix A.
-- *Restricting the guarantee.* We therefore keep the theorem, prove its assumption for the actual design, and restrict the exact statement to the within-corpus population (your third approach). A unit test reproduces the argument with a fixed family rotation and a large shared family effect: marginal coverage holds, and coverage for the affected family fails.
+**Code.** `scripts/m2s_exchangeability.py` is now the main M2s evaluation (Table 2) and writes `results/v3/m2s_roles_per_study.csv.gz`, `T_m2s_roles_summary.csv` and `T_m2s_exchangeability.csv`. Fig. 6 is drawn from the role-averaged results. `reproduce_all.sh` runs this script before the figures.
 
 ---
 
-## Major Comment 2 – Study-pooled versus corpus-level calibration
+## Major Comment 2 – "New study" wording
+
+**Response: accepted.** Every statement of the guarantee now uses the reviewer's formulation: a randomly selected held-out study from the same realised corpus, marginally over family and study size. This applies to the table of constructions in §2.8, §3.5, §4.5, §4.7 item 7 and Appendix A. Appendix A adds an explanatory paragraph: the theorem says nothing about a genuinely new study drawn from an independent literature population, nor about a given family. The "In words" sentence after the theorem now refers to the observations of the test study.
+
+---
+
+## Major Comment 3 – Type-I error
 
 **Response: accepted.**
-- *Consistent terminology.* The two procedures are named consistently throughout:
-  - the *study-pooled, empirically calibrated* threshold, whose type-I error is evaluated leave-one-corpus-out;
-  - the *corpus-level conformal* threshold, whose finite-sample guarantee holds only at 5.3% with 18 corpora.
-
-  This applies in the Abstract, Table 1, §2.6, §3.3, §4.1, the Conclusions (§5.1) and Appendix B. Bare "calibrated test" no longer appears.
-- *"As guaranteed".* §3.3 now reads: "the observed type-I error was 5.3–5.7%, consistent with the theoretical 5.6% bound within Monte Carlo uncertainty".
-- *Retained.* The 15–25% maximum single-corpus rates, the D1 results of 14.2% and 10.8%, and the statement that both thresholds must be recalibrated, for example on real negative controls, before use on literature data are all retained. The study-pooled threshold is not recommended as a generally reliable 5% test for new literature studies (§4.7 item 5).
-- *Related wording elsewhere.* For the same reason, two observed coverage results in §3.5 and §5.1 are now described as "consistent with" the M2s guarantee rather than "met" or "held".
+- *Visible single-corpus rates.* The 15–25% maximum single-corpus rates remain in the Abstract ("reaching 15–25% in some individual corpora: an empirical average, not a guarantee"), in §3.3 (the Highlight says "higher rates in some individual corpora"), in bold in the Table 5 footnote, and in §4.7 item 5.
+- *Not a reliable 5% test.* §3.3 states that the average empirical type-I error is not evidence of reliable 5% control for real studies; §3.3 and §4.7 state that the threshold must be recalibrated on real negative controls, i.e. studies known to involve adsorption only, before it is applied to literature data.
+- *Extra-binomial results.* The two results with p < 0.05 are now described as nominal, unadjusted p-values among 12 comparisons, none significant after Bonferroni correction (0.05/12 = 0.0042), and as exploratory.
 
 ---
 
-## Major Comment 3 – Novelty claim
+## Major Comment 4 – Empirical application
 
-**Response: accepted; we take the reviewer's preferred option 2.**
-- *Removed.* The sentence in §4.5 that existing adsorption databases and ML studies "typically pool residual-Cr(VI) observations without these distinctions" has been removed, because we have not assessed those resources systematically.
-- *What §4.5 now says.* The contribution is the specific methodological integration demonstrated: a known-truth benchmark of how analytical measurement design, hierarchical study-to-study variation and uncertainty methods affect the identifiability of Cr(VI) adsorption, reduction and precipitation. §4.5 also states explicitly that we make no claim about how existing datasets, databases or software treat these distinctions, and no claim of better performance on real chromium-removal data.
-- *Introduction.* The Contribution paragraph in §1 opens with the same sentence.
+**Response: agreed; no change of positioning.** No experimental values have been introduced, transcribed or estimated. The Ramirez et al. (2020) dataset remains Class C and its demonstration will be completed when its source files are available; the computational environment still cannot reach the hosts that serve them. The manuscript keeps the known-truth benchmark scope throughout.
 
 ---
 
-## Major Comment 4 – Source archive and test information
+## Major Comment 5 – Which results depend on what
 
-**A. Test count.** The suite now has 42 tests: one test was added for the corpus-level conformal threshold in revision 5, and one in this revision for the M2s role-assignment argument. The count of 42 is now used in §2.2, Data availability, the README, `reproduce_all.sh` and this letter, and it matches `release/test_log.txt` (42 passed; line coverage 82%). The earlier "40" in §2.2 was an oversight.
+**Response: accepted.** §4.5 has a new paragraph, "What each result depends on", with three groups:
+- *Properties of the methods,* which follow mathematically and hold for any data meeting the stated assumptions: the M2s statement under random role assignment, the corpus-level conformal bound and the 19-corpus requirement, the minimum numbers of calibration studies, the absence of a study-level guarantee for pooled calibration, and the logic of "not rejected" versus "equivalent".
+- *Results that depend on the kinetic simulator:* reduction shares, Class C equivalence, q_max inflation, family patterns, the random-versus-study R² gap and ICC, the size of the study-pooled type-I errors, family-conditional and new-corpus M2s coverage, unsafe-design rates.
+- *Results that also depend on the assumed analytical error models:* rejection power with total Cr and with solid-phase data, XPS and XANES false-alarm rates, the posterior SD of the precipitated share, and sequential-verification error rates.
 
-**B. Python version.**
-- *Packages.* The test log and all reruns used exactly the locked versions of every scientific dependency: NumPy 2.5.3, SciPy 1.18.1, pandas 3.0.5, scikit-learn 1.9.1, XGBoost 3.4.1, phreeqpython 1.6.2 and matplotlib 3.11.2.
-- *Interpreter.* Only the interpreter differs, as a patch release: Python 3.13.18 against the locked 3.13.17.
-- *Why we could not use 3.13.17.* We tried to install 3.13.17 in our build environment, but no distribution of it was available there.
-- *What remains.* We agree the final suite should be run in the exact locked environment, and we list it as an author action before publication.
-
-**C. Source archive.**
-- *Supplied.* The source archive of the code commit `76f7fc1` (`git archive`, repository root) is supplied with this revision.
-- *Contents.* It contains `cassia/release/MANIFEST.sha256` for verification and runs `bash scripts/reproduce_all.sh` without git metadata.
-- *Full rerun.* A complete rerun of all numerical stages (about 9–11 h on 4 cores) from an archive of the previous release was started, but it was interrupted after its first stages by a restart of our computational environment and could not be completed for this revision. In the archive, the commit resolution, the test suite and the final assembly and manifest steps were checked.
-- *Release and DOI.* The tagged release and the Zenodo DOI still require the author's accounts (see below).
+The paragraph ends by stating that only the first group transfers to real data without further evidence.
 
 ---
 
-## Major Comment 5 – Empirical validation
+## Major Comment 6 – PHREEQC validation
 
-**Response: agreed; no change of positioning.**
-- *No values introduced.* No experimental values have been introduced, transcribed or estimated.
-- *Ramirez et al. (2020).* The dataset remains Class C, and its demonstration will be completed when the source files are available. The computational environment still cannot reach the hosts that serve them.
-- *Scope.* The manuscript keeps the known-truth benchmark scope throughout and does not present simulated detection rates as experimentally established capabilities.
+**Response: partly accepted.**
+- *Independent validation.* We could not obtain the Ball and Nordstrom (1998) or Rai et al. (1987) data in machine-readable form in our environment, and we have not transcribed values. Independent validation against critically evaluated Cr(VI)/Cr(III) data therefore remains an open limitation (§4.7).
+- *Agreement is not accuracy.* §3.1 now says that agreement between the three databases is not evidence of thermodynamic accuracy, and that an independent comparison with critically evaluated constants is outstanding.
+- *Electrolyte scope.* The electrolyte-sensitivity statement is restricted to the three sodium electrolytes tested; Ca²⁺, Mg²⁺, carbonate and dissolved organic matter were not evaluated.
+
+---
+
+## Major Comment 7 – Coverage, width and practical use
+
+**Response: accepted.**
+- *Width beside coverage.* Table 7b gives the mean width at 90% next to every coverage value, and the unbounded share is written inside the total-Cr coverage cells ("0.97, of which 62% unbounded"). Table S5d gives width, unbounded share and mean within-study coverage at every level.
+- *Practical reliability.* §3.5 and §5.1 now say that, with literature-scale numbers of studies, the intervals are too wide, or unbounded, to serve as practically reliable predictions for treatment design, and that a design decision rests on confirmatory testing of the material under the target conditions (§3.6).
 
 ---
 
@@ -117,13 +95,25 @@ The other comments are addressed point by point below. Items that need the autho
 
 | No. | Comment | Response |
 |---|---|---|
-| 1 | Highlight on coverage | Now "Exact study-level coverage is marginal, not per family; intervals are often too wide" (84 characters). |
-| 2 | Hydrochar Wilson interval | The Wilson lower limit is 0.7149, so the correct value is 71–92%; the text had wrongly rounded it to 72%. §3.5 now reports the Wilson interval as 71–92% and the reported envelope as 71–92%, matching Table S5b. |
-| 3 | Appendix A "independent draws" | Removed and replaced with the exchangeability argument above. |
-| 4 | "As guaranteed" | Replaced (Major Comment 2). |
-| 5 | Test count | Corrected (Major Comment 4A). |
-| 6–9 | DOI, title page, funding and authorship, AI declaration and verification | Require the author; see below. |
-| – | Unbounded total-Cr intervals | Agreed. Table 7b reports the unbounded share next to the total-Cr coverage (63% of test studies at 90%), and Table S5b reports it by family (53–66%). §3.5 and §4.7 now state that the total-Cr coverage must always be read together with this share. |
+| 1 | §4.4 items per class | New paragraph "Which items each class needs": B needs item 1; A1 needs items 1–4, including a final or controlled pH and a reported electrolyte; A2 needs A1 plus a solid Cr inventory and phase or coordination evidence; item 5 sets the analytical error. |
+| 2 | Appendix A wording | Theorem "In words" and the scope paragraph revised (Major Comment 2). |
+| 3 | §2.8 fixed split | The methods state that the original run drew one calibration subset per fold with the same fixed seed in every fold of a corpus, and that it is reported as a single realisation. |
+| 4 | Extra-binomial results | Nominal and exploratory (Major Comment 3). |
+| 5 | Unbounded proportions | Placed in the same cell as the total-Cr coverage (Major Comment 7). |
+| 6 | Fig. 6 | Caption corrected to match the panels: (a) fraction of studies with ≥ 90% coverage, (b) per-study coverage, (c) mean width; M2s role-averaged. |
+| 7 | DOI | Still requires the author's accounts; see below. |
+| 8 | Response-letter typo | The script name was printed without its underscore because a code span inside bold text was rendered with a subscript. The correct name is `scripts/m2s_exchangeability.py`; this letter no longer places code inside bold or italic text. |
+| 9 | Length | The assembled manuscript is about 22,000 words including tables and appendices. We have not shortened it further in this round, because most of this revision's changes are statements of scope that the reviewer requested; we are willing to move §3.7–§3.8 detail and Appendix B into the Supplement if the editor prefers. |
+
+---
+
+## Reproducibility
+
+- *Tests.* The suite has 42 tests; `release/test_log.txt` records 42 passed, line coverage 82%.
+- *Interpreter.* We could not install CPython 3.13.17 in our build environment. Rather than claim the locked interpreter, we updated `requirements-lock.txt`: it now records that the 0.3.3–0.3.5 tests and analyses ran on CPython 3.13.18, with every package version unchanged. A final run on 3.13.17 is listed as an author action.
+- *Source archive.* The source archive of code commit `12de11c` (`git archive`, repository root) is supplied with this revision; it contains `cassia/release/MANIFEST.sha256` and runs `bash scripts/reproduce_all.sh` without git metadata.
+- *Regeneration.* The complete 9–11 h run of `reproduce_all.sh` could not be finished in our cloud build environment, which restarted the container during two earlier attempts; it is listed as an author action. From a clean copy of the source tree we reran the faster stages: `typeI_corpus.py`, `seqver_oc.py`, `bench_partition.py`, `m2s_family.py`, `verification_table.py`, `make_table_s1.py`, the Table S14 summary of `typeI_validation.py` and the supplement generator. All 9 regenerated result tables (Tables S1, S5b, S9, S11–S12, S14, S14b and 8c) and the generated supplementary text were byte-identical to the committed versions. The role-averaged M2s evaluation (`m2s_exchangeability.py`) was run in full for this revision and Fig. 6 was redrawn from it; the other figures redrawn by the same stage were byte-identical. The supplementary tables are written from the result files by `make_supplement_v3.py`; the values of Table 7b were checked against `T_m2s_roles_summary.csv` and `T_m2s_summary.csv`.
+- *Release and DOI.* The tagged release and Zenodo DOI still require the author's accounts.
 
 ---
 
@@ -138,5 +128,6 @@ We have not filled these in, because they require the author's own information, 
 | CRediT statement and any co-authors | Back matter |
 | The author's own statement of verification of code and results | §2.12 (placeholder) |
 | Generative-AI declaration, checked against the target journal's policy | Back matter |
-| GitHub release `cassia-v0.3.4` and Zenodo DOI | Data availability, `CITATION.cff` (steps in `README.md`) |
-| Final test run in the exact locked environment (Python 3.13.17) | `release/test_log.txt` |
+| GitHub release `cassia-v0.3.5` and Zenodo DOI | Data availability, `CITATION.cff` (steps in `README.md`) |
+| Final test run in the exact locked environment (Python 3.13.17), or acceptance of the 3.13.18 lock note | `release/test_log.txt`, `requirements-lock.txt` |
+| Full end-to-end rerun of `reproduce_all.sh` (9–11 h) | Local machine |

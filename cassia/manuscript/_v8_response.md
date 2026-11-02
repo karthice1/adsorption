@@ -102,7 +102,7 @@ The paragraph ends by stating that only the first group transfers to real data w
 | 5 | Unbounded proportions | Placed in the same cell as the total-Cr coverage (Major Comment 7). |
 | 6 | Fig. 6 | Caption corrected to match the panels: (a) fraction of studies with ≥ 90% coverage, (b) per-study coverage, (c) mean width; M2s role-averaged. |
 | 7 | DOI | Still requires the author's accounts; see below. |
-| 8 | Response-letter typo | The script name was printed as "m2sexchangeability.py" because a code span inside bold text was rendered with a subscript. The correct name is scripts/m2s_exchangeability.py; this letter no longer places code inside bold or italic text. |
+| 8 | Response-letter typo | The script name was printed without its underscore because a code span inside bold text was rendered with a subscript. The correct name is `scripts/m2s_exchangeability.py`; this letter no longer places code inside bold or italic text. |
 | 9 | Length | The assembled manuscript is about 22,000 words including tables and appendices. We have not shortened it further in this round, because most of this revision's changes are statements of scope that the reviewer requested; we are willing to move §3.7–§3.8 detail and Appendix B into the Supplement if the editor prefers. |
 
 ---

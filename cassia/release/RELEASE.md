@@ -1,11 +1,11 @@
-# CASSIA 0.3.4 release record
+# CASSIA 0.3.5 release record
 
 - Date: 2026-11-02
-- Code commit at manifest generation (parent of the commit that adds this file): `76f7fc1f3bd3c45432476a0d545e829ea8910db6`
-- Content identity: `release/MANIFEST.sha256` (127 files); verify with `sha256sum -c release/MANIFEST.sha256`
-- Environment: `requirements-lock.txt` (Python 3.13.17); PHREEQC databases with checksums and provenance in `databases/`
+- Code commit at manifest generation (parent of the commit that adds this file): `12de11c7d722cf875d0474d7a3934cd739955a9b`
+- Content identity: `release/MANIFEST.sha256` (129 files); verify with `sha256sum -c release/MANIFEST.sha256`
+- Environment: `requirements-lock.txt` (CPython 3.13.18; package versions identical to the 3.13.17 environment of earlier releases); PHREEQC databases with checksums and provenance in `databases/`
 - Tests: `release/test_log.txt`; coverage: `results/coverage_report.txt`
-- Permanent archive: to be created by the author (GitHub release `cassia-v0.3.4` + Zenodo DOI); not available from the build environment
+- Permanent archive: to be created by the author (GitHub release `cassia-v0.3.5` + Zenodo DOI); not available from the build environment
 
 ## Reproduce
 
@@ -17,7 +17,7 @@ bash scripts/reproduce_all.sh          # every table, figure and number, in depe
                                        # without .git: pass the commit as argument or set CASSIA_COMMIT
 ```
 
-## Expected output tables (75)
+## Expected output tables (77)
 
 - `results/v2/T_S1_simulator_parameters.csv`
 - `results/v2/T_S3_hyperparameters.csv`
@@ -62,6 +62,7 @@ bash scripts/reproduce_all.sh          # every table, figure and number, in depe
 - `results/v3/T_m2s_exchangeability.csv`
 - `results/v3/T_m2s_family.csv`
 - `results/v3/T_m2s_family_full.csv`
+- `results/v3/T_m2s_roles_summary.csv`
 - `results/v3/T_m2s_summary.csv`
 - `results/v3/T_mlscen_summary.csv`
 - `results/v3/T_mlscen_uq.csv`
@@ -86,6 +87,7 @@ bash scripts/reproduce_all.sh          # every table, figure and number, in depe
 - `results/v3/m2s_exchangeability.csv.gz`
 - `results/v3/m2s_exchangeability.json`
 - `results/v3/m2s_per_study.csv`
+- `results/v3/m2s_roles_per_study.csv.gz`
 - `results/v3/mlscen.json`
 - `results/v3/mlscen_metrics.csv`
 - `results/v3/mlscen_uq.csv`
