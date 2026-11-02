@@ -372,3 +372,26 @@ def between_study_variance(df, pred_log, target="q_app_VI"):
     msw = gr.var(ddof=1).mean()
     tau2 = max((msb - msw) / n_bar, 0.0)
     return {"tau2": tau2, "sigma2": msw, "ICC": tau2 / (tau2 + msw)}
+
+
+# ---------------------------------------------------------------------------
+# Cluster-level (corpus-level) split-conformal threshold
+# ---------------------------------------------------------------------------
+def cluster_conformal_threshold(scores, clusters, alpha=0.05, rng=None):
+    """Split-conformal upper threshold whose unit of exchangeability is the cluster (corpus).
+
+    One score is drawn at random from each of the K calibration clusters; the threshold is the
+    ceil((1 - alpha)(K + 1))-th smallest of these K scores, or +inf when that rank exceeds K.
+    If clusters are i.i.d. and a new score is drawn at random from a new cluster, then
+    P(new score > threshold) <= alpha (marginal over clusters, the within-cluster draw and the
+    random selection). A finite threshold therefore needs K >= ceil((1 - alpha) / alpha), i.e.
+    K >= 19 clusters for alpha = 0.05; the smallest attainable alpha with K clusters is 1 / (K + 1).
+    The bound is marginal over clusters: it does not bound the false-rejection rate within any one cluster.
+    """
+    rng = np.random.default_rng(rng)
+    scores = np.asarray(scores, float)
+    clusters = np.asarray(clusters)
+    picks = np.array([rng.choice(scores[clusters == c]) for c in np.unique(clusters)])
+    K = len(picks)
+    k = int(np.ceil((1 - alpha) * (K + 1) - 1e-12))
+    return float(np.sort(picks)[k - 1]) if k <= K else np.inf

@@ -1,6 +1,6 @@
 ## Data and code availability
 
-**Location.** All code, the three PHREEQC databases (with checksums and provenance), the virtual corpora, the result tables and the figure scripts are in the `cassia/` directory of the repository `karthice1/adsorption` (CASSIA 0.3.2). The repository root contains the `adsorption` equation package on which CASSIA depends.
+**Location.** All code, the three PHREEQC databases (with checksums and provenance), the virtual corpora, the result tables and the figure scripts are in the `cassia/` directory of the repository `karthice1/adsorption` (CASSIA 0.3.3). The repository root contains the `adsorption` equation package on which CASSIA depends.
 
 **Fixed snapshot.** The code commit is `[COMMIT]`. A source archive of this commit (`git archive`, repository root) accompanies the submission for review. Its content is identified by `release/MANIFEST.sha256` (SHA-256 checksums of every code, database, data, result and figure file; verify with `sha256sum -c release/MANIFEST.sha256` in `cassia/`). `release/RELEASE.md` records the commit, the environment (`requirements-lock.txt`, Python 3.13.17), the test log (`release/test_log.txt`), the coverage report (`results/coverage_report.txt`) and the list of expected output tables.
 
@@ -10,19 +10,19 @@
 pip install -e .                       # adsorption equation package
 cd cassia
 pip install -e .[ml,pores,dev]
-pytest -q tests                        # 40 tests
+pytest -q tests                        # 41 tests
 bash scripts/reproduce_all.sh          # every table, figure and number, in dependency order (about 9-11 h, 4 cores)
 ```
 
-`scripts/reproduce_all.sh` runs the scripts of Table 2 in order. Each line can be run on its own; the outputs of each script are listed in Table 2 and in the Supplementary Material.
+`scripts/reproduce_all.sh` runs the scripts of Table 2 in order. It does not require git metadata: in a source archive it takes the commit from its first argument, from the environment variable `CASSIA_COMMIT` or from `release/RELEASE.md`, and it stops before any computation if none is available. Each line can be run on its own; the outputs of each script are listed in Table 2 and in the Supplementary Material.
 
-A tagged GitHub release (`cassia-v0.3.2`) of this commit, archived in Zenodo, will provide the permanent DOI. The tag and archive must be created by the author from the repository account; they could not be created from the computational environment. Until then, the commit hash, the source archive and the manifest identify the content unambiguously.
+A tagged GitHub release (`cassia-v0.3.3`) of this commit, archived in Zenodo, will provide the permanent DOI. The tag and archive must be created by the author from the repository account; they could not be created from the computational environment. Until then, the commit hash, the source archive and the manifest identify the content unambiguously.
 
 **Data templates.** The master-dataset template, schema, study registry, search log and PRISMA flow templates are in `cassia/data/`.
 
 **Third-party files.** The PHREEQC databases are distributed with USGS PHREEQC, a U.S. Government work in the public domain, and are included unmodified.
 
-**Software versions.** CASSIA 0.3.2; phreeqpython 1.6.2 (Vitens); PHREEQC databases minteq.v4.dat, minteq.dat and llnl.dat (revisions in Table S2); adsorption 0.1.0 (Amvro23); pyGAPS 4.3.1.dev693; NumPy 2.5.3; SciPy 1.18.1; pandas 3.0.5; scikit-learn 1.9.1; XGBoost 3.4.1; matplotlib 3.11.2; Python 3.13.17.
+**Software versions.** CASSIA 0.3.3; phreeqpython 1.6.2 (Vitens); PHREEQC databases minteq.v4.dat, minteq.dat and llnl.dat (revisions in Table S2); adsorption 0.1.0 (Amvro23); pyGAPS 4.3.1.dev693; NumPy 2.5.3; SciPy 1.18.1; pandas 3.0.5; scikit-learn 1.9.1; XGBoost 3.4.1; matplotlib 3.11.2; Python 3.13.17.
 
 No experimental data were generated, and no published experimental data were analysed, in this study.
 

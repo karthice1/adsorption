@@ -4,7 +4,7 @@ import pandas as pd
 R = "../results/v3/"
 def md(df):
     cols = list(df.columns)
-    out = ["| " + " | ".join(map(str, cols)) + " |", "|" + "---|" * len(cols)]
+    out = ["| " + " | ".join(str(c).replace("|", " ") for c in cols) + " |", "|" + "---|" * len(cols)]
     for _, r in df.iterrows():
         out.append("| " + " | ".join(f"{v:.3f}" if isinstance(v, float) else str(v).replace("|", "given") for v in r) + " |")
     return "\n".join(out)
@@ -14,7 +14,7 @@ INTRO = """All results in this supplement are synthetic (known-truth simulations
 
 | Tables | Generating script | CSV files |
 |---|---|---|
-| S1 | `scripts/make_table_s1.py` (from `cassia.simulate.parameter_table()`, CASSIA 0.3.2) | `results/v3/T_S1_simulator_parameters.csv` |
+| S1 | `scripts/make_table_s1.py` (from `cassia.simulate.parameter_table()`, CASSIA 0.3.3) | `results/v3/T_S1_simulator_parameters.csv` |
 | S2–S5 | `scripts/run_v2.py` | `results/v2/` |
 | S5b | `scripts/m2s_family.py` (from `run_v3.py` stage m2s) | `results/v3/T_m2s_family_full.csv` |
 | S6–S8, S10 | `scripts/run_v3.py` (stages mlscen, censor, equiv3, chem3) | `results/v3/` |
@@ -22,6 +22,7 @@ INTRO = """All results in this supplement are synthetic (known-truth simulations
 | S11–S12 | `scripts/bench_partition.py` | `results/v3/T_bench_partition.csv`, `T_bench_mcse.csv` |
 | S13 | `scripts/endpoint_validation.py` | `results/v3/T_endpoint_validation.csv` |
 | S14 | `scripts/typeI_validation.py` | `results/v3/T_typeI_validation.csv` |
+| S14b | `scripts/typeI_corpus.py` (from the S14 controls; no refitting) | `results/v3/T_typeI_corpus.csv`, `typeI_corpus.json` |
 | Fig. S1 | `scripts/make_supp_figs.py` | `results/v2/ident_profiles.csv` |
 """
 base = open("_supp_base_v2.md").read().rstrip()  # Tables S2-S5 from run_v2.py (frozen header/body)
@@ -30,7 +31,7 @@ base = re.sub(r"^Tables S1.*$|^All tables are generated.*$", "@@INTRO@@", base, 
 base = base.replace("@@INTRO@@", INTRO)
 
 t1 = pd.read_csv(R + "T_S1_simulator_parameters.csv")
-s1 = ("## Table S1. Simulator parameters, distributions, measurement models, evidence-class probabilities and numerical settings (CASSIA 0.3.2)\n\n"
+s1 = ("## Table S1. Simulator parameters, distributions, measurement models, evidence-class probabilities and numerical settings (CASSIA 0.3.3)\n\n"
       "Generated from the implementation by `scripts/make_table_s1.py`; a unit test checks that the evidence-class probabilities and "
       "measurement-model constants in this table are those used by the code. LN(m, s): log-normal with log-mean m and log-SD s; "
       "U(a, b): uniform; N(0, s): normal.\n\n" + md(t1) + "\n\n")
@@ -38,9 +39,16 @@ a, b = base.index("## Table S1."), base.index("## Table S2.")
 base = base[:a] + s1 + base[b:]
 F = pd.read_csv(R + "T_m2s_family_full.csv")
 F = F[F.target.isin(["q_app_VI", "Ce_VI", "q_tot_aq", "Ce_total"])]
+F = F[["target", "family", "n_studies", "n_corpora", "mean_coverage", "frac_studies_cov_ge_0.9", "envelope95_lo", "envelope95_hi",
+       "cluster95_lo", "cluster95_hi", "wilson95_lo", "wilson95_hi", "frac_unbounded", "mean_width_log10_bounded"]]
 s5b = ("## Table S5b. M2s (exact study-level split conformal) by material family at nominal 90% (10 corpora, outer leave-one-study-out)\n\n"
-       "Fraction of test studies with ≥ 90% within-study coverage, with Wilson 95% intervals; mean within-study coverage; fraction of "
-       "unbounded intervals (counted as full coverage) and mean width of bounded intervals (log₁₀).\n\n" + md(F) + "\n\n")
+       "Fraction of test studies with ≥ 90% within-study coverage, mean within-study coverage, fraction of unbounded intervals "
+       "(counted as full coverage) and mean width of bounded intervals (log₁₀). Three 95% intervals for the fraction: cluster95, a "
+       "corpus-cluster percentile bootstrap (the 10 corpora resampled with replacement, 4,000 resamples), which respects the sharing of "
+       "family hyper-priors by the studies of a corpus; wilson95, descriptive only, which treats the studies of a family as independent "
+       "Bernoulli observations; and envelope95, the wider of the two, which is the interval reported in the text. With only 10 "
+       "independent corpora the cluster bootstrap is itself imprecise and collapses to a point when every study of a family covers, "
+       "so the family comparisons remain descriptive.\n\n" + md(F) + "\n\n")
 a = base.index("## Table S5.")
 b = base.find("## Table S6", a)
 base = (base[:b] + s5b + base[b:]) if b > 0 else (base.rstrip() + "\n\n" + s5b)
@@ -87,7 +95,30 @@ if os.path.exists(R + "T_typeI_validation.csv"):
              "new corpora (Wilson 95% intervals). typeI_loco: conformal threshold from 17 of 18 corpora applied to the held-out corpus "
              "(360 controls; corpus-bootstrap 95% interval); max_corpus_typeI: largest held-out-corpus value (20 controls). "
              "thr_conformal_pooled: final threshold from all 360 controls, with power for studies with reduction share > 0.3 and 5–30%. "
+             "All type-I values are empirical frequencies under the simulator; the corpus-level analysis is in Table S14b. "
              "`scripts/typeI_validation.py`.\n\n" + md(TI[keep]))
+if os.path.exists(R + "T_typeI_corpus.csv"):
+    TC = pd.read_csv(R + "T_typeI_corpus.csv")
+    ka = ["sd_rel", "design", "pooled_loco_typeI", "pooled_max_corpus", "pooled_n_corpora_ge_0.15",
+          "binom_P_max_ge_observed", "dispersion_chi2_p", "icc_log_chi2", "icc_F_p", "split6_observed_typeI", "split6_p025",
+          "split6_p975", "split6_P_ge_observed"]
+    kb = ["sd_rel", "design", "corpus_loco_typeI", "corpus_loco_max_corpus", "corpus_thr_p05", "corpus_thr_p95",
+          "power_pooled|>30%", "power_corpus|>30%", "power_pooled|5-30%", "power_corpus|5-30%"]
+    S.append("## Table S14b. Corpus-level analysis of the type-I error (360 negative controls, 18 corpora of 20 controls)\n\n"
+             "`scripts/typeI_corpus.py`; all values are simulated. pooled_*: study-pooled conformal threshold from 17 corpora applied to "
+             "the held-out corpus (leave-one-corpus-out, LOCO): average type-I (interval in Table S14), largest per-corpus value, "
+             "and number of corpora at ≥ 15%. binom_P_max_ge_observed: probability that the largest of 18 per-corpus rates reaches the "
+             "observed maximum if each control were rejected independently with probability 0.05 (20 controls per corpus). "
+             "dispersion_chi2_p: test of extra-binomial variation of the per-corpus rejection counts. icc_log_chi2, icc_F_p: between-corpus "
+             "share of the variance of log χ² (one-way ANOVA) and its F test. corpus_*: corpus-level split conformal with one randomly "
+             "drawn control per corpus; at α = 0.05 the threshold is unbounded for every design (a finite threshold needs ≥ 19 corpora); "
+             "at the smallest attainable level, 1/19 = 5.3%, the threshold is the largest of the 18 draws (5th–95th percentiles over "
+             "2,000 draws shown), corpus_loco_typeI is its LOCO type-I (17 corpora, level 1/18 = 5.6%, averaged over draws) and "
+             "power_corpus its power on the 101 reduction studies of stage equiv3 (power_pooled: study-pooled threshold from all 360 "
+             "controls). split6_*: type-I on 12 corpora when the threshold is calibrated on 6 corpora: observed for the calibration "
+             "cohort of Table S14, 2.5–97.5% range and probability of a value at least as large over 2,000 random choices of 6 corpora.\n\n"
+             "**(a) Study-pooled threshold: empirical cross-corpus performance, heterogeneity and calibration-set sensitivity**\n\n" + md(TC[ka])
+             + "\n\n**(b) Corpus-level split conformal at level 1/19 against the study-pooled threshold**\n\n" + md(TC[kb]))
 S.append("## Fig. S1. Profile likelihoods of the reductant capacity\n\n![Fig. S1](figures/figS1_profiles.png)\n\n**Fig. S1.** Profile of Δ(−2 log L) against log₁₀ R₀ relative to its true value for two virtual studies (true reduction share 0.15 and 0.60) under designs D1, D3 and D4u (D4u: unbiased solid oxidation state). Dotted line: χ²₁ 95% threshold (3.84); symmetric-log axis. Non-smooth peaks indicate local optima at individual profile points; the true profile lies at or below the plotted curve, so the profiles are indicative only. The mechanistic model structure is assumed known.")
 open("CASSIA_supplementary.md", "w").write("\n\n".join(S) + "\n")
 print("supplement words", len(open("CASSIA_supplementary.md").read().split()))

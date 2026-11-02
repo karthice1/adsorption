@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.3.3 (2026-11-02) - fifth revision
+- Type-I error of the rejection test: new corpus-level analysis from the existing 360 controls, no refitting
+  (`scripts/typeI_corpus.py`, Table S14b). Includes a corpus-level split-conformal threshold
+  (`cassia.validation.cluster_conformal_threshold`), which is unbounded at 5% with 18 corpora, plus
+  between-corpus heterogeneity and calibration-set sensitivity (explains the 6-corpus D1 rates of 14.2% and 10.8%).
+  The study-pooled threshold is now reported as empirical average cross-corpus performance, without a finite-sample guarantee.
+- Table S5b: corpus-cluster bootstrap intervals alongside the descriptive Wilson intervals; the reported
+  interval is the wider envelope of the two (`scripts/m2s_family.py`).
+- `scripts/reproduce_all.sh` runs without git metadata. The commit is taken from the argument, then
+  `CASSIA_COMMIT`, then git, then `release/RELEASE.md`, and is resolved before any computation.
+  `make_release_manifest.py` uses the same rule.
+- README updated to 0.3.3 (reproduction, release checklist); new unit test for the cluster conformal threshold (41 tests).
+- Fixed: `|` in supplementary table headers broke the Word table parser.
+
 ## 0.3.2 (2026-11-01) - fourth revision
 - Rejection test: conformal threshold estimated across corpora; 240 new negative controls in 12 independent
   corpora; leave-one-corpus-out type-I error with corpus-bootstrap intervals (`scripts/typeI_validation.py`,

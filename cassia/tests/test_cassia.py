@@ -289,3 +289,20 @@ def test_parameter_table_matches_implementation():
     assert f"N(0, {x['noise']})" in t["xps_cr3_frac"] and "f_s = e f/(e f + 1 - f)" in t["xps_cr3_frac"]
     assert f"U(0, {n['beam_max']})" in t["xanes_cr3_frac"] and f"N(0, {n['noise']})" in t["xanes_cr3_frac"]
     assert f"N(0, {ms.INVENTORY_REL_SD})" in t["solid_cr_mgg"] and f"N(0, {ms.PHASE_ABS_SD})" in t["cr3_precip_frac"]
+
+
+def test_cluster_conformal_threshold_unit_is_cluster():
+    """Corpus-level split conformal: unbounded at alpha = 0.05 with 18 clusters; valid with clustered null scores."""
+    from cassia.validation import cluster_conformal_threshold
+    rng = np.random.default_rng(3)
+    sc = rng.normal(size=18 * 20); cl = np.repeat(np.arange(18), 20)
+    assert np.isinf(cluster_conformal_threshold(sc, cl, 0.05, rng))
+    assert np.isfinite(cluster_conformal_threshold(sc, cl, 1 / 19, rng))
+    # strong cluster random effect: the corpus-level threshold keeps the type-I error for a new cluster
+    K, n, hits = 39, 10, []
+    for _ in range(600):
+        u = rng.normal(0, 1.0, K + 1)
+        s = (u[:, None] + rng.normal(0, 0.3, (K + 1, n))).ravel(); c = np.repeat(np.arange(K + 1), n)
+        t = cluster_conformal_threshold(s[c < K], c[c < K], 0.05, rng)
+        hits.append(rng.choice(s[c == K]) > t)
+    assert np.mean(hits) <= 0.05 + 3 * np.sqrt(0.05 * 0.95 / 600)

@@ -11,9 +11,9 @@ parts = [open(f).read().strip() for f in ("_v3_results_A.md", "_v3_results_ML.md
 appendix = open("_v3_appendix.md").read().strip()
 tail = open("_v3_back_matter.md").read().strip()
 
-HL = ["Known-truth benchmark of what Cr(VI)-removal data can show about mechanism",
-      "Simulated Cr(VI)-only data were often equivalent to adsorption-only fits within 10%",
-      "At about 5% type-I error, total-Cr and solid-phase data gave 80–98% rejection power",
+HL = ["Known-truth benchmark: Cr(VI)-only data were often adsorption-equivalent within 10%",
+      "Total-Cr and solid-phase data gave 80–98% rejection power in simulated studies",
+      "Average type-I error was about 5%, with higher rates in some individual corpora",
       "Exact study-level coverage holds; intervals are too wide for some engineering uses",
       "No unsafe accepted designs were observed in the simulated test cohorts"]
 assert all(len(h) <= 85 for h in HL), [len(h) for h in HL]
@@ -25,12 +25,12 @@ AB = ("This methodological study uses known-truth simulations to establish what 
       "identify. Three PHREEQC databases agreed on Cr(VI) speciation within 0.044 but differed by 63–83 mV in the Cr(VI)/Cr(III) "
       "boundary. Across five simulated mechanism scenarios, adsorption-only was not rejected for 65–78% of high-reduction studies "
       "observed through residual Cr(VI) alone, and a noncentral-χ² equivalence test showed it equivalent within a 10% margin for "
-      "43–73%. Calibrated on 360 negative controls from 18 corpora, the rejection test had a type-I error of 4.7–5.6% for every "
-      "measurement design on average across corpora (95% intervals within 2.5–8.6%); its power was 80–88% with total Cr and 92–98% "
-      "with XPS or XANES. Random cross-validation overstated transferability (random-forest R² 0.86–0.89 versus 0.48–0.65 "
+      "43–73%. Calibrated on 360 negative controls from 18 simulated corpora, the rejection test had power of "
+      "80–88% with total Cr and 92–98% with XPS or XANES; its type-I error averaged about 5% (4.7–5.6%) over held-out corpora, "
+      "with rates of 15–25% in some individual corpora: an empirical average, not a guarantee. Random cross-validation overstated transferability (random-forest R² 0.86–0.89 versus 0.48–0.65 "
       "leave-one-study-out). An exact study-level split-conformal interval achieved its stated coverage guarantee, but the 90% interval "
       "for apparent Cr(VI) uptake spanned approximately 3.3 log₁₀ units; intervals for total-chromium endpoints were frequently "
-      "unbounded with literature-scale calibration samples. With sequential confirmatory testing, no unsafe accepted design was observed "
+      "unbounded with literature-scale calibration samples. With sequential confirmatory testing, no unsafe accepted design was observed in the simulated cohorts "
       "(Wilson 95% upper bound 1.3% of materials, 3.5–3.8% of accepted designs). No published experimental data were analysed; the "
       "framework is benchmarked, not experimentally validated.")
 

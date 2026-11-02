@@ -1,4 +1,6 @@
-_______________ coverage: platform linux, python 3.13.17-final-0 _______________
+.........................................                                [100%]
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.13.18-final-0 _______________
 
 Name                        Stmts   Miss  Cover
 -----------------------------------------------
@@ -10,7 +12,7 @@ cassia/identifiability.py     362    132    64%
 cassia/measurement.py          24      2    92%
 cassia/pores.py                20      0   100%
 cassia/simulate.py            265     12    95%
-cassia/validation.py          244     40    84%
+cassia/validation.py          252     40    84%
 -----------------------------------------------
-TOTAL                        1324    246    81%
-40 passed in 50.68s
+TOTAL                        1332    246    82%
+41 passed in 60.04s (0:01:00)

@@ -1,0 +1,16 @@
+{
+ "K_corpora": 18,
+ "alpha": 0.05,
+ "corpus_level_finite_needs_K_ge": 19,
+ "alpha_min_K18": 0.05263157894736842,
+ "P_any_cell_ge_0.142_approx": 0.01,
+ "calibration_corpora": [
+  "B-0",
+  "C-0",
+  "D-0",
+  "E-0",
+  "E-1",
+  "E-2"
+ ],
+ "B": 2000
+}
