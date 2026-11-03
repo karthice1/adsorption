@@ -1,4 +1,4 @@
-"""Build CASSIA_supplementary.md: Table S1 from the implementation, S2-S5 (run_v2.py), S5b-S14 and Fig. S1. Run from manuscript/."""
+"""Build CASSIA_supplementary.md: Table S1 from the implementation, S2-S5 (run_v2.py), S5b-S15, Fig. S1-S2 and Supplementary Notes S1-S3 (_v3_supp_notes.md). Run from manuscript/."""
 import pandas as pd
 
 R = "../results/v3/"
@@ -25,7 +25,11 @@ INTRO = """All results in this supplement are synthetic (known-truth simulations
 | S13 | `scripts/endpoint_validation.py` | `results/v3/T_endpoint_validation.csv` |
 | S14 | `scripts/typeI_validation.py` | `results/v3/T_typeI_validation.csv` |
 | S14b | `scripts/typeI_corpus.py` (from the S14 controls; no refitting) | `results/v3/T_typeI_corpus.csv`, `typeI_corpus.json` |
+| S15 (Note S3) | `scripts/run_v3.py` (stage seqver) | `results/v3/T_seqver_summary.csv`, `seqver.csv` |
 | Fig. S1 | `scripts/make_supp_figs.py` | `results/v2/ident_profiles.csv` |
+| Fig. S2 (Note S2) | `scripts/run_v3.py` (stage figures) | `results/v2/` (missing chemistry) |
+
+Supplementary Notes S1–S3 give the goodness-of-fit and equivalence tests of the adsorption-only model, the full methods and results of the propagation of unreported chemistry (manuscript §2.10 and §3.7) and the sequential verification of accepted designs (§3.6).
 """
 base = open("_supp_base_v2.md").read().rstrip()  # Tables S2-S5 from run_v2.py (frozen header/body)
 import re
@@ -167,7 +171,7 @@ if os.path.exists(R + "T_typeI_corpus.csv"):
              "log χ²: between-corpus share of the variance of log χ² (one-way ANOVA), with its F test. 6-corpus calibration: type-I error "
              "on 12 corpora when the threshold is calibrated on 6, observed for the calibration cohort of Table S14, and its 2.5–97.5% "
              "range and the probability of a value at least as large over 2,000 random choices of 6 corpora. (b) Corpus-level split "
-             "conformal (one randomly drawn control per corpus; Appendix B). At α = 0.05 its threshold is unbounded for every design, "
+             "conformal (one randomly drawn control per corpus; Supplementary Note S1). At α = 0.05 its threshold is unbounded for every design, "
              "because a finite threshold needs ≥ 19 corpora. At the smallest attainable level, 1/19 = 5.3%, the threshold is the largest "
              "of the 18 draws (5th–95th percentiles over 2,000 draws shown). LOCO type-I uses 17 corpora (level 1/18 = 5.6%), averaged "
              "over draws. Power is for the reduction studies of stage equiv3 (share 5–30%, n = 50; > 30%, n = 51), against the "
@@ -176,5 +180,7 @@ if os.path.exists(R + "T_typeI_corpus.csv"):
              + md(TC[list(ka)].rename(columns=ka))
              + "\n\n**(b) Corpus-level split conformal at level 1/19 against the study-pooled threshold**\n\n" + md(TC[list(kb)].rename(columns=kb)))
 S.append("## Fig. S1. Profile likelihoods of the reductant capacity\n\n![Fig. S1](figures/figS1_profiles.png)\n\n**Fig. S1.** Profile of Δ(−2 log L) against log₁₀ R₀ relative to its true value for two virtual studies (true reduction share 0.15 and 0.60) under designs D1, D3 and D4u (D4u: unbiased solid oxidation state). Dotted line: χ²₁ 95% threshold (3.84); symmetric-log axis. Non-smooth peaks indicate local optima at individual profile points; the true profile lies at or below the plotted curve, so the profiles are indicative only. The mechanistic model structure is assumed known.")
+from latex2uni import convert
+S.append(convert(open("_v3_supp_notes.md").read().strip()))
 open("CASSIA_supplementary.md", "w").write("\n\n".join(S) + "\n")
 print("supplement words", len(open("CASSIA_supplementary.md").read().split()))

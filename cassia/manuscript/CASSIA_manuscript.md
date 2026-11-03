@@ -81,8 +81,8 @@ CASSIA 0.3.6 is organised in six layers (Table 1). Analyses are run by scripts t
 
 | Script | Outputs |
 |---|---|
-| `scripts/run_v2.py --stage all` | `results/v2/`: chemistry (Tables S2–S4), mechanism benchmark (Table 4, Fig. 2), ML validation (Table 6, Fig. 4), interval methods M0–M2 (Table 7, Table S5), treatment design (Table 8), missing chemistry (Fig. 8), Fig. 1 |
-| `scripts/run_v3.py --stage chem3 … seqver` | `results/v3/`: electrolyte sensitivity (Table S10), identifiability and equivalence tests (Table 5, Table S8), M2s single fixed-seed realisation (Table 7b, last column), ML across scenarios (Table S6), censoring (Table S7), learning curve, sequential verification (Table 8b) |
+| `scripts/run_v2.py --stage all` | `results/v2/`: chemistry (Tables S2–S4), mechanism benchmark (Table 4, Fig. 2), ML validation (Table 6, Fig. 4), interval methods M0–M2 (Table 7, Table S5), treatment design (Table 8), missing chemistry (Fig. S2), Fig. 1 |
+| `scripts/run_v3.py --stage chem3 … seqver` | `results/v3/`: electrolyte sensitivity (Table S10), identifiability and equivalence tests (Table 5, Table S8), M2s single fixed-seed realisation (Table 7b, last column), ML across scenarios (Table S6), censoring (Table S7), learning curve, sequential verification (Table S15) |
 | `scripts/run_v3.py --stage figures` | Figs. 3, 5, 6, 7 (must run after `run_v2.py`, whose older versions of these files it replaces) |
 | `scripts/typeI_validation.py` | independent negative-control cohort; type-I errors with Wilson intervals (Table S14) |
 | `scripts/typeI_corpus.py` | corpus-level type-I analysis: corpus-level split conformal, heterogeneity, calibration-set sensitivity (Table S14b) |
@@ -249,10 +249,10 @@ Four complementary analyses were applied.
    - a one-sided z-test that dissolved Cr(III) = Σ(C_e,tot − C_e,VI) exceeds analytical noise (B);
    - XPS Cr(III) fraction > 0.20 (A1, XPS);
    - XANES Cr(III) fraction > 0.10 (A1, XANES).
-3. **Adsorption-only goodness of fit and equivalence (Appendix B).**
+3. **Adsorption-only goodness of fit and equivalence (Supplementary Note S1).**
    - *Model and controls.* A flexible empirical adsorption-only model was fitted to each design's observations by weighted least squares: a pH-dependent Sips equilibrium, a free kinetic curve, study bias, pH relaxation and, for A1/A2, a bounded measurement-induced apparent Cr(III) fraction. Every study was paired with a negative control: the same material with reduction switched off. Both arms were run at 3% and 10% analytical noise.
    - *Three outcomes per study.*
-     - **rejected**, when χ² exceeds a threshold calibrated on negative controls. The threshold is the ⌈0.95(n + 1)⌉-th smallest χ² of the n = 360 controls of 18 independent corpora, pooled over studies: the 120 paired controls and 240 further controls in 12 new corpora (`scripts/typeI_validation.py`). Studies within a corpus share redrawn family hyper-priors, so the corpus, not the study, is the unit that can be assumed exchangeable. The study-pooled threshold therefore carries no finite-sample guarantee for a study from a new corpus; its type-I error is reported as an *empirical* property of the simulator, evaluated leave-one-corpus-out with a corpus-cluster bootstrap interval and with the largest per-corpus rate. A corpus-level split-conformal threshold, which does carry a guarantee, was evaluated alongside it (Appendix B; Table S14b; `scripts/typeI_corpus.py`);
+     - **rejected**, when χ² exceeds a threshold calibrated on negative controls. The threshold is the ⌈0.95(n + 1)⌉-th smallest χ² of the n = 360 controls of 18 independent corpora, pooled over studies: the 120 paired controls and 240 further controls in 12 new corpora (`scripts/typeI_validation.py`). Studies within a corpus share redrawn family hyper-priors, so the corpus, not the study, is the unit that can be assumed exchangeable. The study-pooled threshold therefore carries no finite-sample guarantee for a study from a new corpus; its type-I error is reported as an *empirical* property of the simulator, evaluated leave-one-corpus-out with a corpus-cluster bootstrap interval and with the largest per-corpus rate. A corpus-level split-conformal threshold, which does carry a guarantee, was evaluated alongside it (Supplementary Note S1; Table S14b; `scripts/typeI_corpus.py`);
      - **equivalent within ε**, when a noncentral-χ² equivalence test, the goodness-of-fit analogue of two one-sided tests (Schuirmann, 1987; Wellek, 2010), shows that the misfit non-centrality is below a margin λ₀(ε). The margin corresponds to a systematic discrepancy of ε = 5, 10 or 20% in every concentration (0.05 absolute for oxidation-state fractions);
      - **inconclusive**, otherwise.
    - *Terminology.* "Not rejected" is never interpreted as "equivalent".
@@ -356,11 +356,7 @@ Only M2s carries a proven study-level guarantee. The coverage of M0–M2 for uns
 
 ### 2.10 Propagation of unreported chemistry
 
-**Prediction level.** For studies that did not report ionic strength or final pH, 1,000 scenarios were drawn: I log-uniform on 10⁻³–10⁻¹ M and a pH-basis ambiguity uniform on ±0.5. They were propagated through the speciation features, the q_app,VI predictions and the M1 intervals. For each observation the following were recorded: the 90% range of f(HCrO₄⁻), the spread of the point prediction, and the union interval width against the nominal width. Grouped 5-fold models were used on four corpora.
-
-**Design level.** For six new materials per corpus, the designer's assumed I was drawn 300 times from the same range, while the true I was 0.01 M. The point + verify design was re-run for each draw (confirmatory batches at the true conditions), and the true outcome of each accepted design was simulated. This gives distributions of recommended dose, residual total Cr and compliance probability.
-
-**Mechanistic level.** The first-order bias in the inferred reduction share is given by the identifiability engine (Section 2.6).
+For studies that did not report ionic strength or final pH, an unknown ionic strength (log-uniform, 10⁻³–10⁻¹ M) and an unknown pH basis (uniform, ±0.5) were propagated at three levels: through the speciation features, predictions and M1 intervals (1,000 draws per observation); through the point + verify design (300 draws per new material, confirmatory batches at the true conditions); and, as a first-order bias in the inferred reduction share, through the identifiability engine (§2.6). Details are in Supplementary Note S2.
 
 ### 2.11 Literature-data protocol and seed dataset
 
@@ -517,11 +513,11 @@ The prior SD was 0.04–0.28.
 - XPS false-alarms seven times as often as XANES because of the assumed beam/vacuum reduction and surface enrichment.
 - An XPS Cr(III) signal on its own is therefore weaker evidence of reduction than the same signal from XANES.
 
-**Adsorption-only fits: rejection, equivalence or neither (Table 5, Fig. 3c,d; Table S14; Appendix B).** For 120 studies, each paired with a pure-adsorption control, and 240 further controls from 12 new corpora:
+**Adsorption-only fits: rejection, equivalence or neither (Table 5, Fig. 3c,d; Table S14; Supplementary Note S1).** For 120 studies, each paired with a pure-adsorption control, and 240 further controls from 12 new corpora:
 - *The nominal χ² test over-rejects.* On the 240 independent controls, its type-I error was 2.9–17.1%, depending on design and noise. The empirical model only approximates the generating adsorption model.
 - *Calibration on 6 corpora did not transfer for D1.* Thresholds estimated from the 120 paired controls (6 corpora) were applied to the 240 independent controls (12 new corpora; Table S14). For D2–D5 the type-I error was 1.7–5.4% with either the empirical 95th percentile or the conformal order statistic. For D1 it was 15.4% and 13.8% with the empirical percentile and still 14.2% (Wilson 95% interval 10.3–19.1%) and 10.8% (7.5–15.4%) with the conformal order statistic, at 3% and 10% noise. The conformal threshold does not prevent this: its rank guarantee holds only for a new study exchangeable with the 120 calibration studies, and a study from a new corpus is not guaranteed to be. At 3% noise the largest D1 statistic among the 120 calibration controls was χ² = 23.6, whereas 6 of the 240 independent controls exceeded it (maximum 49.8); the two largest values were reproduced exactly when refitted with 20 instead of 3 optimiser starts, so they are not fitting failures. Allocating 6 of the 18 corpora to calibration at random gave a D1 type-I error at least as large as 14.2% in 0.1% of 2,000 allocations (2.5–97.5% range 0.8–12.1%), and at least as large as 10.8% at 10% noise in 0.7% (Table S14b); allocating 120 of the 360 controls at random, ignoring corpora, gave similar probabilities (0.1% and 2%). The observed calibration set was therefore an unusually unfavourable draw for D1. It is not explained by a detectable between-corpus variance component (below).
 - *Average cross-corpus type-I error is close to 5%, but this is an empirical result, not a guarantee.* With the study-pooled threshold estimated from 17 corpora and applied to the held-out corpus, the type-I error averaged 4.7–5.6% for every design and noise level (corpus-bootstrap 95% intervals within 2.5–8.6%; Table 5). In single held-out corpora of 20 controls it ranged from 0% to 15–25%; 1–2 of the 18 corpora reached ≥ 15% in every design. Part of this spread is the binomial sampling of 20 controls: with an independent 5% rejection probability per control, the largest of 18 per-corpus rates would reach 15% with probability 0.76, 20% with 0.25 and 25% with 0.045. A test of extra-binomial variation gave nominal p < 0.05 in 2 of 12 design × noise cells (p = 0.017 and 0.030; p ≥ 0.096 in the others). These are exploratory, unadjusted results: neither is below the Bonferroni threshold for 12 comparisons (0.05/12 = 0.0042), and the between-corpus share of the variance of log χ² was indistinguishable from zero (intraclass correlation ≤ 0.008; F-test p ≥ 0.30; Table S14b). These results describe the simulator; they do not establish a 5% type-I error for a new corpus, and in particular not for a real literature corpus.
-- *A corpus-level guarantee is not available at 5% with 18 corpora.* A split-conformal threshold whose unit of exchangeability is the corpus uses one control per corpus (Appendix B). With K = 18 corpora its 95% threshold is unbounded for every design, because a finite threshold needs K ≥ 19. The smallest attainable level is 1/19 = 5.3%, where the threshold is the largest of the 18 per-corpus draws. Evaluated leave-one-corpus-out (17 corpora, level 1/18 = 5.6%), the observed type-I error was 5.3–5.7%, consistent with the theoretical 5.6% bound within Monte Carlo uncertainty, but this threshold is unstable (for D3–D5 at 3% noise, its 5th–95th percentiles over random draws span 47–9,752) and costs power: for high-reduction studies, 75–85% instead of 88–98% under D3–D5 at 3% noise, and 59–88% instead of 80–94% at 10% noise (Table S14b). The corpus-level guarantee is also marginal over corpora and does not bound the rate within any one corpus.
+- *A corpus-level guarantee is not available at 5% with 18 corpora.* A split-conformal threshold whose unit of exchangeability is the corpus uses one control per corpus (Supplementary Note S1). With K = 18 corpora its 95% threshold is unbounded for every design, because a finite threshold needs K ≥ 19. The smallest attainable level is 1/19 = 5.3%, where the threshold is the largest of the 18 per-corpus draws. Evaluated leave-one-corpus-out (17 corpora, level 1/18 = 5.6%), the observed type-I error was 5.3–5.7%, consistent with the theoretical 5.6% bound within Monte Carlo uncertainty, but this threshold is unstable (for D3–D5 at 3% noise, its 5th–95th percentiles over random draws span 47–9,752) and costs power: for high-reduction studies, 75–85% instead of 88–98% under D3–D5 at 3% noise, and 59–88% instead of 80–94% at 10% noise (Table S14b). The corpus-level guarantee is also marginal over corpora and does not bound the rate within any one corpus.
 - *Power with Class C data is low.* At the final threshold (360 controls), the test rejected adsorption-only in 28% (D1) and 35% (D2) of high-reduction studies (share > 0.3) at 3% analytical noise, and in 22% at 10% noise.
 - *Cr(III) measurements raise power.* Adding total Cr (D3) raised power to 80–88%. Adding solid-phase evidence (D4x, D4n, D5) raised it to 92–98%. These powers are at the study-pooled threshold, whose type-I error was about 5% on average across simulated corpora and up to 15–25% in single corpora.
 - *Reporting choice.* We report the study-pooled threshold, with its empirical leave-one-corpus-out type-I error and the largest per-corpus rate, as the primary analysis, and the corpus-level threshold as the procedure that carries a finite-sample guarantee (at 5.3%, not 5%). Neither is claimed to provide 5% type-I control for a new independent corpus, and the average empirical type-I error is not evidence of reliable 5% control for real studies. Before use on experimental literature data, either threshold must be recalibrated on suitable real negative controls.
@@ -722,33 +718,7 @@ Table 7 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 - It found compliant designs for 62% (S1) and 54% (S2) of attainable materials, after a mean of 1.4–1.5 rounds.
 - The median dose was twice the true minimum dose, which is the price of escalating on a coarse dose grid.
 
-**Verification is a sequential decision, so its false-acceptance risk was evaluated explicitly (Table 8b, Fig. 7b,c).**
-- *Simulation.* An independent cohort of 300 new materials per target was drawn from the same hyper-priors as the design cohort (20 training corpora × 15 materials; the material draws differ from those of the design stage). For every material, target and rule, 1,000 verification sequences were simulated, with up to four dose rounds and both endpoints measured each round. Each sequence drew a calibration bias and correlated replicate errors.
-- *Per material.* The probability of accepting a non-compliant design was:
-  - simple rule (duplicates, mean ≤ 90% of each limit): mean 0.01% across materials, worst material 1.4–1.7%;
-  - error-controlled rule (triplicates, one-sided upper confidence bound ≤ limit, Bonferroni over two endpoints and four rounds): worst material 0.1–0.7%.
-- *Overall.* No material exceeded 5% under either rule, with shared or independent calibration bias. The controlled rule needed about 50% more batches per material (4.7 against 3.1 for S1; 4.0 against 2.6 for S2).
-- *Operating characteristic.* Because these averages depend on how close true concentrations sit to the limits, Table 8b gives the acceptance probability over four rounds for a design whose true concentrations stay at a fixed ratio to both limits:
-
-| True concentration / limit | Simple rule | Error-controlled rule |
-|---|---|---|
-| 1.00 (at the limit) | 3.7% | 0.8% |
-| 1.05 | 0.2% | 0.04% |
-| 0.90 (truly compliant) | 59% | 37% |
-
-  Both figures assume shared calibration bias. The controlled rule is about five times safer at the limit and less likely to accept compliant designs close to the limit.
-- *Scope.* These are properties under the assumed analytical-error model (3% random, 5% calibration uncertainty), not guarantees for real laboratories.
-
-**Table 8b.** Sequential verification: probability of accepting a non-compliant design (1,000 simulated sequences per material; 300 materials per target).
-
-| Target | Rule | Bias model | Mean P(false acceptance) | Worst material | Materials > 5% | Mean batches |
-|---|---|---|---|---|---|---|
-| S1 | simple (n = 2, mean ≤ 0.9·limit) | shared | 0.0001 | 0.014 | 0 | 3.1 |
-| S1 | controlled (n = 3, UCB ≤ limit) | shared | 0.0000 | 0.001 | 0 | 4.7 |
-| S2 | simple | shared | 0.0001 | 0.015 | 0 | 2.6 |
-| S2 | controlled | shared | 0.0000 | 0.007 | 0 | 4.0 |
-| S1 | simple | independent | 0.0001 | 0.015 | 0 | 3.1 |
-| S1 | controlled | independent | 0.0000 | 0.002 | 0 | 4.7 |
+**Verification is a sequential decision, so its false-acceptance risk was evaluated explicitly (Fig. 7b,c; Table S15; Supplementary Note S3).** In an independent cohort of 300 new materials per target, the probability of accepting a non-compliant design was at most 1.4–1.7% for any material with the simple rule (duplicates, mean ≤ 90% of each limit) and 0.1–0.7% with the error-controlled rule (triplicates, one-sided upper confidence bound ≤ limit, Bonferroni over two endpoints and four rounds). No material exceeded 5% under either rule, and the controlled rule needed about 50% more batches. For a design whose true concentrations sit at the limit, the acceptance probability over four rounds was 3.7% (simple) and 0.8% (controlled). These are properties under the assumed analytical-error model (3% random, 5% calibration uncertainty), not guarantees for real laboratories.
 
 **Table 8c.** Accepted designs and unsafe acceptances by rule, with explicit denominators (synthetic; 300 materials per target in each cohort). Design cohort: one realised sequence per material; verification cohort: expected numbers over 1,000 sequences per material (shared calibration bias).
 
@@ -768,16 +738,7 @@ The error-controlled rule accepted almost as many designs as the simple rule (81
 - They were sensitive to lower pH: compliance fell to 81% at −0.25 and 62% at −0.5 pH units, because dissolved Cr(III) release rises as pH falls.
 - A 20% dose reduction gave 83% compliance.
 
-**Out-of-study accuracy of the endpoint models (Table S13).** The design layer uses four RF models: Cr(VI) and total Cr, as uptake and as effluent concentration. The total-Cr models are trained only on rows with a total-Cr measurement, from about 18 Class A/B studies per corpus. Under leave-one-study-out (10 corpora), the R² on the log scale was:
-
-| Endpoint | LOSO R² (log₁₀) | Random-split R² (log₁₀) | LOSO RMSE (log₁₀) |
-|---|---|---|---|
-| C_e,VI | 0.74 ± 0.06 | 0.94 | 0.49 |
-| C_e,tot | 0.65 ± 0.09 | 0.91 | 0.37 |
-| q_app,VI | 0.39 ± 0.16 | 0.77 | 0.51 |
-| q_tot,aq | 0.42 ± 0.17 | 0.75 | 0.52 |
-
-R² on the log scale weights low concentrations, which matter for compliance, more than the linear-scale R² of Table 6 (linear-scale LOSO R² here: 0.87, 0.85, 0.56 and 0.52). The total-Cr models are less accurate than the Cr(VI) models, as expected from fewer training studies, and both lose about 0.2–0.4 in R² between random and study-level validation. Their study-level intervals are reported in Table 7.
+**Out-of-study accuracy of the endpoint models (Table S13).** The design layer uses four RF models: Cr(VI) and total Cr, as uptake and as effluent concentration; the total-Cr models are trained only on the about 18 Class A/B studies per corpus that report total Cr. Under leave-one-study-out, R² on the log₁₀ scale was 0.74 and 0.65 for the Cr(VI) and total-Cr effluent concentrations and 0.39–0.42 for the two uptakes, against 0.75–0.94 under random splits.
 
 **Effluent predictions.** Predicted and true effluent concentrations on a design sub-grid were rank-correlated (Spearman 0.65 for Cr(VI), 0.55 for total Cr), with median absolute errors of 0.40 and 0.22 log₁₀ units. The 95% upper bounds held for 97.9% (Cr(VI)) and 100% (total Cr) of grid points.
 
@@ -802,25 +763,7 @@ R² on the log scale weights low concentrations, which matter for compliance, mo
 
 ### 3.7 Propagation of unreported chemistry
 
-**Prediction level.** Unknown ionic strength (10⁻³–10⁻¹ M) and an unknown pH basis (±0.5) were propagated with 1,000 draws per observation for 462 pH-edge observations from studies that did not report them.
-- The 90% range of f(HCrO₄⁻) was 0.035 at pH ≤ 3.5, 0.045 at pH 3.5–5, 0.24 at pH 5–6.5 and 0.08 at pH 6.5–8.5.
-- The resulting spread of the point prediction was 0.08–0.14 log₁₀ units, small compared with the study-level interval width (1.18–1.28 log₁₀ units).
-- The union of the M1 intervals over all scenarios was 6–14% wider than the nominal interval.
-
-**Design level.** Twenty-four new materials were each re-designed 300 times with the test-confirmed protocol, under different assumed ionic strengths.
-- An unknown ionic strength changed the accepted dose for 3 of the 10 materials with accepted designs (e.g. 4–8 g L⁻¹).
-- It never produced a non-compliant accepted design, because the confirmatory batches are run at the true conditions.
-- The 95th percentile of true residual total Cr at the accepted designs was 0.08–1.38 mg L⁻¹ across materials, below the 2 mg L⁻¹ limit.
-
-**Capacity level.** A conventional isotherm fit uses neither ionic strength nor the pH basis, so unreported solution chemistry does not change the fitted q_max itself. It changes what q_max means: the inferred reduction share and the speciation-based affinity (mechanistic level below).
-
-**Mechanistic level.** Unreported pH matters more than unreported ionic strength (§3.3): a 0.5-unit pH error biased the inferred reduction share by up to 0.16 (90th percentile).
-
-**Conclusion.** For prediction and design, missing solution chemistry is a second-order uncertainty compared with between-study heterogeneity. For mechanistic interpretation, a missing pH basis is first-order.
-
-![Fig. 8](figures/fig7_missing_chemistry.png)
-
-**Fig. 8.** Propagation of unreported ionic strength and pH basis (1,000 draws per observation; synthetic studies). (a) 90% range of f(HCrO₄⁻). (b) Width of the nominal M1 interval, of its union over scenarios, and spread of the point prediction (log₁₀). (c) Accepted dose under unknown ionic strength for each new material (box over 300 draws; numbers: compliance probability).
+For 462 pH-edge observations from studies that did not report ionic strength or pH basis, the spread of the point prediction was 0.08–0.14 log₁₀ units, small compared with the study-level interval width (1.18–1.28 log₁₀ units), and the union of the M1 intervals over all scenarios was 6–14% wider than the nominal interval. An unknown ionic strength changed the accepted dose for 3 of the 10 materials with accepted designs but never produced a non-compliant accepted design, because the confirmatory batches are run at the true conditions. A 0.5-unit pH-basis error biased the inferred reduction share by up to 0.16 (90th percentile; §3.3). For prediction and design, missing solution chemistry is therefore a second-order uncertainty compared with between-study heterogeneity; for mechanistic interpretation, a missing pH basis is first-order (Supplementary Note S2, Fig. S2).
 
 ### 3.8 Empirical application: status
 
@@ -850,7 +793,7 @@ It runs end to end on files in the CASSIA schema (`examples/user_data_workflow.p
 
 The revised analysis gives a mechanism-resolved answer to the question in the title. It rests on synthetic evidence and should be read with that qualification.
 
-**Terminology.** Three outcomes are distinguished throughout (Appendix B). 'Rejected' means the χ² test with the study-pooled, empirically calibrated threshold rejected the adsorption-only model. 'Equivalent within ε' means the equivalence test demonstrated that the adsorption-only misfit is smaller than a stated margin. 'Not rejected' alone is inconclusive and is never read as structural equivalence.
+**Terminology.** Three outcomes are distinguished throughout (Supplementary Note S1). 'Rejected' means the χ² test with the study-pooled, empirically calibrated threshold rejected the adsorption-only model. 'Equivalent within ε' means the equivalence test demonstrated that the adsorption-only misfit is smaller than a stated margin. 'Not rejected' alone is inconclusive and is never read as structural equivalence.
 
 **Class C (residual Cr(VI) only).**
 - Such data establish that Cr(VI) disappears under the stated conditions, and how fast.
@@ -919,7 +862,7 @@ The results support five requirements for any paper that claims Cr(VI) *adsorpti
 **What kind of contribution this is.** The paper is a methodological and theoretical benchmark: it characterises, under known truth, the identifiability, transferability and decision reliability of methods that are routinely applied to Cr(VI)–carbon data. Its quantitative findings are properties of those methods under the simulated data-generating processes. They become claims about real systems only through the empirical application of §3.8, which this paper does not report.
 
 **What each result depends on.** Three kinds of results should be kept apart.
-- *Properties of the methods.* They follow mathematically and hold for any data that meet the stated assumptions. Examples: the M2s coverage statement under random role assignment (Appendix A); the corpus-level conformal bound and the need for at least 19 corpora for a finite 5% threshold (Appendix B); the minimum numbers of calibration studies (J ≥ 9 at 90%, J ≥ 19 at 95%); the absence of any study-level guarantee for intervals calibrated on pooled observations; and the fact that "not rejected" does not mean "equivalent".
+- *Properties of the methods.* They follow mathematically and hold for any data that meet the stated assumptions. Examples: the M2s coverage statement under random role assignment (Appendix A); the corpus-level conformal bound and the need for at least 19 corpora for a finite 5% threshold (Supplementary Note S1); the minimum numbers of calibration studies (J ≥ 9 at 90%, J ≥ 19 at 95%); the absence of any study-level guarantee for intervals calibrated on pooled observations; and the fact that "not rejected" does not mean "equivalent".
 - *Results that depend on the kinetic simulator.* These include the reduction shares, the equivalence of Class C data to adsorption-only within 5–10%, the inflation of fitted q_max, the family patterns (e.g. the reductive behaviour of hydrochar), the size of the random-versus-study R² gap and the intraclass correlation, the magnitudes of the study-pooled type-I errors, the family-conditional and new-corpus coverage of M2s, and the unsafe-design rates of point predictions.
 - *Results that also depend on the assumed analytical error models.* These include the rejection power with total Cr (80–88%) and with solid-phase data (92–98%), the XPS and XANES false-alarm rates (7.1% and 1.0%), the posterior SD of the precipitated share under A2, and the error rates of sequential verification (3% random and 5% calibration error).
 
@@ -944,7 +887,7 @@ Only the first kind transfers to real data without further evidence. The second 
 2. **One model family.** The simulator spans five mechanisms and randomised family-level priors, but all are variants of one kinetic model family. Results that depend on assumed scaling, such as the dominance of low-surface-area chars in reduction share, are properties of the simulator. Mechanisms not represented include electron shuttling by dissolved organic matter, Cr(V) intermediates, competitive anion effects and surface-site heterogeneity. Cross-mechanism transfer (§3.4) was tested only within this family.
 3. **Thermodynamic validation.** Three USGS databases were compared. An independent validation against critically evaluated constants (Ball and Nordstrom, 1998; Rai et al., 1987) is outstanding: those constants could not be retrieved and verified from the computational environment. NaCl, NaNO₃ and Na₂SO₄ backgrounds were compared (§3.1); Ca²⁺, Mg²⁺, carbonate and dissolved organic matter were not.
 4. **Assumed measurement models.** XPS is modelled with log-normal surface enrichment (SD 0.4 in log), beam reduction up to 15% and noise 0.05; XANES with beam reduction up to 3% and noise 0.03; inventories with 5% error. These distributions are plausible but not calibrated against round-robin data. The A1/A2 results depend on them.
-5. **Type-I error is an empirical average, not a guarantee.** The rejection threshold pools negative-control studies across corpora. Its type-I error was close to 5% on average over held-out simulated corpora but reached 15–25% in single corpora of 20 controls, and a calibration on 6 corpora gave 14.2% and 10.8% for D1 on independent controls. Because studies within a corpus share hyper-priors, the study-pooled threshold carries no finite-sample guarantee for a new corpus. The corpus-level split-conformal threshold does (Appendix B), but with 18 corpora only at 5.3%, not 5%, and with less power and an unstable threshold; at least 19, and in practice many more, independent corpora would be needed. Both thresholds depend on the simulator's adsorption model and would have to be recalibrated, for example on real negative controls, before use on literature data.
+5. **Type-I error is an empirical average, not a guarantee.** The rejection threshold pools negative-control studies across corpora. Its type-I error was close to 5% on average over held-out simulated corpora but reached 15–25% in single corpora of 20 controls, and a calibration on 6 corpora gave 14.2% and 10.8% for D1 on independent controls. Because studies within a corpus share hyper-priors, the study-pooled threshold carries no finite-sample guarantee for a new corpus. The corpus-level split-conformal threshold does (Supplementary Note S1), but with 18 corpora only at 5.3%, not 5%, and with less power and an unstable threshold; at least 19, and in practice many more, independent corpora would be needed. Both thresholds depend on the simulator's adsorption model and would have to be recalibrated, for example on real negative controls, before use on literature data.
 6. **Equivalence margins are conventions.** The margins (5, 10, 20% systematic discrepancy) are expressed in units of the analytical SD and are choices, not physical constants. Equivalence is demonstrated relative to one flexible empirical model class; a more flexible class would make Class C data even less informative.
 7. **Conformal guarantees.** The M2s guarantee is exact but marginal: it applies to a randomly selected held-out study from the same realised corpus, marginally over family and study size, through random role assignment (Appendix A), not to a given family, to a genuinely new study from an independent literature population, or to a new corpus. For the total-Cr endpoints, most of its 90% coverage comes from unbounded intervals (62% of test studies). A new material from an unrepresented family violates exchangeability, as the leave-one-family-out results show. M2 has no proven guarantee.
 8. **Approximate procedures.** The Fisher analysis assumes known rate laws, and the profiles include the true parameters among optimiser starts. Sequential-verification error rates hold under the assumed analytical-error model (3% random, 5% calibration uncertainty).
@@ -1056,50 +999,6 @@ In this paper the test study is a randomly selected held-out study from the same
 3. *Minimum number of calibration studies.* The interval is finite only if $J\ge(1-\alpha)/\alpha$: at least 9 calibration studies for $\alpha=0.10$ and 19 for $\alpha=0.05$. With half of the 29 training studies used for calibration (about 14), M2s is bounded at 90% and unbounded at 95%. For total-Cr endpoints only about 8 calibration studies are available, so M2s is unbounded even at 90%. This finite-sample limit is reported as a result, not hidden.
 4. *Relation to Dunn et al. (2023).* Their methods target coverage of a *single random observation* from a new group, using pooling, subsampling or repeated subsampling. M1 is our analogue of their weighted pooling. M2s targets a different, group-level $(\beta,1-\alpha)$ tolerance statement: a fraction $\beta$ of a new study's observations, with confidence $1-\alpha$.
 5. *M2 (CV+) has no proven guarantee.* M2 uses the same study scores, but with K-fold models instead of a single split, as in the CV+ construction (Barber et al., 2021). The CV+ guarantee is proven for scalar residual scores of exchangeable data points. We have not shown that it extends to within-study quantile scores, so no $1-2\alpha$ guarantee is claimed for M2. M2 is reported as an empirical method only.
-
-## Appendix B. Goodness-of-fit and equivalence tests of the adsorption-only model
-
-**Observations and weights.**
-- *Vector.* The observation vector of a design (§2.6) contains residual Cr(VI) and, as the design requires, total aqueous Cr, the solid oxidation-state fraction, final pH and solid Cr inventory. Phase evidence is excluded, because the precipitated share of solid Cr(III) is undefined under adsorption only (there is no Cr(III)). For D5 the test therefore uses D4n + solid Cr inventory; phase evidence enters only the Fisher analysis of the precipitation share (§2.6, §3.3). No observation model for phase evidence under the null is assumed.
-- *Error model.* Each observation $y_i$ carries an independent error with SD $\sigma_i$:
-  - $\sigma_{\rm rel}y_i+0.01$ mg L⁻¹ for Cr(VI), with $\sigma_{\rm rel}$ = 0.03 or 0.10;
-  - $\sigma_{\rm rel}y_i+0.02$ mg L⁻¹ for total Cr;
-  - the technique noise (0.05 XPS, 0.03 XANES) for oxidation state;
-  - 0.05 for pH;
-  - 5% + 0.01 mg g⁻¹ for inventory.
-- *Shared calibration error.* A calibration bias shared by all concentrations of a study is a free parameter, so residual correlation from calibration is absorbed rather than ignored.
-- *Below the detection limit.* Observations below the limit of detection are set to LOD/2 with $\sigma_i$ = LOD.
-
-**The adsorption-only model and its fit.**
-- *Model.* The empirical adsorption-only model (§2.6) has:
-  - a pH-dependent Sips equilibrium (5 parameters plus $q_{\max}$);
-  - a free kinetic curve (3 parameters; D2 and later);
-  - the study bias;
-  - a free pH-relaxation fraction (A1/A2 designs);
-  - a free apparent solid Cr(III) fraction produced by the measurement itself, bounded by the technique's assumed maximum beam reduction (A1/A2).
-- *Fit.* The model is fitted by bounded weighted least squares with two to three random starts.
-- *Statistic.* The misfit statistic is $\chi^2=\sum_i r_i^2/\sigma_i^2$ at the optimum, with $\nu=n_{\rm obs}-n_{\rm free}$ degrees of freedom.
-
-**Rejection threshold: study-pooled empirical calibration and corpus-level conformal calibration.**
-- *Why the nominal test fails.* The empirical model is not exactly the data-generating adsorption model, so $\chi^2$ under the null is inflated relative to $\chi^2_\nu$. The nominal test therefore over-rejects (6.7–15% at nominal 5%; §3.3).
-- *Study-pooled threshold (primary analysis).* For each design and noise level the threshold is $t=\chi^2_{(k)}$, the $k$-th smallest of the $n=360$ negative-control statistics pooled over studies, with $k=\lceil 0.95(n+1)\rceil$. The split-conformal rank argument (Vovk et al., 2005) gives $P(\chi^2_{\rm new}>t)\le 0.05$ only if the new null statistic is exchangeable with the $n$ calibration statistics. That premise is not assumed here. The negative controls of one corpus share its redrawn family hyper-priors, so a study from a new corpus is exchangeable with the pooled calibration studies only if those corpus-level random effects do not affect the null $\chi^2$. No finite-sample guarantee is therefore claimed for the study-pooled threshold. Its type-I error is an empirical property of the simulator.
-- *Evaluation of the study-pooled threshold.* Type-I error is estimated leave-one-corpus-out over all 18 corpora (360 controls): the threshold is computed from the other 17 corpora and applied to the held-out corpus. The 95% interval comes from resampling corpora (4,000 bootstrap replicates). The largest per-corpus rate is reported with it, together with a binomial reference for 20 controls per corpus, a test of extra-binomial variation of the per-corpus counts and the intraclass correlation of log $\chi^2$ (Table S14b). The threshold used for power and equivalence is the one from all 360 controls.
-- *Corpus-level split conformal.* This is the single-subsample construction of Dunn et al. (2023) with the corpus as the group. Let the corpora $C_1,\dots,C_{K+1}$ be i.i.d. draws from the simulator, with $C_{K+1}$ a new corpus. From each corpus draw one study uniformly at random, independently of everything else, and let $S_j$ be its null statistic. The $S_j$ are then i.i.d., hence exchangeable. Let $t_K=S_{(k)}$, the $k$-th smallest of $S_1,\dots,S_K$, with $k=\lceil(1-\alpha)(K+1)\rceil$, and $t_K=+\infty$ if $k>K$.
-- *Proposition.* $P(S_{K+1}>t_K)\le\alpha$.
-- *Proof.* By exchangeability, the rank of $S_{K+1}$ among $S_1,\dots,S_{K+1}$ (ties broken at random) is uniform on $\{1,\dots,K+1\}$. $S_{K+1}>S_{(k)}$ requires that rank to exceed $k$, which has probability $(K+1-k)/(K+1)\le\alpha$.
-- *Consequences.* (i) The threshold is finite only if $K\ge(1-\alpha)/\alpha$, i.e. $K\ge 19$ corpora for $\alpha=0.05$. With the $K=18$ corpora available it is unbounded at 5% for every design, and the smallest attainable level is $1/(K+1)=1/19$ (about 0.053), at which $t_K$ is the largest of the 18 draws. (ii) The probability is marginal over corpora, over the study drawn within the new corpus and over the random selection; it does not bound the false-rejection rate within any one corpus. (iii) $t_K$ depends on which control is drawn from each corpus; Table S14b gives its distribution over 2,000 draws, its leave-one-corpus-out type-I error ($K=17$, level $1/18$) and its power.
-- *Calibration on 6 corpora.* With the 120 controls of 6 corpora, the empirical 95th percentile gave a type-I error of 15.4% and 13.8% for D1 on 240 controls from 12 new corpora, and the conformal order statistic of the same 120 controls gave 14.2% and 10.8% (Table S14). This is the failure mode the study-pooled rank argument does not exclude when the calibration set comes from few corpora; for D1 the observed calibration set was an unfavourable draw (probability of a type-I error this large about 0.1–0.7% over random choices of 6 corpora; §3.3, Table S14b).
-- *Two error rates.* The type-I error refers to rejecting a true adsorption-only model. The false-equivalence probability refers to declaring equivalence when the true misfit exceeds the margin. They are controlled by different procedures and reported separately.
-
-**Equivalence within a margin.**
-- *Hypotheses.* Non-rejection is not evidence of equivalence. We therefore test $H_0{:}\ \lambda\ge\lambda_0$ against $H_1{:}\ \lambda<\lambda_0$, where $\lambda$ is the non-centrality of the misfit, i.e. the $\chi^2$ of the best adsorption-only approximation to the noise-free data.
-- *Margin.* The margin is $\lambda_0(\varepsilon)=\sum_i(m_i/\sigma_i)^2$, with $m_i=\varepsilon y_i$ for concentrations and inventory and $m_i$ = 0.05 for oxidation-state fractions. In words, the margin is a systematic discrepancy of relative size $\varepsilon$ in every concentration, with $\varepsilon\in\{0.05,0.10,0.20\}$.
-- *Decision.* 'Equivalent within $\varepsilon$' is declared when $\chi^2\le F^{-1}_{\nu,\lambda_0}(\alpha)$, the $\alpha$-quantile of the noncentral $\chi^2$ with $\nu$ degrees of freedom and non-centrality $\lambda_0$, at $\alpha$ = 0.05. This is the goodness-of-fit form of an equivalence test (Wellek, 2010). As in two one-sided tests (Schuirmann, 1987), equivalence must be demonstrated rather than presumed.
-
-**Operating characteristics.**
-- *Truth.* Because the simulator gives the noise-free observations, the true non-centrality $\lambda_{\rm true}$ of each study is known.
-- *Reported.* We report the false-equivalence rate, $P(\text{declared equivalent}\mid\lambda_{\rm true}\ge\lambda_0)$, and the equivalence power, $P(\text{declared equivalent}\mid\lambda_{\rm true}<\lambda_0)$.
-- *Three outcomes per study.* Each study is reported as one of: rejected by the test with the study-pooled, empirically calibrated threshold; equivalent within $\varepsilon$; or inconclusive, i.e. neither. Only 'rejected' and 'equivalent' are conclusions. "Not rejected" is never interpreted as "structurally equivalent".
 
 ## References
 

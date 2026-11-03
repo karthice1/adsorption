@@ -77,8 +77,8 @@ CASSIA 0.3.6 is organised in six layers (Table 1). Analyses are run by scripts t
 
 | Script | Outputs |
 |---|---|
-| `scripts/run_v2.py --stage all` | `results/v2/`: chemistry (Tables S2–S4), mechanism benchmark (Table 4, Fig. 2), ML validation (Table 6, Fig. 4), interval methods M0–M2 (Table 7, Table S5), treatment design (Table 8), missing chemistry (Fig. 8), Fig. 1 |
-| `scripts/run_v3.py --stage chem3 … seqver` | `results/v3/`: electrolyte sensitivity (Table S10), identifiability and equivalence tests (Table 5, Table S8), M2s single fixed-seed realisation (Table 7b, last column), ML across scenarios (Table S6), censoring (Table S7), learning curve, sequential verification (Table 8b) |
+| `scripts/run_v2.py --stage all` | `results/v2/`: chemistry (Tables S2–S4), mechanism benchmark (Table 4, Fig. 2), ML validation (Table 6, Fig. 4), interval methods M0–M2 (Table 7, Table S5), treatment design (Table 8), missing chemistry (Fig. S2), Fig. 1 |
+| `scripts/run_v3.py --stage chem3 … seqver` | `results/v3/`: electrolyte sensitivity (Table S10), identifiability and equivalence tests (Table 5, Table S8), M2s single fixed-seed realisation (Table 7b, last column), ML across scenarios (Table S6), censoring (Table S7), learning curve, sequential verification (Table S15) |
 | `scripts/run_v3.py --stage figures` | Figs. 3, 5, 6, 7 (must run after `run_v2.py`, whose older versions of these files it replaces) |
 | `scripts/typeI_validation.py` | independent negative-control cohort; type-I errors with Wilson intervals (Table S14) |
 | `scripts/typeI_corpus.py` | corpus-level type-I analysis: corpus-level split conformal, heterogeneity, calibration-set sensitivity (Table S14b) |
@@ -245,10 +245,10 @@ Four complementary analyses were applied.
    - a one-sided z-test that dissolved Cr(III) = Σ(C_e,tot − C_e,VI) exceeds analytical noise (B);
    - XPS Cr(III) fraction > 0.20 (A1, XPS);
    - XANES Cr(III) fraction > 0.10 (A1, XANES).
-3. **Adsorption-only goodness of fit and equivalence (Appendix B).**
+3. **Adsorption-only goodness of fit and equivalence (Supplementary Note S1).**
    - *Model and controls.* A flexible empirical adsorption-only model was fitted to each design's observations by weighted least squares: a pH-dependent Sips equilibrium, a free kinetic curve, study bias, pH relaxation and, for A1/A2, a bounded measurement-induced apparent Cr(III) fraction. Every study was paired with a negative control: the same material with reduction switched off. Both arms were run at 3% and 10% analytical noise.
    - *Three outcomes per study.*
-     - **rejected**, when χ² exceeds a threshold calibrated on negative controls. The threshold is the ⌈0.95(n + 1)⌉-th smallest χ² of the n = 360 controls of 18 independent corpora, pooled over studies: the 120 paired controls and 240 further controls in 12 new corpora (`scripts/typeI_validation.py`). Studies within a corpus share redrawn family hyper-priors, so the corpus, not the study, is the unit that can be assumed exchangeable. The study-pooled threshold therefore carries no finite-sample guarantee for a study from a new corpus; its type-I error is reported as an *empirical* property of the simulator, evaluated leave-one-corpus-out with a corpus-cluster bootstrap interval and with the largest per-corpus rate. A corpus-level split-conformal threshold, which does carry a guarantee, was evaluated alongside it (Appendix B; Table S14b; `scripts/typeI_corpus.py`);
+     - **rejected**, when χ² exceeds a threshold calibrated on negative controls. The threshold is the ⌈0.95(n + 1)⌉-th smallest χ² of the n = 360 controls of 18 independent corpora, pooled over studies: the 120 paired controls and 240 further controls in 12 new corpora (`scripts/typeI_validation.py`). Studies within a corpus share redrawn family hyper-priors, so the corpus, not the study, is the unit that can be assumed exchangeable. The study-pooled threshold therefore carries no finite-sample guarantee for a study from a new corpus; its type-I error is reported as an *empirical* property of the simulator, evaluated leave-one-corpus-out with a corpus-cluster bootstrap interval and with the largest per-corpus rate. A corpus-level split-conformal threshold, which does carry a guarantee, was evaluated alongside it (Supplementary Note S1; Table S14b; `scripts/typeI_corpus.py`);
      - **equivalent within ε**, when a noncentral-χ² equivalence test, the goodness-of-fit analogue of two one-sided tests (Schuirmann, 1987; Wellek, 2010), shows that the misfit non-centrality is below a margin λ₀(ε). The margin corresponds to a systematic discrepancy of ε = 5, 10 or 20% in every concentration (0.05 absolute for oxidation-state fractions);
      - **inconclusive**, otherwise.
    - *Terminology.* "Not rejected" is never interpreted as "equivalent".
@@ -352,11 +352,7 @@ Only M2s carries a proven study-level guarantee. The coverage of M0–M2 for uns
 
 ### 2.10 Propagation of unreported chemistry
 
-**Prediction level.** For studies that did not report ionic strength or final pH, 1,000 scenarios were drawn: I log-uniform on 10⁻³–10⁻¹ M and a pH-basis ambiguity uniform on ±0.5. They were propagated through the speciation features, the q_app,VI predictions and the M1 intervals. For each observation the following were recorded: the 90% range of f(HCrO₄⁻), the spread of the point prediction, and the union interval width against the nominal width. Grouped 5-fold models were used on four corpora.
-
-**Design level.** For six new materials per corpus, the designer's assumed I was drawn 300 times from the same range, while the true I was 0.01 M. The point + verify design was re-run for each draw (confirmatory batches at the true conditions), and the true outcome of each accepted design was simulated. This gives distributions of recommended dose, residual total Cr and compliance probability.
-
-**Mechanistic level.** The first-order bias in the inferred reduction share is given by the identifiability engine (Section 2.6).
+For studies that did not report ionic strength or final pH, an unknown ionic strength (log-uniform, 10⁻³–10⁻¹ M) and an unknown pH basis (uniform, ±0.5) were propagated at three levels: through the speciation features, predictions and M1 intervals (1,000 draws per observation); through the point + verify design (300 draws per new material, confirmatory batches at the true conditions); and, as a first-order bias in the inferred reduction share, through the identifiability engine (§2.6). Details are in Supplementary Note S2.
 
 ### 2.11 Literature-data protocol and seed dataset
 

@@ -7,6 +7,8 @@
   number of corpora behind each family-conditional bootstrap interval (`family_*_ncorpora`; 9 for hydrochar on the
   total-Cr endpoints); Table S5b/S5c captions say which corpora are resampled.
 - Interval widths are stated on the log10(y + c) modelling scale (Section 3.5, Tables 7, 7b, S5b, S5d).
+- Shortened for a computational-methodology journal: Appendix B -> Supplementary Note S1; full Sections 2.10/3.7 and
+  former Fig. 8 -> Note S2 (Fig. S2); sequential-verification details and former Table 8b -> Note S3 (Table S15).
 
 ## 0.3.5 (2026-11-02) - seventh revision
 - M2s: the reported evaluation is now the random role assignment of Appendix A (`scripts/m2s_exchangeability.py`,

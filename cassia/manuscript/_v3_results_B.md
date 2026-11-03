@@ -89,33 +89,7 @@ Table 7 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 - It found compliant designs for 62% (S1) and 54% (S2) of attainable materials, after a mean of 1.4–1.5 rounds.
 - The median dose was twice the true minimum dose, which is the price of escalating on a coarse dose grid.
 
-**Verification is a sequential decision, so its false-acceptance risk was evaluated explicitly (Table 8b, Fig. 7b,c).**
-- *Simulation.* An independent cohort of 300 new materials per target was drawn from the same hyper-priors as the design cohort (20 training corpora × 15 materials; the material draws differ from those of the design stage). For every material, target and rule, 1,000 verification sequences were simulated, with up to four dose rounds and both endpoints measured each round. Each sequence drew a calibration bias and correlated replicate errors.
-- *Per material.* The probability of accepting a non-compliant design was:
-  - simple rule (duplicates, mean ≤ 90% of each limit): mean 0.01% across materials, worst material 1.4–1.7%;
-  - error-controlled rule (triplicates, one-sided upper confidence bound ≤ limit, Bonferroni over two endpoints and four rounds): worst material 0.1–0.7%.
-- *Overall.* No material exceeded 5% under either rule, with shared or independent calibration bias. The controlled rule needed about 50% more batches per material (4.7 against 3.1 for S1; 4.0 against 2.6 for S2).
-- *Operating characteristic.* Because these averages depend on how close true concentrations sit to the limits, Table 8b gives the acceptance probability over four rounds for a design whose true concentrations stay at a fixed ratio to both limits:
-
-| True concentration / limit | Simple rule | Error-controlled rule |
-|---|---|---|
-| 1.00 (at the limit) | 3.7% | 0.8% |
-| 1.05 | 0.2% | 0.04% |
-| 0.90 (truly compliant) | 59% | 37% |
-
-  Both figures assume shared calibration bias. The controlled rule is about five times safer at the limit and less likely to accept compliant designs close to the limit.
-- *Scope.* These are properties under the assumed analytical-error model (3% random, 5% calibration uncertainty), not guarantees for real laboratories.
-
-**Table 8b.** Sequential verification: probability of accepting a non-compliant design (1,000 simulated sequences per material; 300 materials per target).
-
-| Target | Rule | Bias model | Mean P(false acceptance) | Worst material | Materials > 5% | Mean batches |
-|---|---|---|---|---|---|---|
-| S1 | simple (n = 2, mean ≤ 0.9·limit) | shared | 0.0001 | 0.014 | 0 | 3.1 |
-| S1 | controlled (n = 3, UCB ≤ limit) | shared | 0.0000 | 0.001 | 0 | 4.7 |
-| S2 | simple | shared | 0.0001 | 0.015 | 0 | 2.6 |
-| S2 | controlled | shared | 0.0000 | 0.007 | 0 | 4.0 |
-| S1 | simple | independent | 0.0001 | 0.015 | 0 | 3.1 |
-| S1 | controlled | independent | 0.0000 | 0.002 | 0 | 4.7 |
+**Verification is a sequential decision, so its false-acceptance risk was evaluated explicitly (Fig. 7b,c; Table S15; Supplementary Note S3).** In an independent cohort of 300 new materials per target, the probability of accepting a non-compliant design was at most 1.4–1.7% for any material with the simple rule (duplicates, mean ≤ 90% of each limit) and 0.1–0.7% with the error-controlled rule (triplicates, one-sided upper confidence bound ≤ limit, Bonferroni over two endpoints and four rounds). No material exceeded 5% under either rule, and the controlled rule needed about 50% more batches. For a design whose true concentrations sit at the limit, the acceptance probability over four rounds was 3.7% (simple) and 0.8% (controlled). These are properties under the assumed analytical-error model (3% random, 5% calibration uncertainty), not guarantees for real laboratories.
 
 **Table 8c.** Accepted designs and unsafe acceptances by rule, with explicit denominators (synthetic; 300 materials per target in each cohort). Design cohort: one realised sequence per material; verification cohort: expected numbers over 1,000 sequences per material (shared calibration bias).
 
@@ -135,16 +109,7 @@ The error-controlled rule accepted almost as many designs as the simple rule (81
 - They were sensitive to lower pH: compliance fell to 81% at −0.25 and 62% at −0.5 pH units, because dissolved Cr(III) release rises as pH falls.
 - A 20% dose reduction gave 83% compliance.
 
-**Out-of-study accuracy of the endpoint models (Table S13).** The design layer uses four RF models: Cr(VI) and total Cr, as uptake and as effluent concentration. The total-Cr models are trained only on rows with a total-Cr measurement, from about 18 Class A/B studies per corpus. Under leave-one-study-out (10 corpora), the R² on the log scale was:
-
-| Endpoint | LOSO R² (log₁₀) | Random-split R² (log₁₀) | LOSO RMSE (log₁₀) |
-|---|---|---|---|
-| C_e,VI | 0.74 ± 0.06 | 0.94 | 0.49 |
-| C_e,tot | 0.65 ± 0.09 | 0.91 | 0.37 |
-| q_app,VI | 0.39 ± 0.16 | 0.77 | 0.51 |
-| q_tot,aq | 0.42 ± 0.17 | 0.75 | 0.52 |
-
-R² on the log scale weights low concentrations, which matter for compliance, more than the linear-scale R² of Table 6 (linear-scale LOSO R² here: 0.87, 0.85, 0.56 and 0.52). The total-Cr models are less accurate than the Cr(VI) models, as expected from fewer training studies, and both lose about 0.2–0.4 in R² between random and study-level validation. Their study-level intervals are reported in Table 7.
+**Out-of-study accuracy of the endpoint models (Table S13).** The design layer uses four RF models: Cr(VI) and total Cr, as uptake and as effluent concentration; the total-Cr models are trained only on the about 18 Class A/B studies per corpus that report total Cr. Under leave-one-study-out, R² on the log₁₀ scale was 0.74 and 0.65 for the Cr(VI) and total-Cr effluent concentrations and 0.39–0.42 for the two uptakes, against 0.75–0.94 under random splits.
 
 **Effluent predictions.** Predicted and true effluent concentrations on a design sub-grid were rank-correlated (Spearman 0.65 for Cr(VI), 0.55 for total Cr), with median absolute errors of 0.40 and 0.22 log₁₀ units. The 95% upper bounds held for 97.9% (Cr(VI)) and 100% (total Cr) of grid points.
 
@@ -169,25 +134,7 @@ R² on the log scale weights low concentrations, which matter for compliance, mo
 
 ### 3.7 Propagation of unreported chemistry
 
-**Prediction level.** Unknown ionic strength (10⁻³–10⁻¹ M) and an unknown pH basis (±0.5) were propagated with 1,000 draws per observation for 462 pH-edge observations from studies that did not report them.
-- The 90% range of f(HCrO₄⁻) was 0.035 at pH ≤ 3.5, 0.045 at pH 3.5–5, 0.24 at pH 5–6.5 and 0.08 at pH 6.5–8.5.
-- The resulting spread of the point prediction was 0.08–0.14 log₁₀ units, small compared with the study-level interval width (1.18–1.28 log₁₀ units).
-- The union of the M1 intervals over all scenarios was 6–14% wider than the nominal interval.
-
-**Design level.** Twenty-four new materials were each re-designed 300 times with the test-confirmed protocol, under different assumed ionic strengths.
-- An unknown ionic strength changed the accepted dose for 3 of the 10 materials with accepted designs (e.g. 4–8 g L⁻¹).
-- It never produced a non-compliant accepted design, because the confirmatory batches are run at the true conditions.
-- The 95th percentile of true residual total Cr at the accepted designs was 0.08–1.38 mg L⁻¹ across materials, below the 2 mg L⁻¹ limit.
-
-**Capacity level.** A conventional isotherm fit uses neither ionic strength nor the pH basis, so unreported solution chemistry does not change the fitted q_max itself. It changes what q_max means: the inferred reduction share and the speciation-based affinity (mechanistic level below).
-
-**Mechanistic level.** Unreported pH matters more than unreported ionic strength (§3.3): a 0.5-unit pH error biased the inferred reduction share by up to 0.16 (90th percentile).
-
-**Conclusion.** For prediction and design, missing solution chemistry is a second-order uncertainty compared with between-study heterogeneity. For mechanistic interpretation, a missing pH basis is first-order.
-
-![Fig. 8](figures/fig7_missing_chemistry.png)
-
-**Fig. 8.** Propagation of unreported ionic strength and pH basis (1,000 draws per observation; synthetic studies). (a) 90% range of f(HCrO₄⁻). (b) Width of the nominal M1 interval, of its union over scenarios, and spread of the point prediction (log₁₀). (c) Accepted dose under unknown ionic strength for each new material (box over 300 draws; numbers: compliance probability).
+For 462 pH-edge observations from studies that did not report ionic strength or pH basis, the spread of the point prediction was 0.08–0.14 log₁₀ units, small compared with the study-level interval width (1.18–1.28 log₁₀ units), and the union of the M1 intervals over all scenarios was 6–14% wider than the nominal interval. An unknown ionic strength changed the accepted dose for 3 of the 10 materials with accepted designs but never produced a non-compliant accepted design, because the confirmatory batches are run at the true conditions. A 0.5-unit pH-basis error biased the inferred reduction share by up to 0.16 (90th percentile; §3.3). For prediction and design, missing solution chemistry is therefore a second-order uncertainty compared with between-study heterogeneity; for mechanistic interpretation, a missing pH basis is first-order (Supplementary Note S2, Fig. S2).
 
 ### 3.8 Empirical application: status
 
