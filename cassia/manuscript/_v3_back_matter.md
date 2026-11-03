@@ -1,8 +1,8 @@
 ## Data and code availability
 
-**Location.** All code, the three PHREEQC databases (with checksums and provenance), the virtual corpora, the result tables and the figure scripts are in the `cassia/` directory of the repository `karthice1/adsorption` (CASSIA 0.3.6). The repository root contains the `adsorption` equation package on which CASSIA depends.
+**Location.** All code, the three PHREEQC databases (with checksums and provenance), the virtual corpora, the result tables and the figure scripts are in the `cassia/` directory of the repository `karthice1/adsorption` (CASSIA 0.3.7). The repository root contains the `adsorption` equation package on which CASSIA depends.
 
-**Fixed snapshot.** The code commit is `[COMMIT]`. A source archive of this commit (`git archive`, repository root) accompanies the submission for review. Its content is identified by `release/MANIFEST.sha256` (SHA-256 checksums of every code, database, data, result and figure file; verify with `sha256sum -c release/MANIFEST.sha256` in `cassia/`). `release/RELEASE.md` records the commit, the environment (`requirements-lock.txt`; CPython 3.13.18, with package versions identical to the CPython 3.13.17 environment of earlier analyses), the test log (`release/test_log.txt`), the coverage report (`results/coverage_report.txt`) and the list of expected output tables.
+**Fixed snapshot.** The code commit is `[COMMIT]`. The source archive that accompanies the submission (`git archive`, repository root) is taken from the commit that follows it and adds only the rebuilt documents; its file name gives both commits (`cassia-<version>-source-code<code commit>-docs<documents commit>.tar.gz`). All code, data, result and figure files in it are those of the code commit, as the manifest verifies. Its content is identified by `release/MANIFEST.sha256` (SHA-256 checksums of every code, database, data, result and figure file; verify with `sha256sum -c release/MANIFEST.sha256` in `cassia/`). `release/RELEASE.md` records the commit, the environment (`requirements-lock.txt`; CPython 3.13.18, with package versions identical to the CPython 3.13.17 environment of earlier analyses), the test log (`release/test_log.txt`), the coverage report (`results/coverage_report.txt`) and the list of expected output tables.
 
 **Reproduction.** From the repository root:
 
@@ -16,13 +16,21 @@ bash scripts/reproduce_all.sh          # every table, figure and number, in depe
 
 `scripts/reproduce_all.sh` runs the scripts of Table 2 in order. It does not require git metadata: in a source archive it takes the commit from its first argument, from the environment variable `CASSIA_COMMIT` or from `release/RELEASE.md`, and it stops before any computation if none is available. Each line can be run on its own; the outputs of each script are listed in Table 2 and in the Supplementary Material.
 
-A tagged GitHub release (`cassia-v0.3.6`) of this commit, archived in Zenodo, will provide the permanent DOI. The tag and archive must be created by the author from the repository account; they could not be created from the computational environment. Until then, the commit hash, the source archive and the manifest identify the content unambiguously.
+**Reproduction status.** What has been run:
+- for this version, the 42 unit tests, on CPython 3.13.18 with the package versions of `requirements-lock.txt` (`release/test_log.txt`);
+- every script of Table 2, stage by stage, to produce the reported results;
+- in version 0.3.5, from a clean copy of the source tree, the faster stages (`typeI_corpus.py`, `seqver_oc.py`, `bench_partition.py`, `m2s_family.py`, `verification_table.py`, `make_table_s1.py`, the summary stage of `typeI_validation.py` and the supplement generator); all regenerated result tables were byte-identical to the committed ones, and those results have not changed since;
+- the role-randomised M2s evaluation (`m2s_exchangeability.py`), in full in version 0.3.5, and its summary stage again for this version.
+
+A single uninterrupted run of `reproduce_all.sh` from the source archive, with a complete execution log, has not yet been completed. It is required before publication; if any output differs from the reported values, the manuscript will be corrected.
+
+A tagged GitHub release (`cassia-v0.3.7`) of this commit, archived in Zenodo, will provide the permanent DOI. The tag and archive must be created by the author from the repository account; they could not be created from the computational environment. Until then, the commit hash, the source archive and the manifest identify the content unambiguously.
 
 **Data templates.** The master-dataset template, schema, study registry, search log and PRISMA flow templates are in `cassia/data/`.
 
 **Third-party files.** The PHREEQC databases are distributed with USGS PHREEQC, a U.S. Government work in the public domain, and are included unmodified.
 
-**Software versions.** CASSIA 0.3.6; phreeqpython 1.6.2 (Vitens); PHREEQC databases minteq.v4.dat, minteq.dat and llnl.dat (revisions in Table S2); adsorption 0.1.0 (Amvro23); pyGAPS 4.3.1.dev693; NumPy 2.5.3; SciPy 1.18.1; pandas 3.0.5; scikit-learn 1.9.1; XGBoost 3.4.1; matplotlib 3.11.2; CPython 3.13.18 for the tests and the analyses added in this version, 3.13.17 for the earlier analyses.
+**Software versions.** CASSIA 0.3.7; phreeqpython 1.6.2 (Vitens); PHREEQC databases minteq.v4.dat, minteq.dat and llnl.dat (revisions in Table S2); adsorption 0.1.0 (Amvro23); pyGAPS 4.3.1.dev693; NumPy 2.5.3; SciPy 1.18.1; pandas 3.0.5; scikit-learn 1.9.1; XGBoost 3.4.1; matplotlib 3.11.2; CPython 3.13.18 for the tests and the analyses added in this version, 3.13.17 for the earlier analyses.
 
 No experimental data were generated, and no published experimental data were analysed, in this study.
 

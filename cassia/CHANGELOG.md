@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.7 (2026-11-03) - ninth revision
+- Table S5c: the family-conditional cluster bootstrap now recomputes the pooled rate (the reported point estimate) in
+  each resample, as Table S5b does; the estimand is defined in the caption, and the equal-corpus mean is written to the
+  CSV for comparison (differs by at most 0.024).
+- Reproducibility wording (Section 2.2, Section 2.12, Data availability) states which stages were rerun and that a
+  single uninterrupted `reproduce_all.sh` run from the archive is still outstanding; archive naming gives the code
+  and documents commits.
+- Word tables: rows no longer split across pages.
+
 ## 0.3.6 (2026-11-03) - eighth revision
 - Abstract and Conclusions: the M2s guarantee is stated as a finite-corpus randomisation guarantee for a randomly
   held-out study of the same realised corpus, not for a study from an independent literature population.

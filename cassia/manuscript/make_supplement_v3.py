@@ -14,7 +14,7 @@ INTRO = """All results in this supplement are synthetic (known-truth simulations
 
 | Tables | Generating script | CSV files |
 |---|---|---|
-| S1 | `scripts/make_table_s1.py` (from `cassia.simulate.parameter_table()`, CASSIA 0.3.6) | `results/v3/T_S1_simulator_parameters.csv` |
+| S1 | `scripts/make_table_s1.py` (from `cassia.simulate.parameter_table()`, CASSIA 0.3.7) | `results/v3/T_S1_simulator_parameters.csv` |
 | S2–S5 | `scripts/run_v2.py` | `results/v2/` |
 | S5b | `scripts/m2s_family.py` (from `run_v3.py` stage m2s) | `results/v3/T_m2s_family_full.csv` |
 | S5c | `scripts/m2s_exchangeability.py` | `results/v3/T_m2s_exchangeability.csv` |
@@ -37,7 +37,7 @@ base = re.sub(r"^Tables S1.*$|^All tables are generated.*$", "@@INTRO@@", base, 
 base = base.replace("@@INTRO@@", INTRO)
 
 t1 = pd.read_csv(R + "T_S1_simulator_parameters.csv")
-s1 = ("## Table S1. Simulator parameters, distributions, measurement models, evidence-class probabilities and numerical settings (CASSIA 0.3.6)\n\n"
+s1 = ("## Table S1. Simulator parameters, distributions, measurement models, evidence-class probabilities and numerical settings (CASSIA 0.3.7)\n\n"
       "Generated from the implementation by `scripts/make_table_s1.py`; a unit test checks that the evidence-class probabilities and "
       "measurement-model constants in this table are those used by the code. LN(m, s): log-normal with log-mean m and log-SD s; "
       "U(a, b): uniform; N(0, s): normal.\n\n" + md(t1) + "\n\n")
@@ -63,8 +63,9 @@ s5b = ("## Table S5b. M2s (exact study-level split conformal) by material family
 import os
 if os.path.exists(R + "T_m2s_exchangeability.csv"):
     X = pd.read_csv(R + "T_m2s_exchangeability.csv")
+    eqdiff = max(abs(X[c[:-len("_equal_corpus_mean")]] - X[c]).max() for c in X.columns if c.endswith("_equal_corpus_mean"))
     famcols = [c for c in X.columns if c.startswith("family_") and c not in ("family_min", "family_max")
-               and not c.endswith(("_lo", "_hi", "_ncorpora"))]
+               and not c.endswith(("_lo", "_hi", "_ncorpora", "_equal_corpus_mean"))]
     for c in famcols:
         if c + "_lo" in X.columns:
             nc = X[c + "_ncorpora"] if c + "_ncorpora" in X.columns else [None] * len(X)
@@ -83,8 +84,13 @@ if os.path.exists(R + "T_m2s_exchangeability.csv"):
             "studies are the studies of the same corpus not used for model fitting, with every one of them taken as test in turn; this is "
             "the role assignment under which Appendix A proves coverage ≥ 0.90 for a randomly selected held-out study of the same realised "
             "corpus, and the enumerated rate equals k/(J + 1) by construction. Family columns: the same rate conditional on the test "
-            "study's family, which the theorem does not cover, with a corpus-cluster percentile bootstrap 95% interval and the number "
-            "of contributing corpora in parentheses (4,000 resamples). Only corpora that contain test studies of the family contribute, "
+            "study's family, which the theorem does not cover. Estimand: the coverage probability of a test-study role drawn at random "
+            "from all role assignments of that family, pooled over corpora, so that each corpus is weighted by the number of role "
+            "assignments it contributes; the point estimate is this pooled rate. In parentheses: a corpus-cluster percentile bootstrap "
+            "95% interval for the same pooled estimator (corpora resampled with replacement and the pooled rate recomputed in each of "
+            "4,000 resamples, as in Table S5b) and the number of contributing corpora. The alternative estimand, the unweighted mean of "
+            "the per-corpus rates, differs from the pooled rate by at most " + f"{eqdiff:.3f}" + " (column family_<family>_equal_corpus_mean "
+            "of the CSV file). Only corpora that contain test studies of the family contribute, "
             "and these are the clusters resampled: 10 for every family and endpoint except hydrochar on the two total-Cr endpoints, "
             "where 9 corpora have hydrochar studies with total-Cr data (total Cr is measured only in Class A/B studies). With 9–10 "
             "clusters the bootstrap intervals are themselves imprecise. New corpus: model and calibration from one corpus, test studies from the next "

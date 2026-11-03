@@ -94,7 +94,7 @@ function table(lines) {
     columnWidths: widths,
     borders: { top: rule, bottom: rule, left: none, right: none, insideHorizontal: none, insideVertical: none },
     rows: rows.map((r, i) => new TableRow({
-      tableHeader: i === 0,
+      tableHeader: i === 0, cantSplit: true,
       children: r.map((c, j) => new TableCell({
         width: { size: widths[j], type: WidthType.DXA },
         borders: i === 0 ? { bottom: rule, top: rule } : i === rows.length - 1 ? { bottom: rule } : {},

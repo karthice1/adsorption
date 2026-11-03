@@ -1,6 +1,6 @@
 """Write release/ files that identify and verify a CASSIA release.
 
-    python scripts/make_release_manifest.py 0.3.6
+    python scripts/make_release_manifest.py 0.3.7
 
 The code commit is taken from CASSIA_COMMIT if set, otherwise from `git rev-parse HEAD`; without either
 (e.g. in a source archive) it is recorded as unknown.
@@ -20,7 +20,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 REL = ROOT / "release"
 REL.mkdir(exist_ok=True)
-version = sys.argv[1] if len(sys.argv) > 1 else "0.3.6"
+version = sys.argv[1] if len(sys.argv) > 1 else "0.3.7"
 include = ["cassia", "scripts", "tests", "examples", "data", "databases", "results/v2", "results/v3",
            "manuscript/figures", "pyproject.toml", "requirements-lock.txt", "LICENSE", "CITATION.cff", "README.md", "CHANGELOG.md"]
 files = []
@@ -47,6 +47,7 @@ tables = sorted(str(f.relative_to(ROOT)) for f in files if f.suffix in (".csv", 
 - Content identity: `release/MANIFEST.sha256` ({len(lines)} files); verify with `sha256sum -c release/MANIFEST.sha256`
 - Environment: `requirements-lock.txt` (CPython 3.13.18; package versions identical to the 3.13.17 environment of earlier releases); PHREEQC databases with checksums and provenance in `databases/`
 - Tests: `release/test_log.txt`; coverage: `results/coverage_report.txt`
+- Review source archive: `git archive` (repository root) of the next commit, which adds this file and the rebuilt documents only; named `cassia-{version}-source-code<code commit>-docs<documents commit>.tar.gz`. Its code, data, result and figure files are those of the code commit above (verify with the manifest)
 - Permanent archive: to be created by the author (GitHub release `cassia-v{version}` + Zenodo DOI); not available from the build environment
 
 ## Reproduce

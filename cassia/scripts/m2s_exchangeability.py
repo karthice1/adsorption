@@ -96,9 +96,16 @@ def work(k):
     return out
 
 
-def cluster_ci(per_corpus, B=4000, seed=11):
-    v = np.asarray(per_corpus, float); rng = np.random.default_rng(seed)
-    bs = v[rng.integers(0, len(v), (B, len(v)))].mean(1)
+def cluster_ci(hits, sizes, B=4000, seed=11):
+    """Corpus-cluster percentile bootstrap of the POOLED rate sum(hits)/sum(sizes).
+
+    The estimand is the coverage probability of a test-study role drawn at random from the pooled role assignments of
+    the family (each corpus weighted by the number of role assignments it contributes), i.e. the same estimator as the
+    reported point estimate; each bootstrap sample resamples corpora with replacement and recomputes that pooled ratio
+    (as in scripts/m2s_family.py)."""
+    k, n = np.asarray(hits, float), np.asarray(sizes, float); rng = np.random.default_rng(seed)
+    idx = rng.integers(0, len(k), (B, len(k)))
+    bs = k[idx].sum(1) / n[idx].sum(1)
     return float(np.quantile(bs, 0.025)), float(np.quantile(bs, 0.975))
 
 
@@ -133,10 +140,11 @@ def summarise(U):
                "within_rate": w.ok.mean(), "within_min_corpus": pc.min(), "within_max_corpus": pc.max(),
                "new_corpus_rate": n.ok.mean(), "new_corpus_min_corpus": n.groupby("corpus").ok.mean().min()}
         for f, h in w.groupby("family"):
-            pcf = h.groupby("corpus").ok.mean()   # only corpora with test studies of this family contribute
-            lo, hi = cluster_ci(pcf.values)
+            pcf = h.groupby("corpus").ok.agg(["sum", "size"])   # only corpora with test studies of this family contribute
+            lo, hi = cluster_ci(pcf["sum"].values, pcf["size"].values)
             rec[f"family_{f}"] = h.ok.mean(); rec[f"family_{f}_lo"] = lo; rec[f"family_{f}_hi"] = hi
             rec[f"family_{f}_ncorpora"] = int(len(pcf))
+            rec[f"family_{f}_equal_corpus_mean"] = float((pcf["sum"] / pcf["size"]).mean())   # alternative estimand, reported for comparison
         fr = w.groupby("family").ok.mean()
         rec["family_min"], rec["family_max"] = fr.min(), fr.max()
         rows.append(rec)
