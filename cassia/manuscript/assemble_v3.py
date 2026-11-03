@@ -14,7 +14,7 @@ tail = open("_v3_back_matter.md").read().strip()
 HL = ["Known-truth benchmark: Cr(VI)-only data were often adsorption-equivalent within 10%",
       "Total-Cr and solid-phase data gave 80–98% rejection power in simulated studies",
       "Average type-I error was about 5%, with higher rates in some individual corpora",
-      "Exact study-level coverage is marginal, not per family; intervals are often too wide",
+      "Exact coverage is marginal within one corpus, not per family; intervals are too wide",
       "No unsafe accepted designs were observed in the simulated test cohorts"]
 assert all(len(h) <= 85 for h in HL), [len(h) for h in HL]
 
@@ -25,13 +25,13 @@ AB = ("This methodological study uses known-truth simulations to establish what 
       "identify. Three PHREEQC databases agreed on Cr(VI) speciation within 0.044 but differed by 63–83 mV in the Cr(VI)/Cr(III) "
       "boundary. Across five simulated mechanisms, adsorption-only was not rejected for 65–78% of high-reduction studies "
       "observed through residual Cr(VI) alone, and a noncentral-χ² equivalence test showed it equivalent within a 10% margin for "
-      "43–73%. With a threshold empirically calibrated on 360 negative-control studies from 18 corpora, the rejection test had power of "
-      "80–88% with total Cr and 92–98% with XPS or XANES; its type-I error averaged about 5% (4.7–5.6%) over held-out corpora, "
+      "43–73%. With a threshold calibrated empirically on 360 simulated negative controls, the rejection test had power of "
+      "80–88% with total Cr and 92–98% with XPS or XANES; type-I error averaged 4.7–5.6% over held-out corpora, "
       "reaching 15–25% in some individual corpora: an empirical average, not a guarantee. Random cross-validation overstated transferability (random-forest R² 0.86–0.89 versus 0.48–0.65 "
-      "leave-one-study-out). Observed coverage of an exact study-level split-conformal interval agreed with its guarantee, marginal over studies; the 90% interval "
-      "for apparent Cr(VI) uptake spanned 3.5 log₁₀ units; total-chromium intervals were often "
-      "unbounded with literature-scale calibration samples. With sequential confirmatory testing, no unsafe accepted design was observed in the simulated cohorts "
-      "(Wilson 95% upper bound 1.3% of materials, 3.5–3.8% of accepted designs). No published experimental data were analysed; the "
+      "leave-one-study-out). Under random role assignment, an exact study-level split-conformal interval guarantees coverage only for a randomly held-out study "
+      "of the same realised corpus, not for independent literature; its 90% interval for apparent Cr(VI) uptake spanned 3.5 log₁₀(y + c) units, "
+      "and total-Cr intervals were often unbounded. With sequential confirmatory testing, no unsafe accepted design was observed in the simulated cohorts "
+      "(Wilson 95% upper bound 1.3% of materials). No published experimental data were analysed; the "
       "framework is benchmarked, not experimentally validated.")
 
 front = front.replace("<!--HIGHLIGHTS-->", "\n".join("- " + h for h in HL)).replace("<!--ABSTRACT-->", AB)

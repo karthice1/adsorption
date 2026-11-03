@@ -1,6 +1,6 @@
 """Write release/ files that identify and verify a CASSIA release.
 
-    python scripts/make_release_manifest.py 0.3.5
+    python scripts/make_release_manifest.py 0.3.6
 
 The code commit is taken from CASSIA_COMMIT if set, otherwise from `git rev-parse HEAD`; without either
 (e.g. in a source archive) it is recorded as unknown.
@@ -20,7 +20,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 REL = ROOT / "release"
 REL.mkdir(exist_ok=True)
-version = sys.argv[1] if len(sys.argv) > 1 else "0.3.5"
+version = sys.argv[1] if len(sys.argv) > 1 else "0.3.6"
 include = ["cassia", "scripts", "tests", "examples", "data", "databases", "results/v2", "results/v3",
            "manuscript/figures", "pyproject.toml", "requirements-lock.txt", "LICENSE", "CITATION.cff", "README.md", "CHANGELOG.md"]
 files = []

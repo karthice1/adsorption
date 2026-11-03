@@ -25,7 +25,7 @@ In words: with probability at least $1-\alpha$, at least $\lceil\beta n_{J+1}\rc
 3. On the event $s_{J+1}\le\hat q$, by the definition of $s_{J+1}$ as an order statistic, at least $\lceil\beta n_{J+1}\rceil$ residuals of the test study are $\le s_{J+1}\le\hat q$.
 4. The upper bound follows from the uniform rank when the scores are distinct. ∎
 
-In this paper the test study is a randomly selected held-out study from the same realised corpus, and the probability is over the random assignment of roles, marginally over the study's material family and study size (next paragraph). The theorem says nothing about a genuinely new study drawn from an independent literature population.
+In this paper the test study is a randomly selected held-out study from the same realised corpus, and the probability is over the random assignment of roles, marginally over the study's material family and study size (next paragraph). It is a finite-corpus randomisation guarantee, not a conventional distribution-free guarantee for future experimental studies: the theorem says nothing about a genuinely new study drawn from an independent literature population.
 
 **Exchangeability under the simulator design.**
 - *Design.* A corpus has 30 studies. Material families are assigned in a fixed rotation (study $i$ has family $i$ mod 6, five studies per family); they are not randomised. The family hyper-priors are drawn once per corpus and shared by all its studies; materials and study conditions are then drawn independently per study. Studies of different families are therefore not identically distributed, and studies of one corpus are dependent through the shared hyper-priors. For a total-Cr endpoint the corpus is restricted to the $N$ studies that report total Cr.

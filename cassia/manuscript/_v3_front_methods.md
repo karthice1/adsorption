@@ -59,7 +59,7 @@ Negative apparent uptake (C_e,VI > C₀ within analytical error) is retained in 
 
 ### 2.2 Software architecture and release
 
-CASSIA 0.3.5 is organised in six layers (Table 1). Analyses are run by scripts that are listed, with their outputs, in Table 2.
+CASSIA 0.3.6 is organised in six layers (Table 1). Analyses are run by scripts that are listed, with their outputs, in Table 2.
 
 **Table 1.** CASSIA layers, modules and responsibilities.
 

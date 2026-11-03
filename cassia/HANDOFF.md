@@ -19,7 +19,7 @@ Handoff date: 2026-11-01. This file is the complete state of the work done in th
   - study-level conformal prediction;
   - two-endpoint treatment design with sequential verification.
 - **No experiments and no empirical data.** No laboratory experiments were done, and **no published experimental data have been analysed yet**. The paper is positioned as a *methodological, known-truth benchmark*.
-- **Review history.** The manuscript has been through seven reviewer rounds; the current software is **CASSIA 0.3.5** (seventh revision, 2026-11-02; branch `claude/project-thread-2l93r3`).
+- **Review history.** The manuscript has been through eight reviewer rounds; the current software is **CASSIA 0.3.6** (eighth revision, 2026-11-03; branch `claude/project-thread-2l93r3`).
 
 ## 2. Where everything is
 
@@ -70,7 +70,7 @@ If you would rather keep the work in a new folder or repository, copy the whole 
 
 As an alternative to git, unpack `cassia/manuscript/cassia-0.3.2-source-8f60859.tar.gz`. It is a `git archive` of commit `8f60859` and was sent to you in the chat; it is not stored in the repository.
 
-### 3.2 Python environment (Python 3.10+; the cloud used 3.13.17)
+### 3.2 Python environment (Python 3.10+; the cloud used 3.13.18; package versions as in the lock file)
 
 ```bash
 python -m venv .venv
@@ -145,7 +145,7 @@ The `.docx` files are **generated from Markdown sources**. Edit the sources, nev
 | `_v3_back_matter.md` | Data/code availability, funding, CRediT, declarations, references |
 | `assemble_v3.py` | **Highlights and Abstract live here** (lists `HL` and `AB`); assembles everything into `CASSIA_manuscript.md` and `_build_manuscript.md` (appendix math converted by `latex2uni.py`) |
 | `make_supplement_v3.py` + `_supp_base_v2.md` | Builds `CASSIA_supplementary.md` (Table S1 from code, S2–S5 frozen, S5b–S14, Fig. S1) |
-| `_v8_response.md` | Source of the latest response letter (seventh round; placeholders `{COMMIT}`, `{COMMIT_SHORT}`, `{NTESTS}`, `{COV}`, `{FULLRUN}` are filled into `CASSIA_response_to_reviewer.md`) |
+| `_v9_response.md` | Source of the latest response letter (eighth round; placeholders `{COMMIT}`, `{COMMIT_SHORT}`, `{NTESTS}`, `{COV}`, `{FULLRUN}` are filled into `CASSIA_response_to_reviewer.md`) |
 | `_round1_…`, `_round2_…`, `_v3_response.md`, `_v4_response.md`, `_v5_response.md`, `_v6_response.md` | Earlier response letters (archive) |
 | `build_docx.js` | Markdown → Word (Elsevier review format: Times 12 pt, double spacing, continuous line numbers, page numbers; tables, figures, bullets, sub/superscripts `_{}`/`^{}`, centred equations `<center>`, fenced code) |
 | `postprocess_docx.py` | Stops line numbers appearing in the footer |
@@ -168,7 +168,7 @@ python assemble_v3.py "$(git rev-parse HEAD)"
 **2. Response letter.** Fill its placeholders from `_v5_response.md`:
 
 ```bash
-python -c "s=open('_v8_response.md').read();c='$(git rev-parse HEAD)';s=s.replace('{COMMIT}',c).replace('{COMMIT_SHORT}',c[:7]).replace('{NTESTS}','42').replace('{COV}','82%').replace('{FULLRUN}','<text on the archive rerun>');open('CASSIA_response_to_reviewer.md','w').write(s)"
+python -c "s=open('_v9_response.md').read();c='$(git rev-parse HEAD)';s=s.replace('{COMMIT}',c).replace('{COMMIT_SHORT}',c[:7]).replace('{NTESTS}','42').replace('{COV}','82%').replace('{FULLRUN}','<text on the archive rerun>');open('CASSIA_response_to_reviewer.md','w').write(s)"
 ```
 
 **3. Word documents.** On Windows PowerShell, first run `$env:CASSIA_IN="_build_manuscript.md"`, then run `node build_docx.js` without the prefix:
@@ -199,7 +199,7 @@ soffice --headless --convert-to pdf CASSIA_manuscript.docx
 
 **Release workflow, in order:**
 1. Commit the code and results.
-2. Run `python scripts/make_release_manifest.py 0.3.5` from `cassia/`.
+2. Run `python scripts/make_release_manifest.py 0.3.6` from `cassia/`.
 3. Rebuild the documents with that commit.
 4. Commit again.
 
@@ -229,6 +229,7 @@ This takes about 9–11 h on 4 cores. The steps can also be run one at a time; s
 | 3 | Repeat of round-1 comments (cited v0.1 pages) | v0.3.1: benchmark precision (Tables S11–S12), endpoint-model validation (Table S13), unit-of-calibration table, removed revision-history wording |
 | 6 | (1) M2s exchangeability under hierarchical simulator (fixed family rotation, shared hyper-priors); (2) calibration wording, "as guaranteed"; (3) narrower novelty claim; (4) 40/41 tests, Python 3.13.17, source archive; (5) empirical still missing | v0.3.4: exchangeability proved from random role assignment within a corpus, guarantee restricted to that population; Table S5c (`m2s_exchangeability.py`): family-conditional 0.84–0.99, new corpus down to 0.85; wording fixed; 42 tests |
 | 7 | (1) main M2s evaluation used one fixed-seed split; (2) "new study" wording; (3) keep 15–25% type-I visible, extra-binomial exploratory; (4) empirical still missing; (5) what depends on maths/simulator/error model; (6) PHREEQC independent validation, electrolyte scope; (7) coverage with width, not practically reliable; minor §4.4 items per class | v0.3.5: M2s results role-averaged over 50 proper-training sets (Table 7b, S5c, S5d; theory k/(J+1) by construction), LOSO run = single realisation; scope wording; §4.5 three-way split; PHREEQC limitation kept (no access to Ball & Nordstrom 1998 data) |
+| 8 | Minor revision (computational journal) / major (adsorption journal, no empirical data): (1) Abstract/Conclusions: guarantee only under random role assignment within the same realised corpus; (3) S5c number of corpora per family bootstrap (hydrochar total-Cr: 9); (4) letter 3.13.17 vs 3.13.18; (5) widths on log₁₀(y + c) scale; (6) length; (7–8) DOI, author details; clean end-to-end rerun | v0.3.6: wording fixed; `m2s_exchangeability.py --summarise` adds `family_*_ncorpora` from the saved per-study file; S5b/S5c captions; length unchanged pending journal choice |
 | 5 | (1) type-I guarantee: study-pooled conformal threshold ≠ corpus-level exchangeability, explain D1 14.2/10.8%; (2) cluster bootstrap for S5b; (3) reproduce_all.sh needs git, README v0.2.0; (4) author metadata/DOI; (5) Highlights/Abstract type-I wording | v0.3.3: (1) corpus-level split conformal added (unbounded at 5% with 18 corpora) and the guarantee withdrawn for the study-pooled threshold (empirical LOCO average, max per corpus shown); (2)(3)(5) done; (4) needs the author |
 | 4 | (1) empirical still missing; (2) Table S1 out of date; (3) Table S5 lacks M2s; (4) type-I not controlled (D4n 12.5%); (5) D5 phase evidence vs test vector; (6) denominators of safety claim; (7) endpoint-specific conformal wording; (8) version/reproducibility inconsistencies | v0.3.2: all addressed; (1) by repositioning as a methodological benchmark |
 
@@ -288,7 +289,7 @@ This takes about 9–11 h on 4 cores. The steps can also be run one at a time; s
    - **Integrity rule (kept throughout):** never transcribe numbers from memory, estimate them or invent them. Digitise from figures only if it is declared as such.
 2. **Independent thermodynamic validation** against Ball & Nordstrom (1998) and Rai et al. (1987), which were also blocked in the cloud. CASSIA accepts a reference-constant table for this comparison.
 3. **Release:**
-   - create the GitHub tag `cassia-v0.3.5` and connect Zenodo to mint a DOI;
+   - create the GitHub tag `cassia-v0.3.6` and connect Zenodo to mint a DOI;
    - update `CITATION.cff`, which still holds a placeholder DOI `10.5281/zenodo.0000000`;
    - update the Data availability text in `_v3_back_matter.md`.
 4. **Author details:**

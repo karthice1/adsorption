@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.6 (2026-11-03) - eighth revision
+- Abstract and Conclusions: the M2s guarantee is stated as a finite-corpus randomisation guarantee for a randomly
+  held-out study of the same realised corpus, not for a study from an independent literature population.
+- `scripts/m2s_exchangeability.py --summarise` rebuilds Tables 7b/S5c from the saved per-study file and records the
+  number of corpora behind each family-conditional bootstrap interval (`family_*_ncorpora`; 9 for hydrochar on the
+  total-Cr endpoints); Table S5b/S5c captions say which corpora are resampled.
+- Interval widths are stated on the log10(y + c) modelling scale (Section 3.5, Tables 7, 7b, S5b, S5d).
+
 ## 0.3.5 (2026-11-02) - seventh revision
 - M2s: the reported evaluation is now the random role assignment of Appendix A (`scripts/m2s_exchangeability.py`,
   50 proper-training sets per corpus, all nominal levels; Table 7b, Table S5d, Fig. 6), with corpus-cluster bootstrap

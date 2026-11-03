@@ -1,6 +1,7 @@
 """M2s evaluated by the random role assignment of Appendix A (main M2s evaluation: Table 7b, Table S5c, Fig. 6).
 
-    PYTHONPATH=. python scripts/m2s_exchangeability.py   (~15 min, 4 cores)
+    PYTHONPATH=. python scripts/m2s_exchangeability.py               full run (4 cores)
+    PYTHONPATH=. python scripts/m2s_exchangeability.py --summarise   tables only, from the saved per-study file
       -> results/v3/m2s_roles_per_study.csv.gz   one row per corpus x proper-training set x test study x alpha
          results/v3/T_m2s_roles_summary.csv      Table 7b (role-averaged), with the theoretical value k/(J+1)
          results/v3/T_m2s_exchangeability.csv    Table S5c (family-conditional and new-corpus coverage)
@@ -105,6 +106,11 @@ def main():
     with Pool(4) as p:
         U = pd.DataFrame([x for c in p.map(work, range(NCORP)) for x in c])
     U.to_csv(RES / "m2s_roles_per_study.csv.gz", index=False)
+    summarise(U)
+
+
+def summarise(U):
+    """Tables 7b and S5c from the per-study results (also callable alone: --summarise reuses the saved file)."""
     W = U[U.kind == "within"]
     # Table 7b (role-averaged): rates over corpora x proper-training sets x enumerated test roles
     rows = []
@@ -127,8 +133,10 @@ def main():
                "within_rate": w.ok.mean(), "within_min_corpus": pc.min(), "within_max_corpus": pc.max(),
                "new_corpus_rate": n.ok.mean(), "new_corpus_min_corpus": n.groupby("corpus").ok.mean().min()}
         for f, h in w.groupby("family"):
-            lo, hi = cluster_ci(h.groupby("corpus").ok.mean().values)
+            pcf = h.groupby("corpus").ok.mean()   # only corpora with test studies of this family contribute
+            lo, hi = cluster_ci(pcf.values)
             rec[f"family_{f}"] = h.ok.mean(); rec[f"family_{f}_lo"] = lo; rec[f"family_{f}_hi"] = hi
+            rec[f"family_{f}_ncorpora"] = int(len(pcf))
         fr = w.groupby("family").ok.mean()
         rec["family_min"], rec["family_max"] = fr.min(), fr.max()
         rows.append(rec)
@@ -142,4 +150,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    if "--summarise" in sys.argv:
+        summarise(pd.read_csv(RES / "m2s_roles_per_study.csv.gz"))
+    else:
+        main()

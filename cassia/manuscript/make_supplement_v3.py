@@ -14,7 +14,7 @@ INTRO = """All results in this supplement are synthetic (known-truth simulations
 
 | Tables | Generating script | CSV files |
 |---|---|---|
-| S1 | `scripts/make_table_s1.py` (from `cassia.simulate.parameter_table()`, CASSIA 0.3.5) | `results/v3/T_S1_simulator_parameters.csv` |
+| S1 | `scripts/make_table_s1.py` (from `cassia.simulate.parameter_table()`, CASSIA 0.3.6) | `results/v3/T_S1_simulator_parameters.csv` |
 | S2–S5 | `scripts/run_v2.py` | `results/v2/` |
 | S5b | `scripts/m2s_family.py` (from `run_v3.py` stage m2s) | `results/v3/T_m2s_family_full.csv` |
 | S5c | `scripts/m2s_exchangeability.py` | `results/v3/T_m2s_exchangeability.csv` |
@@ -33,7 +33,7 @@ base = re.sub(r"^Tables S1.*$|^All tables are generated.*$", "@@INTRO@@", base, 
 base = base.replace("@@INTRO@@", INTRO)
 
 t1 = pd.read_csv(R + "T_S1_simulator_parameters.csv")
-s1 = ("## Table S1. Simulator parameters, distributions, measurement models, evidence-class probabilities and numerical settings (CASSIA 0.3.5)\n\n"
+s1 = ("## Table S1. Simulator parameters, distributions, measurement models, evidence-class probabilities and numerical settings (CASSIA 0.3.6)\n\n"
       "Generated from the implementation by `scripts/make_table_s1.py`; a unit test checks that the evidence-class probabilities and "
       "measurement-model constants in this table are those used by the code. LN(m, s): log-normal with log-mean m and log-SD s; "
       "U(a, b): uniform; N(0, s): normal.\n\n" + md(t1) + "\n\n")
@@ -49,8 +49,8 @@ F.columns = ["target", "family", "studies", "corpora", "mean coverage", "fractio
              "95% cluster bootstrap", "95% Wilson (descriptive)", "fraction unbounded", "mean width (log₁₀, bounded)"]
 s5b = ("## Table S5b. M2s (exact study-level split conformal) by material family at nominal 90% (10 corpora, outer leave-one-study-out; one fixed-seed calibration split per corpus, a single realisation of the role assignment; role-averaged family rates are in Table S5c)\n\n"
        "Fraction of test studies with ≥ 90% within-study coverage, mean within-study coverage, fraction of unbounded intervals "
-       "(counted as full coverage) and mean width of bounded intervals (log₁₀). Three 95% intervals for the fraction: a "
-       "corpus-cluster percentile bootstrap (the 10 corpora resampled with replacement, 4,000 resamples), which respects the sharing of "
+       "(counted as full coverage) and mean width of bounded intervals (on the modelling scale log₁₀(y + c), manuscript §2.7). Three 95% intervals for the fraction: a "
+       "corpus-cluster percentile bootstrap (the contributing corpora, column \"corpora\": 10, or 9 for hydrochar on the total-Cr endpoints, resampled with replacement, 4,000 resamples), which respects the sharing of "
        "family hyper-priors by the studies of a corpus; the Wilson interval, descriptive only, which treats the studies of a family as "
        "independent Bernoulli observations; and the envelope of the two (lower = smaller, upper = larger), which is the interval reported in the text. With only 10 "
        "independent corpora the cluster bootstrap is itself imprecise and collapses to a point when every study of a family covers, "
@@ -59,10 +59,12 @@ import os
 if os.path.exists(R + "T_m2s_exchangeability.csv"):
     X = pd.read_csv(R + "T_m2s_exchangeability.csv")
     famcols = [c for c in X.columns if c.startswith("family_") and c not in ("family_min", "family_max")
-               and not c.endswith(("_lo", "_hi"))]
+               and not c.endswith(("_lo", "_hi", "_ncorpora"))]
     for c in famcols:
         if c + "_lo" in X.columns:
-            X[c] = [f"{v:.3f} ({lo:.2f}–{hi:.2f})" for v, lo, hi in zip(X[c], X[c + "_lo"], X[c + "_hi"])]
+            nc = X[c + "_ncorpora"] if c + "_ncorpora" in X.columns else [None] * len(X)
+            X[c] = [f"{v:.3f} ({lo:.2f}–{hi:.2f}" + (f"; {int(k)} corpora)" if k is not None else ")")
+                    for v, lo, hi, k in zip(X[c], X[c + "_lo"], X[c + "_hi"], nc)]
     X = X[["target", "J_mean", "frac_unbounded", "within_rate", "within_min_corpus", "within_max_corpus", *famcols, "new_corpus_rate",
            "new_corpus_min_corpus"]]
     X.columns = (["target", "calibration studies J (mean)", "fraction unbounded", "within corpus (guaranteed ≥ 0.90)", "within: lowest corpus",
@@ -76,8 +78,11 @@ if os.path.exists(R + "T_m2s_exchangeability.csv"):
             "studies are the studies of the same corpus not used for model fitting, with every one of them taken as test in turn; this is "
             "the role assignment under which Appendix A proves coverage ≥ 0.90 for a randomly selected held-out study of the same realised "
             "corpus, and the enumerated rate equals k/(J + 1) by construction. Family columns: the same rate conditional on the test "
-            "study's family, which the theorem does not cover, with a corpus-cluster percentile bootstrap 95% interval in parentheses "
-            "(10 corpora resampled, 4,000 resamples). New corpus: model and calibration from one corpus, test studies from the next "
+            "study's family, which the theorem does not cover, with a corpus-cluster percentile bootstrap 95% interval and the number "
+            "of contributing corpora in parentheses (4,000 resamples). Only corpora that contain test studies of the family contribute, "
+            "and these are the clusters resampled: 10 for every family and endpoint except hydrochar on the two total-Cr endpoints, "
+            "where 9 corpora have hydrochar studies with total-Cr data (total Cr is measured only in Class A/B studies). With 9–10 "
+            "clusters the bootstrap intervals are themselves imprecise. New corpus: model and calibration from one corpus, test studies from the next "
             "corpus (different hyper-prior draws), also not covered. Unbounded intervals count as covering.\n\n" + md(X) + "\n\n")
 if os.path.exists(R + "T_m2s_roles_summary.csv"):
     Y = pd.read_csv(R + "T_m2s_roles_summary.csv")
@@ -90,7 +95,7 @@ if os.path.exists(R + "T_m2s_roles_summary.csv"):
     s5b += ("## Table S5d. M2s by random role assignment at all nominal levels (10 corpora × 50 proper-training sets)\n\n"
             "`scripts/m2s_exchangeability.py`; source of Table 7b. The observed fraction equals k/(J + 1) by construction once every "
             "role assignment is enumerated (Appendix A); it confirms the implementation, not the usefulness of the intervals. Unbounded "
-            "intervals count as covering; read the coverage together with the unbounded fraction.\n\n" + md(Y) + "\n\n")
+            "intervals count as covering; read the coverage together with the unbounded fraction. Widths are on the modelling scale log₁₀(y + c).\n\n" + md(Y) + "\n\n")
 a = base.index("## Table S5.")
 b = base.find("## Table S6", a)
 base = (base[:b] + s5b + base[b:]) if b > 0 else (base.rstrip() + "\n\n" + s5b)

@@ -13,7 +13,7 @@ Table 7 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 - M2 is conservative at lower nominal levels (mean coverage 0.77–0.82 at a nominal 0.50).
 
 **The price is width, and it is large.**
-- At 90%, M2 intervals spanned 2.1–3.1 log₁₀ units, against 1.3–1.7 for M0: a factor of 100–1,000 between the bounds.
+- At 90%, M2 intervals spanned 2.1–3.1 log₁₀ units, against 1.3–1.7 for M0. Widths are on the modelling scale log₁₀(y + c) (§2.7): a width of 2–3 units is a factor of 100–1,000 between the bounds of y + c, not of y itself.
 - At 95%, intervals for the total-Cr endpoints were effectively unbounded. Only about 17 studies with total-Cr data were available for calibration, fewer than the 19 that a study-level 95% quantile requires.
 - This is a concrete data requirement: certifying total-Cr predictions at 95% needs at least 19 independent studies that report total Cr.
 
@@ -21,7 +21,7 @@ Table 7 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 - *Evaluation procedure.* The theorem's exchangeability comes from the random assignment of the test, proper-training and calibration roles within a corpus (Appendix A). The reported M2s results therefore average over role assignments: in each of the 10 corpora we drew 50 random proper-training sets of half the remaining studies and took every other study in turn as the test study, with the rest as calibration studies. This gave 14 calibration studies for the Cr(VI) endpoints and 8.3 on average for the total-Cr endpoints.
 - *Calibration.* For apparent uptake, the fraction of test studies with at least 90% of their observations covered was 0.53, 0.73, 0.80 and 0.93 at nominal 0.50, 0.70, 0.80 and 0.90. These values equal the theoretical rate k/(J + 1) at every level, which is an identity once all role assignments are enumerated (Appendix A). They confirm that the implementation realises the theorem; they are not independent evidence that the intervals are useful.
 - *One fixed-seed realisation.* The original leave-one-study-out run drew one calibration subset per fold, with the same fixed seed in every fold of a corpus, and is a single realisation of the procedure, not the procedure the theorem describes. It gave 0.50, 0.72, 0.80 and 0.93 for apparent uptake (Table 7b, last column for 0.90). Single realisations scatter around the role-averaged rate; the guarantee concerns the average over role assignments.
-- *Cost.* The price of exactness is width, 3.5 log₁₀ units at 90% for apparent uptake, a factor of about 3,000 between the bounds. Only half of the training studies are used to fit the model.
+- *Cost.* The price of exactness is width, 3.5 units of log₁₀(y + c) at 90% for apparent uptake, a factor of about 3,000 between the bounds of y + c (c = 0.1 mg g⁻¹). Only half of the training studies are used to fit the model.
 - *Unbounded intervals.* At 95%, M2s is unbounded for every endpoint, because it needs J ≥ 19. At 90% it is unbounded for 62% of test studies on the total-Cr endpoints, because it needs J ≥ 9. Unbounded intervals count as covering, so the total-Cr coverage of 0.97 at 90% is reported in Table 7b only together with this unbounded share (53–66% by family in the single realisation; Table S5b).
 - *Across mechanisms.* In single fixed-seed realisations of the five scenarios, at least 0.92 of studies were covered at ≥ 90% (Fig. 5c); this panel was not role-averaged.
 - *Interpretation.* Exact study-level guarantees are available, but with literature-scale numbers of studies the intervals are too wide, or unbounded, to serve as practically reliable predictions for treatment design. A design decision rests on confirmatory testing of the material under the target conditions (§3.6). This is a substantive negative result, not a defect of the method.
@@ -32,7 +32,7 @@ Table 7 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 
 **Table 7b.** M2s, exact study-level split conformal: fraction of test studies with ≥ 90% within-study coverage. Role-averaged over 50 random proper-training sets per corpus with every remaining study as test study (10 corpora); these values equal k/(J + 1) by construction. ∞: unbounded for every test study. Last column: the single fixed-seed leave-one-study-out realisation.
 
-| Endpoint | Calibration studies J (mean) | 1 − α = 0.50 | 0.70 | 0.80 | 0.90 | 0.95 | Width at 0.90 (log₁₀; bounded intervals) | Single realisation at 0.90 |
+| Endpoint | Calibration studies J (mean) | 1 − α = 0.50 | 0.70 | 0.80 | 0.90 | 0.95 | Width at 0.90 (log₁₀(y + c); bounded intervals) | Single realisation at 0.90 |
 |---|---|---|---|---|---|---|---|---|
 | q_app,VI | 14 | 0.53 | 0.73 | 0.80 | 0.93 | ∞ | 3.46 | 0.93 |
 | C_e,VI | 14 | 0.53 | 0.73 | 0.80 | 0.93 | ∞ | 3.71 | 0.95 |
@@ -41,7 +41,7 @@ Table 7 and Fig. 6 report outer leave-one-study-out evaluations on 10 corpora: 3
 
 **Coverage is marginal over families, not conditional.** For apparent uptake, M0 covered 0.77 of hydrochar observations (0.85 with M1, 0.91 with M2), compared with 0.96–0.99 for the other families. Under M2s the role-averaged rate for hydrochar studies was 0.85 (above). In the single fixed-seed realisation, 84% of hydrochar studies (42 of 50) met the 90% within-study target, against 90–98% for the other families (Table S5b; mean within-study coverage 0.95 against 0.97–0.995). The 50 hydrochar studies come from 10 corpora that each redraw the family hyper-priors, so they are not 50 independent observations. For this realisation a corpus-cluster bootstrap gave a 95% interval of 76–90%, and the Wilson interval, which treats the studies as independent and is descriptive only, 71–92%; we report the wider envelope, 71–92%. With 10 independent corpora the intervals of the families overlap, so this is a tendency, not a demonstrated family effect; it is consistent with the M0–M1 results (Table S5) and with the guarantee being marginal, not family-conditional. Study-level calibration does not repair heterogeneity between families.
 
-**Table 7.** Study-level coverage at a nominal 90% under leave-one-study-out validation (10 corpora; RF with speciation features). Coverage is the fraction of a test study's observations inside its interval.
+**Table 7.** Study-level coverage at a nominal 90% under leave-one-study-out validation (10 corpora; RF with speciation features). Coverage is the fraction of a test study's observations inside its interval. Width is on the log₁₀(y + c) scale (§2.7).
 
 | Endpoint | Method | Mean | Median | 10th pct | Worst | Studies ≥ 0.90 | Width (log₁₀) | Calibration studies |
 |---|---|---|---|---|---|---|---|---|

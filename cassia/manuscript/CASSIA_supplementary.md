@@ -177,7 +177,7 @@ Status codes: `bracketed` (solubility found; |SI| < 0.01 at the solution); `unde
 
 ## Table S5b. M2s (exact study-level split conformal) by material family at nominal 90% (10 corpora, outer leave-one-study-out; one fixed-seed calibration split per corpus, a single realisation of the role assignment; role-averaged family rates are in Table S5c)
 
-Fraction of test studies with ≥ 90% within-study coverage, mean within-study coverage, fraction of unbounded intervals (counted as full coverage) and mean width of bounded intervals (log₁₀). Three 95% intervals for the fraction: a corpus-cluster percentile bootstrap (the 10 corpora resampled with replacement, 4,000 resamples), which respects the sharing of family hyper-priors by the studies of a corpus; the Wilson interval, descriptive only, which treats the studies of a family as independent Bernoulli observations; and the envelope of the two (lower = smaller, upper = larger), which is the interval reported in the text. With only 10 independent corpora the cluster bootstrap is itself imprecise and collapses to a point when every study of a family covers, so the family comparisons remain descriptive.
+Fraction of test studies with ≥ 90% within-study coverage, mean within-study coverage, fraction of unbounded intervals (counted as full coverage) and mean width of bounded intervals (on the modelling scale log₁₀(y + c), manuscript §2.7). Three 95% intervals for the fraction: a corpus-cluster percentile bootstrap (the contributing corpora, column "corpora": 10, or 9 for hydrochar on the total-Cr endpoints, resampled with replacement, 4,000 resamples), which respects the sharing of family hyper-priors by the studies of a corpus; the Wilson interval, descriptive only, which treats the studies of a family as independent Bernoulli observations; and the envelope of the two (lower = smaller, upper = larger), which is the interval reported in the text. With only 10 independent corpora the cluster bootstrap is itself imprecise and collapses to a point when every study of a family covers, so the family comparisons remain descriptive.
 
 | target | family | studies | corpora | mean coverage | fraction ≥ 0.90 | 95% envelope (reported) | 95% cluster bootstrap | 95% Wilson (descriptive) | fraction unbounded | mean width (log₁₀, bounded) |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -208,7 +208,7 @@ Fraction of test studies with ≥ 90% within-study coverage, mean within-study c
 
 ## Table S5c. M2s coverage under the hierarchical simulator design (nominal 90%, β = 0.9; 10 corpora × 50 random proper-training sets, every role assignment enumerated)
 
-`scripts/m2s_exchangeability.py`. Fraction of test studies with ≥ 90% of their observations covered, averaged over role assignments. Within corpus: the test study and the J calibration studies are the studies of the same corpus not used for model fitting, with every one of them taken as test in turn; this is the role assignment under which Appendix A proves coverage ≥ 0.90 for a randomly selected held-out study of the same realised corpus, and the enumerated rate equals k/(J + 1) by construction. Family columns: the same rate conditional on the test study's family, which the theorem does not cover, with a corpus-cluster percentile bootstrap 95% interval in parentheses (10 corpora resampled, 4,000 resamples). New corpus: model and calibration from one corpus, test studies from the next corpus (different hyper-prior draws), also not covered. Unbounded intervals count as covering.
+`scripts/m2s_exchangeability.py`. Fraction of test studies with ≥ 90% of their observations covered, averaged over role assignments. Within corpus: the test study and the J calibration studies are the studies of the same corpus not used for model fitting, with every one of them taken as test in turn; this is the role assignment under which Appendix A proves coverage ≥ 0.90 for a randomly selected held-out study of the same realised corpus, and the enumerated rate equals k/(J + 1) by construction. Family columns: the same rate conditional on the test study's family, which the theorem does not cover, with a corpus-cluster percentile bootstrap 95% interval and the number of contributing corpora in parentheses (4,000 resamples). Only corpora that contain test studies of the family contribute, and these are the clusters resampled: 10 for every family and endpoint except hydrochar on the two total-Cr endpoints, where 9 corpora have hydrochar studies with total-Cr data (total Cr is measured only in Class A/B studies). With 9–10 clusters the bootstrap intervals are themselves imprecise. New corpus: model and calibration from one corpus, test studies from the next corpus (different hyper-prior draws), also not covered. Unbounded intervals count as covering.
 
 | quantity | Ce VI | Ce total | q app VI | q tot aq |
 |---|---|---|---|---|
@@ -217,18 +217,18 @@ Fraction of test studies with ≥ 90% within-study coverage, mean within-study c
 | within corpus (guaranteed ≥ 0.90) | 0.933 | 0.968 | 0.933 | 0.968 |
 | within: lowest corpus | 0.933 | 0.909 | 0.933 | 0.909 |
 | within: highest corpus | 0.933 | 1.000 | 0.933 | 1.000 |
-| family: AC chemical | 0.936 (0.90–0.98) | 0.934 (0.90–1.00) | 0.983 (0.96–1.00) | 1.000 (1.00–1.00) |
-| family: AC physical | 0.952 (0.90–0.99) | 0.965 (0.88–1.00) | 0.973 (0.94–1.00) | 0.971 (0.95–1.00) |
-| family: biochar manure | 0.952 (0.92–0.98) | 0.993 (0.99–1.00) | 0.891 (0.85–0.93) | 0.972 (0.94–1.00) |
-| family: biochar wood | 0.907 (0.85–0.96) | 1.000 (1.00–1.00) | 0.923 (0.88–0.96) | 0.987 (0.98–1.00) |
-| family: hydrochar | 0.955 (0.91–0.99) | 0.979 (0.95–1.00) | 0.846 (0.76–0.91) | 0.917 (0.79–0.99) |
-| family: porous carbon | 0.899 (0.84–0.95) | 0.932 (0.90–1.00) | 0.981 (0.95–1.00) | 0.962 (0.93–1.00) |
+| family: AC chemical | 0.936 (0.90–0.98; 10 corpora) | 0.934 (0.90–1.00; 10 corpora) | 0.983 (0.96–1.00; 10 corpora) | 1.000 (1.00–1.00; 10 corpora) |
+| family: AC physical | 0.952 (0.90–0.99; 10 corpora) | 0.965 (0.88–1.00; 10 corpora) | 0.973 (0.94–1.00; 10 corpora) | 0.971 (0.95–1.00; 10 corpora) |
+| family: biochar manure | 0.952 (0.92–0.98; 10 corpora) | 0.993 (0.99–1.00; 10 corpora) | 0.891 (0.85–0.93; 10 corpora) | 0.972 (0.94–1.00; 10 corpora) |
+| family: biochar wood | 0.907 (0.85–0.96; 10 corpora) | 1.000 (1.00–1.00; 10 corpora) | 0.923 (0.88–0.96; 10 corpora) | 0.987 (0.98–1.00; 10 corpora) |
+| family: hydrochar | 0.955 (0.91–0.99; 10 corpora) | 0.979 (0.95–1.00; 9 corpora) | 0.846 (0.76–0.91; 10 corpora) | 0.917 (0.79–0.99; 9 corpora) |
+| family: porous carbon | 0.899 (0.84–0.95; 10 corpora) | 0.932 (0.90–1.00; 10 corpora) | 0.981 (0.95–1.00; 10 corpora) | 0.962 (0.93–1.00; 10 corpora) |
 | new corpus | 0.928 | 0.979 | 0.930 | 0.984 |
 | new corpus: lowest corpus pair | 0.885 | 0.901 | 0.844 | 0.927 |
 
 ## Table S5d. M2s by random role assignment at all nominal levels (10 corpora × 50 proper-training sets)
 
-`scripts/m2s_exchangeability.py`; source of Table 7b. The observed fraction equals k/(J + 1) by construction once every role assignment is enumerated (Appendix A); it confirms the implementation, not the usefulness of the intervals. Unbounded intervals count as covering; read the coverage together with the unbounded fraction.
+`scripts/m2s_exchangeability.py`; source of Table 7b. The observed fraction equals k/(J + 1) by construction once every role assignment is enumerated (Appendix A); it confirms the implementation, not the usefulness of the intervals. Unbounded intervals count as covering; read the coverage together with the unbounded fraction. Widths are on the modelling scale log₁₀(y + c).
 
 | target | nominal 1 − α | calibration studies J (mean) | studies with ≥ 90% covered | k/(J + 1) | lowest corpus | fraction unbounded | mean within-study coverage | mean width, bounded (log₁₀) |
 |---|---|---|---|---|---|---|---|---|
