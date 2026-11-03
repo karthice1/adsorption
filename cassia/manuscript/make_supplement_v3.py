@@ -194,17 +194,17 @@ if os.path.exists(R + "T_meas_sensitivity.csv"):
     V = V.assign(setting=V.setting.str.replace("_", " "),
                  perturbation=V.perturbation.str.replace('"', "").str.replace("{", "").str.replace("}", "").str.replace("_", " "))
     V = V[["setting", "design", "perturbation", "typeI_published_threshold", "typeI_recalibrated_cv", "power_published|5-30%",
-           "power_published|>30%", "power_recalibrated|5-30%", "power_recalibrated|>30%", "n|5-30%", "n|>30%"]]
-    V.columns = ["setting", "design", "true error model (changed values)", "type-I, published threshold",
-                 "type-I, recalibrated (split-half)", "power 5–30%, published", "power > 30%, published",
-                 "power 5–30%, recalibrated", "power > 30%, recalibrated", "n 5–30%", "n > 30%"]
+           "power_published|>30%", "power_recalibrated|5-30%", "power_recalibrated|>30%"]]
+    V = V.assign(**{c: V[c].map("{:.3f}".format) for c in V.columns[3:5]}, **{c: V[c].map("{:.2f}".format) for c in V.columns[5:]})
+    V.columns = ["setting", "design", "changed values", "type-I (pub.)", "type-I (recal.)",
+                 "power 5–30% (pub.)", "power >30% (pub.)", "power 5–30% (recal.)", "power >30% (recal.)"]
     S.append("## Table S16. Rejection test under XPS and XANES error models larger than assumed (designs D4x and D4n, 3% analytical noise)\n\n"
              "`scripts/meas_sensitivity.py`. The 120 studies and paired adsorption-only controls of Table S8 were re-simulated with the "
              "stated changes to the technique model of Table S1 (XPS nominal: enrichment log-SD 0.4, beam reduction up to 0.15, noise 0.05; "
              "XANES nominal: no enrichment, beam reduction up to 0.03, noise 0.03). The analyst's adsorption-only fit keeps the nominal "
-             "model, so the true error is misspecified. Published threshold: the study-pooled threshold from 360 nominal controls "
-             "(Table S14b), applied unchanged. Recalibrated: 95th percentile of the 120 perturbed controls, with split-half cross-validated "
-             "type-I error. Power: fraction of studies with a reduction share of 5–30% or > 30% in which adsorption-only was rejected. "
+             "model, so the true error is misspecified. Pub.: published threshold, i.e. the study-pooled threshold from 360 nominal controls "
+             "(Table S14b), applied unchanged. Recal.: threshold recalibrated as the 95th percentile of the 120 perturbed controls, with split-half cross-validated "
+             "type-I error. Power: fraction of studies with a reduction share of 5–30% (n = 50) or > 30% (n = 51) in which adsorption-only was rejected. "
              "Nominal rows repeat the procedure with the nominal model as reference; with the same optimiser start values as Table S8 they reproduce its fits. Synthetic; 120 controls per setting, so type-I "
              "errors carry a binomial SE of about 2 percentage points.\n\n" + md(V))
 S.append("## Fig. S1. Profile likelihoods of the reductant capacity\n\n![Fig. S1](figures/figS1_profiles.png)\n\n**Fig. S1.** Profile of Δ(−2 log L) against log₁₀ R₀ relative to its true value for two virtual studies (true reduction share 0.15 and 0.60) under designs D1, D3 and D4u (D4u: unbiased solid oxidation state). Dotted line: χ²₁ 95% threshold (3.84); symmetric-log axis. Non-smooth peaks indicate local optima at individual profile points; the true profile lies at or below the plotted curve, so the profiles are indicative only. The mechanistic model structure is assumed known.")

@@ -512,17 +512,17 @@ Columns typeI_nominal, typeI_empirical and typeI_conformal: thresholds from the 
 
 ## Table S16. Rejection test under XPS and XANES error models larger than assumed (designs D4x and D4n, 3% analytical noise)
 
-`scripts/meas_sensitivity.py`. The 120 studies and paired adsorption-only controls of Table S8 were re-simulated with the stated changes to the technique model of Table S1 (XPS nominal: enrichment log-SD 0.4, beam reduction up to 0.15, noise 0.05; XANES nominal: no enrichment, beam reduction up to 0.03, noise 0.03). The analyst's adsorption-only fit keeps the nominal model, so the true error is misspecified. Published threshold: the study-pooled threshold from 360 nominal controls (Table S14b), applied unchanged. Recalibrated: 95th percentile of the 120 perturbed controls, with split-half cross-validated type-I error. Power: fraction of studies with a reduction share of 5–30% or > 30% in which adsorption-only was rejected. Nominal rows repeat the procedure with the nominal model as reference; with the same optimiser start values as Table S8 they reproduce its fits. Synthetic; 120 controls per setting, so type-I errors carry a binomial SE of about 2 percentage points.
+`scripts/meas_sensitivity.py`. The 120 studies and paired adsorption-only controls of Table S8 were re-simulated with the stated changes to the technique model of Table S1 (XPS nominal: enrichment log-SD 0.4, beam reduction up to 0.15, noise 0.05; XANES nominal: no enrichment, beam reduction up to 0.03, noise 0.03). The analyst's adsorption-only fit keeps the nominal model, so the true error is misspecified. Pub.: published threshold, i.e. the study-pooled threshold from 360 nominal controls (Table S14b), applied unchanged. Recal.: threshold recalibrated as the 95th percentile of the 120 perturbed controls, with split-half cross-validated type-I error. Power: fraction of studies with a reduction share of 5–30% (n = 50) or > 30% (n = 51) in which adsorption-only was rejected. Nominal rows repeat the procedure with the nominal model as reference; with the same optimiser start values as Table S8 they reproduce its fits. Synthetic; 120 controls per setting, so type-I errors carry a binomial SE of about 2 percentage points.
 
-| setting | design | true error model (changed values) | type-I, published threshold | type-I, recalibrated (split-half) | power 5–30%, published | power > 30%, published | power 5–30%, recalibrated | power > 30%, recalibrated | n 5–30% | n > 30% |
-|---|---|---|---|---|---|---|---|---|---|---|
-| XPS nominal | D4x | none | 0.058 | 0.042 | 0.800 | 0.961 | 0.800 | 0.961 | 50 | 51 |
-| XPS noise x2 | D4x | noise: 0.1 | 0.117 | 0.075 | 0.800 | 0.961 | 0.800 | 0.961 | 50 | 51 |
-| XPS enrichment sd x2 | D4x | enrich logsd: 0.8 | 0.058 | 0.050 | 0.800 | 0.961 | 0.800 | 0.961 | 50 | 51 |
-| XPS beam x2 | D4x | beam max: 0.3 | 0.117 | 0.083 | 0.800 | 0.961 | 0.760 | 0.941 | 50 | 51 |
-| XANES nominal | D4n | none | 0.067 | 0.033 | 0.820 | 0.941 | 0.780 | 0.941 | 50 | 51 |
-| XANES beam 0.10 | D4n | beam max: 0.1 | 0.092 | 0.058 | 0.840 | 0.941 | 0.800 | 0.941 | 50 | 51 |
-| XANES noise x2 | D4n | noise: 0.06 | 0.108 | 0.058 | 0.840 | 0.961 | 0.780 | 0.922 | 50 | 51 |
+| setting | design | changed values | type-I (pub.) | type-I (recal.) | power 5–30% (pub.) | power >30% (pub.) | power 5–30% (recal.) | power >30% (recal.) |
+|---|---|---|---|---|---|---|---|---|
+| XPS nominal | D4x | none | 0.058 | 0.042 | 0.80 | 0.96 | 0.80 | 0.96 |
+| XPS noise x2 | D4x | noise: 0.1 | 0.117 | 0.075 | 0.80 | 0.96 | 0.80 | 0.96 |
+| XPS enrichment sd x2 | D4x | enrich logsd: 0.8 | 0.058 | 0.050 | 0.80 | 0.96 | 0.80 | 0.96 |
+| XPS beam x2 | D4x | beam max: 0.3 | 0.117 | 0.083 | 0.80 | 0.96 | 0.76 | 0.94 |
+| XANES nominal | D4n | none | 0.067 | 0.033 | 0.82 | 0.94 | 0.78 | 0.94 |
+| XANES beam 0.10 | D4n | beam max: 0.1 | 0.092 | 0.058 | 0.84 | 0.94 | 0.80 | 0.94 |
+| XANES noise x2 | D4n | noise: 0.06 | 0.108 | 0.058 | 0.84 | 0.96 | 0.78 | 0.92 |
 
 ## Fig. S1. Profile likelihoods of the reductant capacity
 

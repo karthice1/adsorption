@@ -3,14 +3,14 @@
 ## Highlights
 
 - Known-truth benchmark: Cr(VI)-only data were often adsorption-equivalent within 10%
-- Total-Cr and solid-phase data gave 80–98% rejection power in simulated studies
+- Under assumed error models, total-Cr and solid-phase data gave 80–98% rejection power
 - Average type-I error was about 5%, with higher rates in some individual corpora
 - Exact coverage is marginal within one corpus, not per family; intervals are too wide
-- No unsafe accepted designs were observed in the simulated test cohorts
+- No unsafe accepted design was observed in the simulated design cohort (not zero risk)
 
 ## Abstract
 
-This methodological study uses known-truth simulations to establish what common analyses of Cr(VI) removal by carbonaceous materials can recover. Loss of dissolved Cr(VI) is routinely reported as adsorption, although Cr(VI) is also reduced to Cr(III). CASSIA is an open, provenance-aware framework that separates apparent removal, total-aqueous-Cr removal and adsorption, assigns observation-level evidence classes (C, B, A1, A2), and tests which mechanisms a measurement design can identify. Three PHREEQC databases agreed on Cr(VI) speciation within 0.044 but differed by 63–83 mV in the Cr(VI)/Cr(III) boundary. Across five simulated mechanisms, adsorption-only was not rejected for 65–78% of high-reduction studies observed through residual Cr(VI) alone, and a noncentral-χ² equivalence test showed it equivalent within a 10% margin for 43–73%. With a threshold calibrated empirically on 360 simulated negative controls, the rejection test had power of 80–88% with total Cr and 92–98% with XPS or XANES; type-I error averaged 4.7–5.6% over held-out corpora, reaching 15–25% in some individual corpora: an empirical average, not a guarantee. Random cross-validation overstated transferability (random-forest R² 0.86–0.89 versus 0.48–0.65 leave-one-study-out). Under random role assignment, an exact study-level split-conformal interval guarantees coverage only for a randomly held-out study of the same realised corpus, not for independent literature; its 90% interval for apparent Cr(VI) uptake spanned 3.5 log₁₀(y + c) units, and total-Cr intervals were often unbounded. With sequential confirmatory testing, no unsafe accepted design was observed in the simulated cohorts (Wilson 95% upper bound 1.3% of materials). No published experimental data were analysed; the framework is benchmarked, not experimentally validated.
+This methodological study uses known-truth simulations to establish what common analyses of Cr(VI) removal by carbonaceous materials can recover. Loss of dissolved Cr(VI) is routinely reported as adsorption, although Cr(VI) is also reduced to Cr(III). CASSIA is an open, provenance-aware framework that separates apparent removal, total-aqueous-Cr removal and adsorption, assigns observation-level evidence classes, and tests which mechanisms a measurement design can identify. Three PHREEQC databases agreed on Cr(VI) speciation within 0.044 but differed by 63–83 mV in the Cr(VI)/Cr(III) boundary. Across five mechanisms of one simulated kinetic model family, adsorption-only was not rejected for 65–78% of high-reduction studies observed through residual Cr(VI) alone, and a noncentral-χ² equivalence test showed it equivalent within a 10% margin for 43–73%. With an empirically calibrated threshold (360 simulated controls), the rejection test had 80–88% power with total Cr and 92–98% with XPS or XANES under assumed error models; type-I error averaged 4.7–5.6% over held-out corpora, reaching 15–25% in some individual corpora: an empirical average, not a guarantee. Random cross-validation overstated transferability (R² 0.86–0.89 versus 0.48–0.65 leave-one-study-out). Under random role assignment, an exact study-level split-conformal interval guarantees coverage only for a randomly held-out study of the same realised corpus, not for independent literature; its 90% interval for apparent uptake spanned 3.5 log₁₀(y + c) units, and total-Cr intervals were often unbounded. With sequential confirmatory testing, no unsafe accepted design was observed in the simulated design cohort (Wilson 95% upper bound 1.3% of materials). No experimental data were analysed; the framework is benchmarked, not experimentally validated.
 
 **Keywords:** hexavalent chromium; carbonaceous adsorbents; known-truth simulation benchmark; PHREEQC; mechanism identifiability; leave-one-study-out validation; conformal prediction; data provenance
 
@@ -46,8 +46,10 @@ Hexavalent chromium is a priority contaminant in effluents from electroplating, 
 
 Three endpoints are computed and never merged:
 - **Apparent Cr(VI) uptake**, q_app,VI = (C₀ − C_e,VI)/D. It is always computable.
-- **Total-aqueous-Cr uptake**, q_tot,aq = (C₀ − C_e,tot)/D. It requires a total-Cr analysis (AAS or ICP). It is not adsorption either, because it includes Cr(III) retained or precipitated on the solid.
+- **Total-aqueous-Cr removal**, q_tot,aq = (C₀ − C_e,tot)/D, per gram of sorbent. It requires a total-Cr analysis (AAS or ICP). It is not adsorption either, because it includes Cr(III) retained or precipitated on the solid.
 - **Aqueous Cr(III) index**, Σ(C_e,tot − C_e,VI)/Σ(C₀ − C_e,VI). It is a lower bound on the share of Cr(VI) disappearance due to reduction.
+
+Where this paper writes 'uptake' (e.g. apparent uptake), it means removal from solution per gram of sorbent, never adsorption.
 
 Evidence classes are assigned **per observation** (`cassia.dataset.classify`), because a single paper may report total Cr or solid-phase data for some experiments only. Oxidation-state identification and chromium mass balance are treated as different analytical tasks:
 - **Class C:** residual Cr(VI) only. Solid-phase data without a total-aqueous-Cr analysis also count as C.
@@ -63,7 +65,7 @@ Negative apparent uptake (C_e,VI > C₀ within analytical error) is retained in 
 
 ### 2.2 Software architecture and release
 
-CASSIA 0.3.7 is organised in six layers (Table 1). Analyses are run by scripts that are listed, with their outputs, in Table 2.
+CASSIA 0.3.8 is organised in six layers (Table 1). Analyses are run by scripts that are listed, with their outputs, in Table 2.
 
 **Table 1.** CASSIA layers, modules and responsibilities.
 
@@ -86,6 +88,7 @@ CASSIA 0.3.7 is organised in six layers (Table 1). Analyses are run by scripts t
 | `scripts/run_v3.py --stage figures` | Figs. 3, 5, 6, 7 (must run after `run_v2.py`, whose older versions of these files it replaces) |
 | `scripts/typeI_validation.py` | independent negative-control cohort; type-I errors with Wilson intervals (Table S14) |
 | `scripts/typeI_corpus.py` | corpus-level type-I analysis: corpus-level split conformal, heterogeneity, calibration-set sensitivity (Table S14b) |
+| `scripts/meas_sensitivity.py` | rejection test under XPS/XANES error models larger than assumed: type-I error and power with the published and a recalibrated threshold (Table S16) |
 | `scripts/seqver_oc.py` | operating characteristic of the verification rules (Table S9) |
 | `scripts/bench_partition.py` | true partition by scenario; Monte Carlo precision (Tables S11, S12) |
 | `scripts/endpoint_validation.py` | out-of-study accuracy of the four endpoint models (Table S13) |
@@ -107,7 +110,7 @@ CASSIA 0.3.7 is organised in six layers (Table 1). Analyses are run by scripts t
 - SHA-256 checksums and `$Id` revision lines for the bundled databases;
 - an end-to-end example workflow for user data (`examples/user_data_workflow.py`);
 - a release record (`release/RELEASE.md`, `release/MANIFEST.sha256`) with SHA-256 checksums of every code, database, data, result and figure file, the code commit hash and the exact commands;
-- 42 automated tests, covering mass and electron conservation for every scenario, saturation-index statuses, interpolation accuracy, the conformal constructions and a negative control for the equivalence test, and agreement of Table S1 with the constants used by the code.
+- 43 automated tests, covering mass and electron conservation for every scenario, saturation-index statuses, interpolation accuracy, the conformal constructions and a negative control for the equivalence test and its data-generating technique option, and agreement of Table S1 with the constants used by the code.
 
 Every number, table and figure in this paper is produced by the seeded scripts of Table 2, which `scripts/reproduce_all.sh` runs in order (about 9–11 h on 4 cores). All random seeds are fixed in the scripts. The reported results were produced by running these scripts stage by stage; a single uninterrupted run of `reproduce_all.sh` from the source archive has not yet been completed (see Data and code availability, Reproduction status).
 
@@ -499,7 +502,7 @@ In scenario E the removed chromium was distributed as follows (medians): 0.62 ad
 | Posterior SD of reduction share | 0.061 | 0.053 | 0.033 | 0.026 | 0.020 | 0.011 |
 
 The prior SD was 0.04–0.28.
-- *Precipitation share.* Only the A2 design constrained it well: posterior SD 0.026 under D5, against 0.037 (D4n), 0.077 (D3) and 0.14 (D1). This rests on only 11 studies with a precipitated share above 0.02, because Cr(OH)₃ is undersaturated at the isotherm pH.
+- *Precipitation share.* Only the A2 design constrained it well: posterior SD 0.026 under D5, against 0.037 (D4n), 0.077 (D3) and 0.14 (D1). This rests on only 11 studies with a precipitated share above 0.02, because Cr(OH)₃ is undersaturated at the isotherm pH. It is therefore a limited benchmark finding, not an established capability of A2 data.
 - *Caveat.* The Fisher analysis assumes the exact rate laws are known, so it is an optimistic bound.
 
 **Model-free diagnostics carry technique-specific false alarms (Fig. 3b).** All three diagnostics gained detection with the reduction share (shares < 0.05, 0.05–0.2, 0.2–0.4 and > 0.4), but their false-alarm rates in pure-adsorption controls differed:
@@ -520,6 +523,7 @@ The prior SD was 0.04–0.28.
 - *A corpus-level guarantee is not available at 5% with 18 corpora.* A split-conformal threshold whose unit of exchangeability is the corpus uses one control per corpus (Supplementary Note S1). With K = 18 corpora its 95% threshold is unbounded for every design, because a finite threshold needs K ≥ 19. The smallest attainable level is 1/19 = 5.3%, where the threshold is the largest of the 18 per-corpus draws. Evaluated leave-one-corpus-out (17 corpora, level 1/18 = 5.6%), the observed type-I error was 5.3–5.7%, consistent with the theoretical 5.6% bound within Monte Carlo uncertainty, but this threshold is unstable (for D3–D5 at 3% noise, its 5th–95th percentiles over random draws span 47–9,752) and costs power: for high-reduction studies, 75–85% instead of 88–98% under D3–D5 at 3% noise, and 59–88% instead of 80–94% at 10% noise (Table S14b). The corpus-level guarantee is also marginal over corpora and does not bound the rate within any one corpus.
 - *Power with Class C data is low.* At the final threshold (360 controls), the test rejected adsorption-only in 28% (D1) and 35% (D2) of high-reduction studies (share > 0.3) at 3% analytical noise, and in 22% at 10% noise.
 - *Cr(III) measurements raise power.* Adding total Cr (D3) raised power to 80–88%. Adding solid-phase evidence (D4x, D4n, D5) raised it to 92–98%. These powers are at the study-pooled threshold, whose type-I error was about 5% on average across simulated corpora and up to 15–25% in single corpora.
+- *Larger-than-assumed solid-phase errors mainly raise false rejections (Table S16).* We re-simulated the 120 studies and paired controls of Table S8 at 3% noise with XPS and XANES error models larger than those of Table S1, keeping the analyst's nominal fit. With the published threshold unchanged, the type-I error of D4x rose from 5.8% (nominal) to 11.7% when the XPS noise or the maximum beam reduction was doubled; doubling the surface-enrichment log-SD had no effect on the controls, whose solid holds no Cr(III) to enrich. For D4n it rose from 6.7% to 9.2% (beam reduction up to 0.10) and 10.8% (noise doubled). Power was unchanged or slightly higher (80–84% for reduction shares of 5–30%, 94–96% above 30%). With a threshold recalibrated on the perturbed controls, the cross-validated type-I error was 5.0–8.3% and power was 76–80% and 92–96%. Each setting has 120 controls, so these type-I errors carry a binomial SE of about 2 percentage points.
 - *Reporting choice.* We report the study-pooled threshold, with its empirical leave-one-corpus-out type-I error and the largest per-corpus rate, as the primary analysis, and the corpus-level threshold as the procedure that carries a finite-sample guarantee (at 5.3%, not 5%). Neither is claimed to provide 5% type-I control for a new independent corpus, and the average empirical type-I error is not evidence of reliable 5% control for real studies. Before use on experimental literature data, either threshold must be recalibrated on suitable real negative controls.
 
 **Non-rejection under Class C reflects genuine structural equivalence.** Because the simulator gives noise-free data, the true misfit of the best adsorption-only approximation is known for every study.
@@ -738,7 +742,7 @@ The error-controlled rule accepted almost as many designs as the simple rule (81
 - They were sensitive to lower pH: compliance fell to 81% at −0.25 and 62% at −0.5 pH units, because dissolved Cr(III) release rises as pH falls.
 - A 20% dose reduction gave 83% compliance.
 
-**Out-of-study accuracy of the endpoint models (Table S13).** The design layer uses four RF models: Cr(VI) and total Cr, as uptake and as effluent concentration; the total-Cr models are trained only on the about 18 Class A/B studies per corpus that report total Cr. Under leave-one-study-out, R² on the log₁₀ scale was 0.74 and 0.65 for the Cr(VI) and total-Cr effluent concentrations and 0.39–0.42 for the two uptakes, against 0.75–0.94 under random splits.
+**Out-of-study accuracy of the endpoint models (Table S13).** The design layer uses four RF models: Cr(VI) and total Cr, each as removal per gram of sorbent and as effluent concentration; the total-Cr models are trained only on the about 18 Class A/B studies per corpus that report total Cr. Under leave-one-study-out, R² on the log₁₀ scale was 0.74 and 0.65 for the Cr(VI) and total-Cr effluent concentrations and 0.39–0.42 for the two uptakes, against 0.75–0.94 under random splits.
 
 **Effluent predictions.** Predicted and true effluent concentrations on a design sub-grid were rank-correlated (Spearman 0.65 for Cr(VI), 0.55 for total Cr), with median absolute errors of 0.40 and 0.22 log₁₀ units. The 95% upper bounds held for 97.9% (Cr(VI)) and 100% (total Cr) of grid points.
 
@@ -807,8 +811,8 @@ The revised analysis gives a mechanism-resolved answer to the question in the ti
 
 **Class A1 and A2 (add solid-phase evidence).**
 - A1 (oxidation state of the solid and final pH) raised power at the study-pooled threshold to 92–96%, at an empirical type-I error of 4.7–5.6% on average across simulated corpora (up to 15–25% in single corpora). XPS and XANES gave similar power in the fitted test, but their model-free diagnostics differed: the assumed beam reduction and surface enrichment made a simple XPS threshold false-alarm in 7.1% of pure-adsorption controls, against 1.0% for XANES (§3.3). An XPS Cr(III) signal is therefore not, on its own, evidence of chemical reduction.
-- A2 (adds a solid Cr inventory and phase evidence) added little to rejection power over A1 (92–98%; phase evidence is not part of the test, §2.6), but it was the only design that constrained the *precipitated* share (posterior SD 0.026 against 0.037–0.14). Its benefit is the partitioning of the reduced Cr, not the detection of reduction.
-- These detectability statements are conditional on the assumed measurement models; with larger real XPS biases, the A1/A2 advantage would shrink.
+- A2 (adds a solid Cr inventory and phase evidence) added little to rejection power over A1 (92–98%; phase evidence is not part of the test, §2.6), but it was the only design that constrained the *precipitated* share (posterior SD 0.026 against 0.037–0.14). This is a limited benchmark finding: it rests on 11 studies with a precipitated share above 0.02 and on the assumed inventory and phase-evidence errors. Its benefit is the partitioning of the reduced Cr, not the detection of reduction.
+- These detectability statements are conditional on the assumed measurement models. With XPS or XANES errors larger than assumed (doubled noise or beam reduction), the published threshold rejected up to 11.7% of adsorption-only controls instead of 5.8–6.7%; recalibrated on such controls, the power for reduction shares above 30% stayed at 92–96% (Table S16). Errors that differ in kind from those simulated, for example systematic peak-fitting bias, were not tested.
 
 **Recommendation.** This hierarchy is a quantitative argument, within the benchmark, for the minimum reporting set of §4.4. It also gives a criterion for pooling literature data: Class C observations may train a model of apparent removal, but they must not be pooled with Class A/B observations as evidence of adsorption capacity.
 
@@ -897,14 +901,18 @@ Only the first kind transfers to real data without further evidence. The second 
 
 ### 5.1 Demonstrated computational findings (thermodynamic calculations and known-truth simulations)
 
+Findings 2–6 hold for the simulator used here: five mechanisms that are variants of one kinetic model family, with assumed analytical-error models for total Cr, XPS, XANES and solid inventory (§4.5, §4.7 items 2 and 4). They are benchmark results, not experimental conclusions, and other kinetic models or measured error distributions could change them.
+
 1. Three PHREEQC databases agree on Cr(VI) speciation to within 0.044 in species fraction. They differ by 63–83 mV on the Cr(VI)/Cr(III) boundary and by more than an order of magnitude on Cr(OH)₃(am) solubility at pH 4. Direct saturation indices show Cr(III) undersaturated up to 5,000 mg L⁻¹ at pH ≤ 4.25 (minteq.v4, I ≤ 0.01 M; 4.5 at I = 0.1 M) and pH ≤ 3.5 (minteq), on a 0.25-pH grid (Table S4). The constants have not been validated independently.
 2. Across 15,000 virtual studies under five mechanisms, isotherm fits of residual Cr(VI) with R² ≥ 0.95 occurred in 41–52% of studies with more than 20% reduction under surface, adsorption-coupled and combined reduction. Fitted q_max then exceeded the adsorption capacity in proportion to the reduction share. The effect was weak when reduction occurred only in solution.
-3. Observed through residual Cr(VI) alone, adsorption-only was not rejected by the test with the study-pooled, empirically calibrated threshold for 65–78% of high-reduction studies, and was demonstrated equivalent within a 10% margin for 43–73%. With total Cr, the test rejected it in 80–88%; with solid-phase evidence, in 92–98%. With the threshold calibrated on 360 negative controls from 18 corpora, the test's type-I error averaged 4.7–5.6% for every design over held-out simulated corpora (leave-one-corpus-out; 95% intervals within 2.5–8.6%), but reached 15–25% within single corpora; calibration on 6 corpora gave 14.2% and 10.8% for D1 on independent controls even with the conformal order statistic. These are empirical averages under the simulator, not a finite-sample 5% guarantee for a new corpus; a corpus-level guarantee is attainable with 18 corpora only at 5.3%, at lower power. Only the A2 design constrained the precipitated share.
+3. Observed through residual Cr(VI) alone, adsorption-only was not rejected by the test with the study-pooled, empirically calibrated threshold for 65–78% of high-reduction studies, and was demonstrated equivalent within a 10% margin for 43–73%. With total Cr, the test rejected it in 80–88%; with solid-phase evidence, in 92–98%. With the threshold calibrated on 360 negative controls from 18 corpora, the test's type-I error averaged 4.7–5.6% for every design over held-out simulated corpora (leave-one-corpus-out; 95% intervals within 2.5–8.6%), but reached 15–25% within single corpora; calibration on 6 corpora gave 14.2% and 10.8% for D1 on independent controls even with the conformal order statistic. These are empirical averages under the simulator, not a finite-sample 5% guarantee for a new corpus; a corpus-level guarantee is attainable with 18 corpora only at 5.3%, at lower power. Only the A2 design constrained the precipitated share, a limited benchmark finding based on 11 studies with a precipitated share above 0.02. The solid-phase results depend on the assumed XPS/XANES error models: with doubled noise or beam reduction, the published threshold's type-I error roughly doubled (up to 11.7%), while with a recalibrated threshold the power stayed at 92–96% for reduction shares above 30% (Table S16).
 4. LOSO R² for apparent uptake (0.48–0.65 across the five scenarios) was far below random-split R² (0.86–0.89). Speciation features did not improve it, and a corpus of 20–30 studies cannot rank learners. With 8 replicates per size, LOSO R² rose from 0.31 (12 studies) to 0.66 (48) and then levelled off (0.66 at 96; §3.4).
 5. Pooled conformal intervals reached nominal average coverage but covered only 65–75% of studies. Under random role assignment, the observed coverage of the exact study-level split-conformal interval M2s was consistent with its guarantee. That guarantee is a finite-corpus randomisation guarantee for a randomly selected held-out study of the same realised corpus, marginal over family and study size; it is not a guarantee for a genuinely new study from an independent literature population. The width was 3.5 units of log₁₀(y + c) at 90% and unbounded at 95% with literature-scale numbers of calibration studies. Such intervals are not practically reliable predictions for treatment design.
 6. Point-prediction designs were unsafe for 21% (S1) and 7% (S2) of new materials, and calibrated-bound designs were rarely available. Model-guided designs with sequential confirmatory testing (simple rule) were accepted for 105 (S1) and 98 (S2) of 300 materials per target, and no unsafe accepted designs were observed in the simulated test cohorts. The Wilson 95% upper bound is 1.3% of all materials, or 3.5–3.8% of accepted designs. In an independent cohort, the error-controlled rule accepted almost as many designs and kept the per-material false-acceptance probability ≤ 0.7%.
 
 ### 5.2 Proposed scientific and engineering implications
+
+These are proposals that follow from the benchmark under its model and measurement assumptions; none has yet been tested on experimental data.
 
 1. Residual-Cr(VI) isotherm constants should be reported, and pooled, as apparent removal capacities. Mechanistic claims require Class A evidence (§4.4).
 2. ML models of Cr(VI) removal should be validated by leave-one-study-out (or family-out) splits, with study-level uncertainty, before they are used for new materials.
@@ -913,9 +921,9 @@ Only the first kind transfers to real data without further evidence. The second 
 
 ## Data and code availability
 
-**Location.** All code, the three PHREEQC databases (with checksums and provenance), the virtual corpora, the result tables and the figure scripts are in the `cassia/` directory of the repository `karthice1/adsorption` (CASSIA 0.3.7). The repository root contains the `adsorption` equation package on which CASSIA depends.
+**Location.** All code, the three PHREEQC databases (with checksums and provenance), the virtual corpora, the result tables and the figure scripts are in the `cassia/` directory of the repository `karthice1/adsorption` (CASSIA 0.3.8). The repository root contains the `adsorption` equation package on which CASSIA depends.
 
-**Fixed snapshot.** The code commit is `e165fa260c9c8c506bf1e6b3ee3ba65db104f57e`. The source archive that accompanies the submission (`git archive`, repository root) is taken from the commit that follows it and adds only the rebuilt documents; its file name gives both commits (`cassia-<version>-source-code<code commit>-docs<documents commit>.tar.gz`). All code, data, result and figure files in it are those of the code commit, as the manifest verifies. Its content is identified by `release/MANIFEST.sha256` (SHA-256 checksums of every code, database, data, result and figure file; verify with `sha256sum -c release/MANIFEST.sha256` in `cassia/`). `release/RELEASE.md` records the commit, the environment (`requirements-lock.txt`; CPython 3.13.18, with package versions identical to the CPython 3.13.17 environment of earlier analyses), the test log (`release/test_log.txt`), the coverage report (`results/coverage_report.txt`) and the list of expected output tables.
+**Fixed snapshot.** The code commit is `a199ce1`. The source archive that accompanies the submission (`git archive`, repository root) is taken from the commit that follows it and adds only the rebuilt documents; its file name gives both commits (`cassia-<version>-source-code<code commit>-docs<documents commit>.tar.gz`). All code, data, result and figure files in it are those of the code commit, as the manifest verifies. Its content is identified by `release/MANIFEST.sha256` (SHA-256 checksums of every code, database, data, result and figure file; verify with `sha256sum -c release/MANIFEST.sha256` in `cassia/`). `release/RELEASE.md` records the commit, the environment (`requirements-lock.txt`; CPython 3.13.18, with package versions identical to the CPython 3.13.17 environment of earlier analyses), the test log (`release/test_log.txt`), the coverage report (`results/coverage_report.txt`) and the list of expected output tables.
 
 **Reproduction.** From the repository root:
 
@@ -923,27 +931,27 @@ Only the first kind transfers to real data without further evidence. The second 
 pip install -e .                       # adsorption equation package
 cd cassia
 pip install -e .[ml,pores,dev]
-pytest -q tests                        # 42 tests
+pytest -q tests                        # 43 tests
 bash scripts/reproduce_all.sh          # every table, figure and number, in dependency order (about 9-11 h, 4 cores)
 ```
 
 `scripts/reproduce_all.sh` runs the scripts of Table 2 in order. It does not require git metadata: in a source archive it takes the commit from its first argument, from the environment variable `CASSIA_COMMIT` or from `release/RELEASE.md`, and it stops before any computation if none is available. Each line can be run on its own; the outputs of each script are listed in Table 2 and in the Supplementary Material.
 
 **Reproduction status.** What has been run:
-- for this version, the 42 unit tests, on CPython 3.13.18 with the package versions of `requirements-lock.txt` (`release/test_log.txt`);
+- for this version, the 43 unit tests, on CPython 3.13.18 with the package versions of `requirements-lock.txt` (`release/test_log.txt`);
 - every script of Table 2, stage by stage, to produce the reported results;
-- for this version, from a clean `git archive` extraction of the code commit, the faster stages (`typeI_corpus.py`, `seqver_oc.py`, `bench_partition.py`, `m2s_family.py`, `verification_table.py`, `make_table_s1.py`, the summary stages of `typeI_validation.py` and `m2s_exchangeability.py`, and the supplement generator). All 12 regenerated result files were byte-identical to the committed ones, except `T_m2s_roles_summary.csv`, which differed only in the last floating-point digit (at most 4 × 10⁻¹⁶);
+- for this version, from a clean `git archive` extraction of the code commit, the faster stages (`typeI_corpus.py`, `seqver_oc.py`, `bench_partition.py`, `m2s_family.py`, `verification_table.py`, `make_table_s1.py`, the summary stages of `typeI_validation.py`, `m2s_exchangeability.py` and `meas_sensitivity.py`, and the supplement generator). All 14 regenerated result files were byte-identical to the committed ones, except `T_m2s_roles_summary.csv`, which differed only in the last floating-point digit (at most 4 × 10⁻¹⁶);
 - the role-randomised M2s evaluation (`m2s_exchangeability.py`) in full, in version 0.3.5; it is unchanged since.
 
 A single uninterrupted run of `reproduce_all.sh` from the source archive, with a complete execution log, has not yet been completed. It is required before publication; if any output differs from the reported values, the manuscript will be corrected.
 
-A tagged GitHub release (`cassia-v0.3.7`) of this commit, archived in Zenodo, will provide the permanent DOI. The tag and archive must be created by the author from the repository account; they could not be created from the computational environment. Until then, the commit hash, the source archive and the manifest identify the content unambiguously.
+A tagged GitHub release (`cassia-v0.3.8`) of this commit, archived in Zenodo, will provide the permanent DOI. The tag and archive must be created by the author from the repository account; they could not be created from the computational environment. Until then, the commit hash, the source archive and the manifest identify the content unambiguously.
 
 **Data templates.** The master-dataset template, schema, study registry, search log and PRISMA flow templates are in `cassia/data/`.
 
 **Third-party files.** The PHREEQC databases are distributed with USGS PHREEQC, a U.S. Government work in the public domain, and are included unmodified.
 
-**Software versions.** CASSIA 0.3.7; phreeqpython 1.6.2 (Vitens); PHREEQC databases minteq.v4.dat, minteq.dat and llnl.dat (revisions in Table S2); adsorption 0.1.0 (Amvro23); pyGAPS 4.3.1.dev693; NumPy 2.5.3; SciPy 1.18.1; pandas 3.0.5; scikit-learn 1.9.1; XGBoost 3.4.1; matplotlib 3.11.2; CPython 3.13.18 for the tests and the analyses added in this version, 3.13.17 for the earlier analyses.
+**Software versions.** CASSIA 0.3.8; phreeqpython 1.6.2 (Vitens); PHREEQC databases minteq.v4.dat, minteq.dat and llnl.dat (revisions in Table S2); adsorption 0.1.0 (Amvro23); pyGAPS 4.3.1.dev693; NumPy 2.5.3; SciPy 1.18.1; pandas 3.0.5; scikit-learn 1.9.1; XGBoost 3.4.1; matplotlib 3.11.2; CPython 3.13.18 for the tests and the analyses added in this version, 3.13.17 for the earlier analyses.
 
 No experimental data were generated, and no published experimental data were analysed, in this study.
 

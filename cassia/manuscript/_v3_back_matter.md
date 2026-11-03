@@ -19,7 +19,7 @@ bash scripts/reproduce_all.sh          # every table, figure and number, in depe
 **Reproduction status.** What has been run:
 - for this version, the 43 unit tests, on CPython 3.13.18 with the package versions of `requirements-lock.txt` (`release/test_log.txt`);
 - every script of Table 2, stage by stage, to produce the reported results;
-- for this version, from a clean `git archive` extraction of the code commit, the faster stages (`typeI_corpus.py`, `seqver_oc.py`, `bench_partition.py`, `m2s_family.py`, `verification_table.py`, `make_table_s1.py`, the summary stages of `typeI_validation.py` and `m2s_exchangeability.py`, and the supplement generator). All 12 regenerated result files were byte-identical to the committed ones, except `T_m2s_roles_summary.csv`, which differed only in the last floating-point digit (at most 4 × 10⁻¹⁶);
+- for this version, from a clean `git archive` extraction of the code commit, the faster stages (`typeI_corpus.py`, `seqver_oc.py`, `bench_partition.py`, `m2s_family.py`, `verification_table.py`, `make_table_s1.py`, the summary stages of `typeI_validation.py`, `m2s_exchangeability.py` and `meas_sensitivity.py`, and the supplement generator). All 14 regenerated result files were byte-identical to the committed ones, except `T_m2s_roles_summary.csv`, which differed only in the last floating-point digit (at most 4 × 10⁻¹⁶);
 - the role-randomised M2s evaluation (`m2s_exchangeability.py`) in full, in version 0.3.5; it is unchanged since.
 
 A single uninterrupted run of `reproduce_all.sh` from the source archive, with a complete execution log, has not yet been completed. It is required before publication; if any output differs from the reported values, the manuscript will be corrected.

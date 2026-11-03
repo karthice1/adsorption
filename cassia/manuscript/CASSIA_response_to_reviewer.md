@@ -1,49 +1,73 @@
-# Response to the Reviewer (ninth round)
+# Response to the Reviewer (tenth round)
 
-**Manuscript:** CASSIA: A Provenance-Aware Computational Framework and Known-Truth Benchmark for Evidence-Constrained Analysis of Cr(VI) Removal by Carbonaceous Materials (revision 9; software CASSIA 0.3.7, code commit `e165fa260c9c8c506bf1e6b3ee3ba65db104f57e`)
+**Manuscript:** CASSIA: A Provenance-Aware Computational Framework and Known-Truth Benchmark for Evidence-Constrained Analysis of Cr(VI) Removal by Carbonaceous Materials (revision 10; software CASSIA 0.3.8, code commit `a199ce1375e43c452ad3258e6a481c0be79b4b63`)
 
-We thank the reviewer for verifying the archive manifest and the M2s implementation, and for finding the mismatch between the family-specific point estimates and their bootstrap intervals. This revision makes the estimator and its interval consistent, and states the reproduction that has actually been run. The items that need the author's own details, accounts or computing time are listed at the end; we have not filled them in.
+We thank the reviewer for inspecting the source archive and for independently recalculating the pooled cluster-bootstrap intervals. We apologise for the mismatch in the source archive. The archive supplied with revision 9 was the previous release (0.3.6), attached in error. The correct revision-9 archive existed; we have checked it, and this revision supplies a new archive for 0.3.8. The other comments are addressed point by point. Items that need the author's own details, accounts or computing time are listed at the end; we have not filled them in.
 
 **Summary of changes.**
 
 | Comment | Change | Where |
 |---|---|---|
-| Major 1 Family-specific estimand | Estimand defined as the pooled rate; the cluster bootstrap now recomputes that pooled rate in each resample; Table S5c regenerated | Table S5c, §3.5, `scripts/m2s_exchangeability.py` |
-| Major 2 Reproducibility | Wording states what was run and that an uninterrupted end-to-end run is still outstanding; faster stages rerun from a clean archive of this version | §2.2, §2.12, Data and code availability |
-| Major 3 Empirical validation | Unchanged positioning; no values introduced | §3.8, §4.7 |
-| Minor 1 Table S5b page break | Table rows can no longer split across pages; header rows repeat; S5b layout tightened | All Word tables, Table S5b |
-| Minor 2 S5c caption | States the estimand | Table S5c |
-| Minor 3 Archive name | Archive file name now gives both the code and the documents commit; the relation is stated | Data availability, `release/RELEASE.md` |
-| Minor 4–8 | Require the author | Author actions |
+| 1 Wrong archive | The correct revision-9 archive is verified below. This revision's archive, `cassia-0.3.8-source-codea199ce1-docs<documents commit>.tar.gz`, identifies 0.3.8 throughout, contains the pooled-ratio bootstrap, and reproduces Table S5c byte for byte | Archive, Data availability |
+| 2 End-to-end run | Faster stages and the Table S5c summary rerun again from a clean archive of this version; the uninterrupted full run remains an author action | Data availability, author actions |
+| 3 Experimental validation | Unchanged positioning; no values introduced | §3.8, §4.7 |
+| 4 One kinetic model family | Claims restricted to this simulator family in the Abstract, Highlights and Conclusions | Abstract, Highlights, §5.1, §5.2 |
+| 5 XPS/XANES error models | New sensitivity analysis with error models larger than assumed (Table S16); A2 precipitation result qualified as a limited benchmark finding | Table S16, §3.3, §4.1, §5.1, `scripts/meas_sensitivity.py` |
+| Minor 7 Highlight | "No unsafe accepted design was observed in the simulated design cohort (not zero risk)" | Highlights |
+| Minor 8 Terminology | "Total-aqueous-Cr removal"; "uptake" defined as removal per gram, never adsorption | §2.1, §3.6 |
+| Minor 1–6 | Require the author | Author actions |
 
 ---
 
-## Major Comment 1 – Family-specific point estimates and bootstrap intervals
+## Major Comment 1 – The submitted source archive
 
-**Response: accepted; we use the reviewer's option 2.**
-- *Estimand.* The quantity of interest is the coverage probability for a test study drawn at random from the role assignments of a given family, pooled over corpora. This matches the marginal, study-level reading of the M2s guarantee, and it is the estimand already used in Table S5b. Each corpus is therefore weighted by the number of role assignments of that family it contributes.
-- *Point estimate.* Unchanged: the pooled rate.
-- *Interval.* The corpus-cluster bootstrap now resamples corpora with replacement and recomputes the same pooled ratio, i.e. the sum of covered role assignments divided by the number of role assignments, in each of 4,000 resamples. Previously it averaged per-corpus rates with equal weight. `scripts/m2s_family.py` (Table S5b) already used the pooled ratio, so the two tables now use the same estimator.
-- *Effect.* The point estimates are unchanged. The intervals changed by at most a few hundredths: for apparent uptake, hydrochar is now 0.85 (0.77–0.91) instead of (0.76–0.91), and manure biochar is unchanged at 0.89 (0.85–0.93). For q_tot,aq, hydrochar is 0.92 (0.81–0.99; 9 corpora). §3.5 now states the estimand, and the Table S5c caption defines it.
-- *Alternative estimand.* For transparency, the unweighted mean of the per-corpus rates is written to `T_m2s_exchangeability.csv` (column `family_<family>_equal_corpus_mean`). It differs from the pooled rate by at most 0.024; the largest difference is for porous carbon on C_e,tot. This reproduces the differences the reviewer reported.
-- *How the table was regenerated.* Only the summary stage was run (`m2s_exchangeability.py --summarise`), from the saved per-study results; no simulation was repeated. All other columns of the table are unchanged.
+**Response: accepted. The wrong file was attached.**
+- *What happened.* The archive the reviewer received, `cassia-0.3.6-source-ce80fd3.tar.gz`, is the revision-8 release. The revision-9 release was `cassia-0.3.7-source-codee165fa2-docs06d88bb.tar.gz`.
+- *Check of the 0.3.7 archive.* We extracted that archive into an empty directory. `pyproject.toml` and `CITATION.cff` give version 0.3.7, and `release/RELEASE.md` names CASSIA 0.3.7 and code commit e165fa260c9c8c506bf1e6b3ee3ba65db104f57e. All 129 manifest checksums pass. `scripts/m2s_exchangeability.py` contains the pooled-ratio bootstrap: each resample sums the covered role assignments and divides by the number of role assignments over the resampled corpora. Running `python scripts/m2s_exchangeability.py --summarise` inside the extracted archive regenerated `results/v3/T_m2s_exchangeability.csv` byte-identical to the archived file, i.e. the code in that archive reproduces Table S5c.
+- *This revision.* The archive supplied now is CASSIA 0.3.8. The same checks were repeated on it; see Reproducibility below.
+- *The six required actions.*
+  1. Archive: 0.3.8, attached.
+  2. Metadata: `pyproject.toml`, `CITATION.cff` and `release/RELEASE.md` identify 0.3.8 and code commit `a199ce1375e43c452ad3258e6a481c0be79b4b63`.
+  3. Pooled-ratio bootstrap: implemented since 0.3.7 and unchanged.
+  4. CSV and JSON outputs: regenerated by the script.
+  5. Manifest: regenerated after all changes to code and results.
+  6. Names: the archive file name gives the code commit and the documents commit. Data availability states that the archive is taken from the documents commit, whose code, data, results and figures are those of the code commit, as the manifest verifies.
 
 ---
 
 ## Major Comment 2 – End-to-end reproducibility
 
-**Response: accepted. The wording now matches what was run, and the full run remains an author action.**
-- *§2.2.* Every number is produced by the seeded scripts of Table 2. The reported results were produced by running these scripts stage by stage, and a single uninterrupted run of `reproduce_all.sh` from the source archive has not yet been completed.
-- *§2.12.* The bullet "full regeneration of every reported number from seeded scripts" has been replaced by: generation of every reported number by seeded scripts, and regeneration of the faster stages from a clean copy of the source, which reproduced the committed result tables byte for byte; a complete end-to-end run is still outstanding.
-- *Data and code availability.* A new paragraph, "Reproduction status", lists what was run: the tests, the stage-by-stage runs, the clean-copy regeneration of the faster stages, and the M2s evaluation. It states that the uninterrupted run is required before publication and that the manuscript will be corrected if any output differs.
-- *For this revision.* From a clean `git archive` extraction of the code commit of this version, we reran the faster stages: `typeI_corpus.py`, `seqver_oc.py`, `bench_partition.py`, `m2s_family.py`, `verification_table.py`, `make_table_s1.py`, the summary stages of `typeI_validation.py` and `m2s_exchangeability.py`, and the supplement generator. All 12 regenerated result files were byte-identical to the committed ones, except `T_m2s_roles_summary.csv`. That file differed only in the last floating-point digit (at most 4 × 10⁻¹⁶), because the summary stage recomputes it from the saved compressed per-study file. The generated supplementary text matched apart from the version label. The 42 tests passed (line coverage 82%).
-- *Full run.* We agree with every step the reviewer lists: a clean extraction of the archive, the CPython 3.13.18 environment of `requirements-lock.txt`, the 42 tests in that environment, a complete execution log, and a comparison of the generated tables with the documents. The run takes 9–11 h on 4 cores. Our cloud build environment restarts long-running processes before a run of that length finishes, so it must be done on the author's own machine. It is listed below.
+**Response: agreed; this remains a publication requirement and an author action.**
+- *Rerun for this version.* From a clean `git archive` extraction of the code commit of this version, we reran `typeI_corpus.py`, `seqver_oc.py`, `bench_partition.py`, `m2s_family.py`, `verification_table.py`, `make_table_s1.py`, the summary stages of `typeI_validation.py`, `m2s_exchangeability.py` and `meas_sensitivity.py`, and the supplement generator. All 14 regenerated result files, including Table S5c and the new Table S16, were byte-identical to the committed ones, except `T_m2s_roles_summary.csv`, which again differed only in the last floating-point digit (at most 4 × 10⁻¹⁶). The regenerated supplementary text was identical to the committed one. The simulation of Table S16 itself was run once in full (about 1 h on 4 cores); its nominal settings reproduce the fits of Table S8 to within 10⁻¹³.
+- *Tests.* The 42 existing tests and one new test passed (43 passed, line coverage 82%), on CPython 3.13.18 with the package versions of `requirements-lock.txt`.
+- *Full run.* The uninterrupted run of `reproduce_all.sh` from a clean extraction, with a complete execution log including software and Python versions, a comparison of every regenerated table and figure with the documents, and a report of every discrepancy, is listed as an author action. It takes 9–11 h on 4 cores and cannot be completed in our cloud build environment, which restarts long-running processes. Data availability states this.
+- *Independent verification statement.* §2.12 still contains the placeholder for the author's own statement of who verified the code and the results. Only the author can provide it.
 
 ---
 
 ## Major Comment 3 – Experimental validation
 
-**Response: agreed; no change of positioning.** No experimental values have been introduced, transcribed, estimated or digitised. The manuscript is positioned as a known-truth methodological benchmark for a computational-methodology journal. It states throughout that it is not an experimentally validated framework.
+**Response: agreed; no change of positioning.** No experimental values have been introduced, transcribed, estimated or digitised. The Ramirez et al. (2020) data still cannot be retrieved from our computational environment. The manuscript remains a known-truth methodological benchmark for a computational-methodology journal.
+
+---
+
+## Major Comment 4 – One kinetic model family
+
+**Response: accepted; we take the reviewer's acceptable alternative.** An independent alternative kinetic model would be a new study; we restrict the claims instead.
+- *Abstract.* "Across five mechanisms of one simulated kinetic model family"; the rejection power is stated "under assumed error models".
+- *Highlights.* The rejection-power highlight now reads "Under assumed error models, total-Cr and solid-phase data gave 80–98% rejection power".
+- *Conclusions.* §5.1 opens by stating that findings 2–6 hold for the simulator used here, five mechanisms that are variants of one kinetic model family with assumed analytical-error models, and that they are benchmark results, not experimental conclusions. §5.2 opens by stating that the implications are proposals under these assumptions and have not been tested on experimental data.
+- *Discussion.* §4.5 ("What each result depends on") and §4.7 items 2 and 4 already carry the same qualification.
+
+---
+
+## Major Comment 5 – XPS/XANES error assumptions
+
+**Response: accepted. A sensitivity analysis has been added, and the A2 result is qualified.**
+- *Design (Table S16, `scripts/meas_sensitivity.py`).* The 120 studies and paired adsorption-only controls of Table S8 were re-simulated for the XPS design D4x and the XANES design D4n with error models larger than assumed. For XPS we doubled the noise, the surface-enrichment log-SD and the maximum beam reduction; for XANES we raised the maximum beam reduction from 0.03 to 0.10 and doubled the noise. The analyst's adsorption-only fit keeps the nominal model, so the true error is misspecified. The fits use the same seeds and optimiser start values as Table S8, so the nominal settings reproduce its fits exactly. For each setting we report the type-I error and power with the published threshold applied unchanged, and with a threshold recalibrated on the perturbed controls.
+- *Results.* With the published threshold unchanged, the type-I error of D4x rose from 5.8% (nominal) to 11.7% when the XPS noise or the maximum beam reduction was doubled. Doubling the surface-enrichment log-SD had no effect on the controls, because their solid holds no Cr(III) to enrich. For D4n the type-I error rose from 6.7% to 9.2% (beam reduction up to 0.10) and 10.8% (noise doubled). Power was unchanged or slightly higher: 80–84% for reduction shares of 5–30% and 94–96% above 30%. With a threshold recalibrated on the perturbed controls, the cross-validated type-I error was 5.0–8.3% and power was 76–80% and 92–96%. Larger solid-phase errors therefore mainly inflate false rejections at the published threshold; they do not remove the power advantage once the threshold is recalibrated. With 120 controls per setting, the type-I errors carry a binomial SE of about 2 percentage points. Errors that differ in kind, such as systematic peak-fitting bias, were not tested, and §4.1 says so.
+- *Code.* `equivalence_test_v3` has a new optional argument for the data-generating technique model; with the default its behaviour is unchanged, which a new unit test checks.
+- *A2 precipitation.* §3.3, §4.1 and §5.1 now call it a limited benchmark finding, based on 11 studies with a precipitated share above 0.02 and on the assumed inventory and phase-evidence errors, not an established capability of A2 data.
 
 ---
 
@@ -51,12 +75,11 @@ We thank the reviewer for verifying the archive manifest and the M2s implementat
 
 | No. | Comment | Response |
 |---|---|---|
-| 1 | Table S5b page break | Every table row in the Word documents is now set so that it cannot break across a page, and header rows repeat on a new page. Column widths now follow the cell contents rather than the header text, and tables with ten or more columns use 8-pt type. Table S5b also merges the study and corpus counts into one column, "studies (corpora)", and shows coverage to two decimals. Its rows no longer wrap or split. |
-| 2 | S5c caption | The caption now defines the estimand (Major Comment 1). |
-| 3 | Archive name | The archive is a `git archive` of the commit that follows the code commit and adds only the rebuilt documents and the release record. Its code, data, result and figure files are those of the code commit, as the manifest verifies. The archive is now named `cassia-0.3.7-source-code<code commit>-docs<documents commit>.tar.gz`, and Data availability and `release/RELEASE.md` explain this. |
-| 4 | DOI | Requires the author's GitHub and Zenodo accounts; `CITATION.cff` keeps the placeholder until then. |
-| 5–7 | Title page, declarations, verification statement | Require the author. |
-| 8 | Length | About 20,600 words including tables, Appendix A and references. The author will check this against the target journal's limit. |
+| 1 | Length | About 21,000 words including tables, Appendix A and references; the author will check the target journal's limit. |
+| 2–5 | Title page, CRediT, funding, AI declaration | Require the author. |
+| 6 | Release and DOI | Require the author's GitHub and Zenodo accounts. |
+| 7 | Highlight | "No unsafe accepted design was observed in the simulated design cohort (not zero risk)" (85 characters). |
+| 8 | Terminology | The second endpoint is now named "total-aqueous-Cr removal" (§2.1), and §2.1 states that "uptake" in this paper means removal from solution per gram of sorbent, never adsorption. §3.6 says "removal per gram of sorbent" for the design-layer models. |
 
 ---
 
@@ -64,11 +87,12 @@ We thank the reviewer for verifying the archive manifest and the M2s implementat
 
 | Item | Where |
 |---|---|
+| Attach the correct archive: `cassia-0.3.8-source-codea199ce1-docs<documents commit>.tar.gz` | Submission |
 | Surname, affiliation, ORCID | Title page (`build_docx.js`), `CITATION.cff`, `LICENSE` |
-| Funding statement | Back matter (currently marked [Author to confirm]) |
+| Funding statement | Back matter |
 | CRediT statement and any co-authors | Back matter |
-| The author's own statement of verification of code and results | §2.12 (placeholder) |
+| The author's own statement of who verified the code and results | §2.12 |
 | Generative-AI declaration, checked against the target journal's policy | Back matter |
 | Word limit of the target journal | Whole manuscript |
-| GitHub release `cassia-v0.3.7` and Zenodo DOI | Data availability, `CITATION.cff` (steps in `README.md`) |
-| Uninterrupted run of `bash scripts/reproduce_all.sh` from a clean extraction of the archive, in the environment of `requirements-lock.txt` (CPython 3.13.18), with the 42 tests and a complete execution log; comparison with the submitted tables | `release/test_log.txt`, results, Data availability "Reproduction status" |
+| GitHub release `cassia-v0.3.8` and Zenodo DOI | Data availability, `CITATION.cff` |
+| Uninterrupted run of `bash scripts/reproduce_all.sh` from a clean extraction of the archive, CPython 3.13.18 with `requirements-lock.txt`, with the tests and a complete execution log; comparison with every reported table and figure, reporting every discrepancy | Data availability, `release/` |

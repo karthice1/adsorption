@@ -1,24 +1,24 @@
-# CASSIA 0.3.7 release record
+# CASSIA 0.3.8 release record
 
 - Date: 2026-11-03
-- Code commit at manifest generation (parent of the commit that adds this file): `e165fa260c9c8c506bf1e6b3ee3ba65db104f57e`
-- Content identity: `release/MANIFEST.sha256` (129 files); verify with `sha256sum -c release/MANIFEST.sha256`
+- Code commit at manifest generation (parent of the commit that adds this file): `a199ce1375e43c452ad3258e6a481c0be79b4b63`
+- Content identity: `release/MANIFEST.sha256` (140 files); verify with `sha256sum -c release/MANIFEST.sha256`
 - Environment: `requirements-lock.txt` (CPython 3.13.18; package versions identical to the 3.13.17 environment of earlier releases); PHREEQC databases with checksums and provenance in `databases/`
 - Tests: `release/test_log.txt`; coverage: `results/coverage_report.txt`
-- Review source archive: `git archive` (repository root) of the next commit, which adds this file and the rebuilt documents only; named `cassia-0.3.7-source-code<code commit>-docs<documents commit>.tar.gz`. Its code, data, result and figure files are those of the code commit above (verify with the manifest)
-- Permanent archive: to be created by the author (GitHub release `cassia-v0.3.7` + Zenodo DOI); not available from the build environment
+- Review source archive: `git archive` (repository root) of the next commit, which adds this file and the rebuilt documents only; named `cassia-0.3.8-source-code<code commit>-docs<documents commit>.tar.gz`. Its code, data, result and figure files are those of the code commit above (verify with the manifest)
+- Permanent archive: to be created by the author (GitHub release `cassia-v0.3.8` + Zenodo DOI); not available from the build environment
 
 ## Reproduce
 
 ```
 pip install -e ..                      # adsorption equation package (repository root)
 pip install -e .[ml,pores,dev]
-pytest -q tests                        # expected: 42 tests pass (see release/test_log.txt)
+pytest -q tests                        # expected: 43 tests pass (see release/test_log.txt)
 bash scripts/reproduce_all.sh          # every table, figure and number, in dependency order (~9-11 h, 4 cores);
                                        # without .git: pass the commit as argument or set CASSIA_COMMIT
 ```
 
-## Expected output tables (77)
+## Expected output tables (87)
 
 - `results/v2/T_S1_simulator_parameters.csv`
 - `results/v2/T_S3_hyperparameters.csv`
@@ -65,6 +65,7 @@ bash scripts/reproduce_all.sh          # every table, figure and number, in depe
 - `results/v3/T_m2s_family_full.csv`
 - `results/v3/T_m2s_roles_summary.csv`
 - `results/v3/T_m2s_summary.csv`
+- `results/v3/T_meas_sensitivity.csv`
 - `results/v3/T_mlscen_summary.csv`
 - `results/v3/T_mlscen_uq.csv`
 - `results/v3/T_seqver_oc.csv`
@@ -89,6 +90,15 @@ bash scripts/reproduce_all.sh          # every table, figure and number, in depe
 - `results/v3/m2s_exchangeability.json`
 - `results/v3/m2s_per_study.csv`
 - `results/v3/m2s_roles_per_study.csv.gz`
+- `results/v3/meas_sens_XANES_beam_0.10.csv.gz`
+- `results/v3/meas_sens_XANES_noise_x2.csv.gz`
+- `results/v3/meas_sens_XANES_nominal.csv.gz`
+- `results/v3/meas_sens_XPS_beam_x2.csv.gz`
+- `results/v3/meas_sens_XPS_enrichment_sd_x2.csv.gz`
+- `results/v3/meas_sens_XPS_noise_x2.csv.gz`
+- `results/v3/meas_sens_XPS_nominal.csv.gz`
+- `results/v3/meas_sens_warmstarts.json`
+- `results/v3/meas_sensitivity.json`
 - `results/v3/mlscen.json`
 - `results/v3/mlscen_metrics.csv`
 - `results/v3/mlscen_uq.csv`
