@@ -1,6 +1,6 @@
 # Response to the Reviewer (eighth round)
 
-**Manuscript:** CASSIA: A Provenance-Aware Computational Framework and Known-Truth Benchmark for Evidence-Constrained Analysis of Cr(VI) Removal by Carbonaceous Materials (revision 8; software CASSIA 0.3.6, code commit `566e59fd2287a5144612a86f3d13a384e8db1879`)
+**Manuscript:** CASSIA: A Provenance-Aware Computational Framework and Known-Truth Benchmark for Evidence-Constrained Analysis of Cr(VI) Removal by Carbonaceous Materials (revision 8; software CASSIA 0.3.6, code commit `5c1f5df334af2fafa5f307d9265e9cf8a4c891c0`)
 
 We thank the reviewer for checking the source archive and the role-averaged M2s implementation independently, and for the clear statement of what remains. This revision makes the wording corrections requested in Section 4 of the report and shortens the manuscript for a computational-methodology journal. The items that need the author's own details, accounts or computing time are listed at the end; we have not filled them in.
 
