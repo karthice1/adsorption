@@ -45,6 +45,7 @@ F = F.assign(**{k: F[f"{k}_lo"].map("{:.2f}".format) + "–" + F[f"{k}_hi"].map(
                 for k in ("envelope95", "cluster95", "wilson95")})
 F = F[["target", "family", "n_studies", "n_corpora", "mean_coverage", "frac_studies_cov_ge_0.9", "envelope95", "cluster95",
        "wilson95", "frac_unbounded", "mean_width_log10_bounded"]]
+F = F.assign(target=F.target.str.replace("_", " "), family=F.family.str.replace("_", " "))
 F.columns = ["target", "family", "studies", "corpora", "mean coverage", "fraction ≥ 0.90", "95% envelope (reported)",
              "95% cluster bootstrap", "95% Wilson (descriptive)", "fraction unbounded", "mean width (log₁₀, bounded)"]
 s5b = ("## Table S5b. M2s (exact study-level split conformal) by material family at nominal 90% (10 corpora, outer leave-one-study-out; one fixed-seed calibration split per corpus, a single realisation of the role assignment; role-averaged family rates are in Table S5c)\n\n"

@@ -4,7 +4,7 @@ All results in this supplement are synthetic (known-truth simulations) or thermo
 
 | Tables | Generating script | CSV files |
 |---|---|---|
-| S1 | `scripts/make_table_s1.py` (from `cassia.simulate.parameter_table()`, CASSIA 0.3.5) | `results/v3/T_S1_simulator_parameters.csv` |
+| S1 | `scripts/make_table_s1.py` (from `cassia.simulate.parameter_table()`, CASSIA 0.3.6) | `results/v3/T_S1_simulator_parameters.csv` |
 | S2–S5 | `scripts/run_v2.py` | `results/v2/` |
 | S5b | `scripts/m2s_family.py` (from `run_v3.py` stage m2s) | `results/v3/T_m2s_family_full.csv` |
 | S5c | `scripts/m2s_exchangeability.py` | `results/v3/T_m2s_exchangeability.csv` |
@@ -18,7 +18,7 @@ All results in this supplement are synthetic (known-truth simulations) or thermo
 | Fig. S1 | `scripts/make_supp_figs.py` | `results/v2/ident_profiles.csv` |
 
 
-## Table S1. Simulator parameters, distributions, measurement models, evidence-class probabilities and numerical settings (CASSIA 0.3.5)
+## Table S1. Simulator parameters, distributions, measurement models, evidence-class probabilities and numerical settings (CASSIA 0.3.6)
 
 Generated from the implementation by `scripts/make_table_s1.py`; a unit test checks that the evidence-class probabilities and measurement-model constants in this table are those used by the code. LN(m, s): log-normal with log-mean m and log-SD s; U(a, b): uniform; N(0, s): normal.
 
@@ -181,30 +181,30 @@ Fraction of test studies with ≥ 90% within-study coverage, mean within-study c
 
 | target | family | studies | corpora | mean coverage | fraction ≥ 0.90 | 95% envelope (reported) | 95% cluster bootstrap | 95% Wilson (descriptive) | fraction unbounded | mean width (log₁₀, bounded) |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Ce_VI | AC_chemical | 50 | 10 | 0.990 | 0.960 | 0.86–1.00 | 0.90–1.00 | 0.86–0.99 | 0.000 | 3.995 |
-| Ce_VI | AC_physical | 50 | 10 | 0.999 | 1.000 | 0.93–1.00 | 1.00–1.00 | 0.93–1.00 | 0.000 | 4.007 |
-| Ce_VI | biochar_manure | 50 | 10 | 0.993 | 0.960 | 0.86–1.00 | 0.90–1.00 | 0.86–0.99 | 0.000 | 3.920 |
-| Ce_VI | biochar_wood | 50 | 10 | 0.979 | 0.920 | 0.81–0.98 | 0.86–0.98 | 0.81–0.97 | 0.000 | 3.913 |
-| Ce_VI | hydrochar | 50 | 10 | 0.992 | 0.940 | 0.84–1.00 | 0.88–1.00 | 0.84–0.98 | 0.000 | 3.941 |
-| Ce_VI | porous_carbon | 50 | 10 | 0.959 | 0.900 | 0.79–0.98 | 0.80–0.98 | 0.79–0.96 | 0.000 | 3.882 |
-| Ce_total | AC_chemical | 29 | 10 | 0.993 | 1.000 | 0.88–1.00 | 1.00–1.00 | 0.88–1.00 | 0.621 | 2.045 |
-| Ce_total | AC_physical | 29 | 10 | 0.988 | 0.931 | 0.78–1.00 | 0.84–1.00 | 0.78–0.98 | 0.655 | 2.118 |
-| Ce_total | biochar_manure | 31 | 10 | 0.997 | 0.968 | 0.84–1.00 | 0.91–1.00 | 0.84–0.99 | 0.645 | 2.240 |
-| Ce_total | biochar_wood | 29 | 10 | 1.000 | 1.000 | 0.88–1.00 | 1.00–1.00 | 0.88–1.00 | 0.655 | 2.282 |
-| Ce_total | hydrochar | 31 | 9 | 0.994 | 1.000 | 0.89–1.00 | 1.00–1.00 | 0.89–1.00 | 0.645 | 2.163 |
-| Ce_total | porous_carbon | 30 | 10 | 0.988 | 0.967 | 0.83–1.00 | 0.91–1.00 | 0.83–0.99 | 0.533 | 2.207 |
-| q_app_VI | AC_chemical | 50 | 10 | 0.995 | 0.980 | 0.90–1.00 | 0.94–1.00 | 0.90–1.00 | 0.000 | 3.268 |
-| q_app_VI | AC_physical | 50 | 10 | 0.984 | 0.960 | 0.86–1.00 | 0.90–1.00 | 0.86–0.99 | 0.000 | 3.257 |
-| q_app_VI | biochar_manure | 50 | 10 | 0.970 | 0.900 | 0.79–0.98 | 0.80–0.98 | 0.79–0.96 | 0.000 | 3.392 |
-| q_app_VI | biochar_wood | 50 | 10 | 0.976 | 0.900 | 0.79–0.96 | 0.84–0.96 | 0.79–0.96 | 0.000 | 3.316 |
-| q_app_VI | hydrochar | 50 | 10 | 0.953 | 0.840 | 0.71–0.92 | 0.76–0.90 | 0.71–0.92 | 0.000 | 3.231 |
-| q_app_VI | porous_carbon | 50 | 10 | 0.988 | 0.980 | 0.90–1.00 | 0.94–1.00 | 0.90–1.00 | 0.000 | 3.239 |
-| q_tot_aq | AC_chemical | 29 | 10 | 1.000 | 1.000 | 0.88–1.00 | 1.00–1.00 | 0.88–1.00 | 0.621 | 3.811 |
-| q_tot_aq | AC_physical | 29 | 10 | 0.993 | 0.966 | 0.83–1.00 | 0.90–1.00 | 0.83–0.99 | 0.655 | 3.735 |
-| q_tot_aq | biochar_manure | 31 | 10 | 0.978 | 0.968 | 0.84–1.00 | 0.90–1.00 | 0.84–0.99 | 0.645 | 3.842 |
-| q_tot_aq | biochar_wood | 29 | 10 | 1.000 | 1.000 | 0.88–1.00 | 1.00–1.00 | 0.88–1.00 | 0.655 | 3.968 |
-| q_tot_aq | hydrochar | 31 | 9 | 0.986 | 0.903 | 0.68–1.00 | 0.68–1.00 | 0.75–0.97 | 0.645 | 3.821 |
-| q_tot_aq | porous_carbon | 30 | 10 | 0.995 | 0.967 | 0.83–1.00 | 0.91–1.00 | 0.83–0.99 | 0.533 | 3.733 |
+| Ce VI | AC chemical | 50 | 10 | 0.990 | 0.960 | 0.86–1.00 | 0.90–1.00 | 0.86–0.99 | 0.000 | 3.995 |
+| Ce VI | AC physical | 50 | 10 | 0.999 | 1.000 | 0.93–1.00 | 1.00–1.00 | 0.93–1.00 | 0.000 | 4.007 |
+| Ce VI | biochar manure | 50 | 10 | 0.993 | 0.960 | 0.86–1.00 | 0.90–1.00 | 0.86–0.99 | 0.000 | 3.920 |
+| Ce VI | biochar wood | 50 | 10 | 0.979 | 0.920 | 0.81–0.98 | 0.86–0.98 | 0.81–0.97 | 0.000 | 3.913 |
+| Ce VI | hydrochar | 50 | 10 | 0.992 | 0.940 | 0.84–1.00 | 0.88–1.00 | 0.84–0.98 | 0.000 | 3.941 |
+| Ce VI | porous carbon | 50 | 10 | 0.959 | 0.900 | 0.79–0.98 | 0.80–0.98 | 0.79–0.96 | 0.000 | 3.882 |
+| Ce total | AC chemical | 29 | 10 | 0.993 | 1.000 | 0.88–1.00 | 1.00–1.00 | 0.88–1.00 | 0.621 | 2.045 |
+| Ce total | AC physical | 29 | 10 | 0.988 | 0.931 | 0.78–1.00 | 0.84–1.00 | 0.78–0.98 | 0.655 | 2.118 |
+| Ce total | biochar manure | 31 | 10 | 0.997 | 0.968 | 0.84–1.00 | 0.91–1.00 | 0.84–0.99 | 0.645 | 2.240 |
+| Ce total | biochar wood | 29 | 10 | 1.000 | 1.000 | 0.88–1.00 | 1.00–1.00 | 0.88–1.00 | 0.655 | 2.282 |
+| Ce total | hydrochar | 31 | 9 | 0.994 | 1.000 | 0.89–1.00 | 1.00–1.00 | 0.89–1.00 | 0.645 | 2.163 |
+| Ce total | porous carbon | 30 | 10 | 0.988 | 0.967 | 0.83–1.00 | 0.91–1.00 | 0.83–0.99 | 0.533 | 2.207 |
+| q app VI | AC chemical | 50 | 10 | 0.995 | 0.980 | 0.90–1.00 | 0.94–1.00 | 0.90–1.00 | 0.000 | 3.268 |
+| q app VI | AC physical | 50 | 10 | 0.984 | 0.960 | 0.86–1.00 | 0.90–1.00 | 0.86–0.99 | 0.000 | 3.257 |
+| q app VI | biochar manure | 50 | 10 | 0.970 | 0.900 | 0.79–0.98 | 0.80–0.98 | 0.79–0.96 | 0.000 | 3.392 |
+| q app VI | biochar wood | 50 | 10 | 0.976 | 0.900 | 0.79–0.96 | 0.84–0.96 | 0.79–0.96 | 0.000 | 3.316 |
+| q app VI | hydrochar | 50 | 10 | 0.953 | 0.840 | 0.71–0.92 | 0.76–0.90 | 0.71–0.92 | 0.000 | 3.231 |
+| q app VI | porous carbon | 50 | 10 | 0.988 | 0.980 | 0.90–1.00 | 0.94–1.00 | 0.90–1.00 | 0.000 | 3.239 |
+| q tot aq | AC chemical | 29 | 10 | 1.000 | 1.000 | 0.88–1.00 | 1.00–1.00 | 0.88–1.00 | 0.621 | 3.811 |
+| q tot aq | AC physical | 29 | 10 | 0.993 | 0.966 | 0.83–1.00 | 0.90–1.00 | 0.83–0.99 | 0.655 | 3.735 |
+| q tot aq | biochar manure | 31 | 10 | 0.978 | 0.968 | 0.84–1.00 | 0.90–1.00 | 0.84–0.99 | 0.645 | 3.842 |
+| q tot aq | biochar wood | 29 | 10 | 1.000 | 1.000 | 0.88–1.00 | 1.00–1.00 | 0.88–1.00 | 0.655 | 3.968 |
+| q tot aq | hydrochar | 31 | 9 | 0.986 | 0.903 | 0.68–1.00 | 0.68–1.00 | 0.75–0.97 | 0.645 | 3.821 |
+| q tot aq | porous carbon | 30 | 10 | 0.995 | 0.967 | 0.83–1.00 | 0.91–1.00 | 0.83–0.99 | 0.533 | 3.733 |
 
 ## Table S5c. M2s coverage under the hierarchical simulator design (nominal 90%, β = 0.9; 10 corpora × 50 random proper-training sets, every role assignment enumerated)
 
