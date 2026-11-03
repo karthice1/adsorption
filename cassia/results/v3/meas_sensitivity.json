@@ -1,0 +1,157 @@
+{
+ "settings": {
+  "XPS_nominal": [
+   "D4x",
+   {}
+  ],
+  "XPS_noise_x2": [
+   "D4x",
+   {
+    "noise": 0.1
+   }
+  ],
+  "XPS_enrichment_sd_x2": [
+   "D4x",
+   {
+    "enrich_logsd": 0.8
+   }
+  ],
+  "XPS_beam_x2": [
+   "D4x",
+   {
+    "beam_max": 0.3
+   }
+  ],
+  "XANES_nominal": [
+   "D4n",
+   {}
+  ],
+  "XANES_beam_0.10": [
+   "D4n",
+   {
+    "beam_max": 0.1
+   }
+  ],
+  "XANES_noise_x2": [
+   "D4n",
+   {
+    "noise": 0.06
+   }
+  ]
+ },
+ "sd_rel": 0.03,
+ "table": [
+  {
+   "setting": "XPS_nominal",
+   "design": "D4x",
+   "perturbation": "none",
+   "n_controls": 120,
+   "published_threshold": 79.598,
+   "typeI_published_threshold": 0.0583,
+   "recalibrated_threshold": 85.451,
+   "typeI_recalibrated_cv": 0.0417,
+   "n|5-30%": 50,
+   "power_published|5-30%": 0.8,
+   "power_recalibrated|5-30%": 0.8,
+   "n|>30%": 51,
+   "power_published|>30%": 0.9608,
+   "power_recalibrated|>30%": 0.9608
+  },
+  {
+   "setting": "XPS_noise_x2",
+   "design": "D4x",
+   "perturbation": "{\"noise\": 0.1}",
+   "n_controls": 120,
+   "published_threshold": 79.598,
+   "typeI_published_threshold": 0.1167,
+   "recalibrated_threshold": 95.3755,
+   "typeI_recalibrated_cv": 0.075,
+   "n|5-30%": 50,
+   "power_published|5-30%": 0.8,
+   "power_recalibrated|5-30%": 0.8,
+   "n|>30%": 51,
+   "power_published|>30%": 0.9608,
+   "power_recalibrated|>30%": 0.9608
+  },
+  {
+   "setting": "XPS_enrichment_sd_x2",
+   "design": "D4x",
+   "perturbation": "{\"enrich_logsd\": 0.8}",
+   "n_controls": 120,
+   "published_threshold": 79.598,
+   "typeI_published_threshold": 0.0583,
+   "recalibrated_threshold": 85.451,
+   "typeI_recalibrated_cv": 0.05,
+   "n|5-30%": 50,
+   "power_published|5-30%": 0.8,
+   "power_recalibrated|5-30%": 0.8,
+   "n|>30%": 51,
+   "power_published|>30%": 0.9608,
+   "power_recalibrated|>30%": 0.9608
+  },
+  {
+   "setting": "XPS_beam_x2",
+   "design": "D4x",
+   "perturbation": "{\"beam_max\": 0.3}",
+   "n_controls": 120,
+   "published_threshold": 79.598,
+   "typeI_published_threshold": 0.1167,
+   "recalibrated_threshold": 101.8085,
+   "typeI_recalibrated_cv": 0.0833,
+   "n|5-30%": 50,
+   "power_published|5-30%": 0.8,
+   "power_recalibrated|5-30%": 0.76,
+   "n|>30%": 51,
+   "power_published|>30%": 0.9608,
+   "power_recalibrated|>30%": 0.9412
+  },
+  {
+   "setting": "XANES_nominal",
+   "design": "D4n",
+   "perturbation": "none",
+   "n_controls": 120,
+   "published_threshold": 78.3745,
+   "typeI_published_threshold": 0.0667,
+   "recalibrated_threshold": 96.76,
+   "typeI_recalibrated_cv": 0.0333,
+   "n|5-30%": 50,
+   "power_published|5-30%": 0.82,
+   "power_recalibrated|5-30%": 0.78,
+   "n|>30%": 51,
+   "power_published|>30%": 0.9412,
+   "power_recalibrated|>30%": 0.9412
+  },
+  {
+   "setting": "XANES_beam_0.10",
+   "design": "D4n",
+   "perturbation": "{\"beam_max\": 0.1}",
+   "n_controls": 120,
+   "published_threshold": 78.3745,
+   "typeI_published_threshold": 0.0917,
+   "recalibrated_threshold": 97.5778,
+   "typeI_recalibrated_cv": 0.0583,
+   "n|5-30%": 50,
+   "power_published|5-30%": 0.84,
+   "power_recalibrated|5-30%": 0.8,
+   "n|>30%": 51,
+   "power_published|>30%": 0.9412,
+   "power_recalibrated|>30%": 0.9412
+  },
+  {
+   "setting": "XANES_noise_x2",
+   "design": "D4n",
+   "perturbation": "{\"noise\": 0.06}",
+   "n_controls": 120,
+   "published_threshold": 78.3745,
+   "typeI_published_threshold": 0.1083,
+   "recalibrated_threshold": 107.7763,
+   "typeI_recalibrated_cv": 0.0583,
+   "n|5-30%": 50,
+   "power_published|5-30%": 0.84,
+   "power_recalibrated|5-30%": 0.78,
+   "n|>30%": 51,
+   "power_published|>30%": 0.9608,
+   "power_recalibrated|>30%": 0.9216
+  }
+ ]
+}

@@ -277,6 +277,23 @@ def test_equivalence_v3_control_and_reduction():
     assert set(k for k in ctrl if k.startswith("equiv_")) == {"equiv_0.05", "equiv_0.1", "equiv_0.2"}
 
 
+def test_equivalence_v3_true_tech_default_unchanged():
+    """A data-generating technique model equal to the nominal one reproduces the default exactly;
+    a larger one changes the data but not the analyst's nominal fit."""
+    from cassia import measurement as ms
+    m, meta = _one_study()
+    mm = sim.apply_scenario(m, "A")
+    base = idf.equivalence_test_v3(mm, meta, "D4x", sd_rel=0.03, seed=3, n_starts=2)
+    same = idf.equivalence_test_v3(mm, meta, "D4x", sd_rel=0.03, seed=3, n_starts=2,
+                                   true_tech=dict(ms.TECHNIQUES["XPS"]))
+    assert base.keys() == same.keys()
+    for k in base:
+        assert np.array_equal(np.asarray(base[k]), np.asarray(same[k])), k
+    worse = idf.equivalence_test_v3(mm, meta, "D4x", sd_rel=0.03, seed=3, n_starts=2,
+                                    true_tech={"noise": 0.10})
+    assert worse["chi2"] != base["chi2"]
+
+
 def test_parameter_table_matches_implementation():
     """Table S1 is generated from the constants the simulator and measurement models use."""
     from cassia import measurement as ms

@@ -438,7 +438,7 @@ def _stack_equiv(base, design):
 
 
 def equivalence_test_v3(m: sim.Material, meta: dict, design: str, sd_rel=0.03, seed=0, n_starts=3,
-                        margins=(0.05, 0.10, 0.20), margin_ox=0.05, alpha=0.05, x_init=None):
+                        margins=(0.05, 0.10, 0.20), margin_ox=0.05, alpha=0.05, x_init=None, true_tech=None):
     """Goodness of fit and a formal equivalence test of an adsorption-only model.
 
     Weighted least squares with independent, heteroscedastic errors: SD = sd_rel * y + floor for
@@ -450,6 +450,11 @@ def equivalence_test_v3(m: sim.Material, meta: dict, design: str, sd_rel=0.03, s
     noise-free data = non-centrality of the misfit, the operating-characteristic truth) and, for
     each margin eps, lambda0(eps) = sum((eps*y_i or margin_ox)/sd_i)^2 and the TOST-type decision
     'equivalent within eps' if chi2_obs <= ncx2.ppf(alpha, dof, lambda0).
+
+    ``true_tech`` (measurement-model sensitivity): optional overrides of the technique's
+    ``enrich_logsd``, ``beam_max`` and ``noise`` used to GENERATE the oxidation-state data. The
+    analyst's fit keeps the nominal model (nominal SDs and beam-reduction bound), i.e. the true
+    analytical error is misspecified. With ``true_tech=None`` the behaviour is unchanged.
     """
     rng = np.random.default_rng(seed)
     base = observe(m, meta)
@@ -458,7 +463,12 @@ def equivalence_test_v3(m: sim.Material, meta: dict, design: str, sd_rel=0.03, s
     nrest = y.size - nc
     # true technique bias for this study (drawn), measurement noise
     tech = TECH_OF.get(design)
-    e, bm = ms.draw_technique_bias(rng, tech) if tech else (1.0, 0.0)
+    tt = {**ms.TECHNIQUES[tech], **true_tech} if (tech and true_tech) else None
+    if tt is not None:
+        e = float(np.exp(rng.normal(0, tt["enrich_logsd"]))) if tt["enrich_logsd"] > 0 else 1.0
+        bm = float(rng.uniform(0, tt["beam_max"]))
+    else:
+        e, bm = ms.draw_technique_bias(rng, tech) if tech else (1.0, 0.0)
     y_true_obs, _ = stack(base, design, tech=(e, bm)) if tech else (y, None)
     if design == "D5":
         y_true_obs = y_true_obs[:-len(base["pfrac"])]
@@ -467,7 +477,10 @@ def equivalence_test_v3(m: sim.Material, meta: dict, design: str, sd_rel=0.03, s
     bias = np.exp(rng.normal(0, 0.05))
     yobs = y_true_obs.copy()
     yobs[:nc] = y_true_obs[:nc] * bias * (1 + rng.normal(0, sd_rel, nc))
-    yobs[nc:] = y_true_obs[nc:] + rng.normal(0, 1, nrest) * sd[nc:]
+    sd_data = sd.copy()
+    if tt is not None:
+        sd_data[nc:nc + len(base["xps"])] = tt["noise"]                    # true oxidation-state noise
+    yobs[nc:] = y_true_obs[nc:] + rng.normal(0, 1, nrest) * sd_data[nc:]
     lod = yobs[:nc] < 0.01
     yobs[:nc][lod] = 0.005
     sd_fit = sd.copy(); sd_fit[:nc][lod] = 0.01

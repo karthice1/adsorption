@@ -1,4 +1,4 @@
-# Interpreter: CPython 3.13.18 (0.3.3-0.3.7 tests and new analyses). Results first generated up to 0.3.2 used CPython 3.13.17 with these same package versions.
+# Interpreter: CPython 3.13.18 (0.3.3-0.3.8 tests and new analyses). Results first generated up to 0.3.2 used CPython 3.13.17 with these same package versions.
 adsorption_file_parser==0.3.0
 annotated-types==0.8.0
 anyio==4.15.1

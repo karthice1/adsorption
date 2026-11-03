@@ -109,7 +109,7 @@ The error-controlled rule accepted almost as many designs as the simple rule (81
 - They were sensitive to lower pH: compliance fell to 81% at −0.25 and 62% at −0.5 pH units, because dissolved Cr(III) release rises as pH falls.
 - A 20% dose reduction gave 83% compliance.
 
-**Out-of-study accuracy of the endpoint models (Table S13).** The design layer uses four RF models: Cr(VI) and total Cr, as uptake and as effluent concentration; the total-Cr models are trained only on the about 18 Class A/B studies per corpus that report total Cr. Under leave-one-study-out, R² on the log₁₀ scale was 0.74 and 0.65 for the Cr(VI) and total-Cr effluent concentrations and 0.39–0.42 for the two uptakes, against 0.75–0.94 under random splits.
+**Out-of-study accuracy of the endpoint models (Table S13).** The design layer uses four RF models: Cr(VI) and total Cr, each as removal per gram of sorbent and as effluent concentration; the total-Cr models are trained only on the about 18 Class A/B studies per corpus that report total Cr. Under leave-one-study-out, R² on the log₁₀ scale was 0.74 and 0.65 for the Cr(VI) and total-Cr effluent concentrations and 0.39–0.42 for the two uptakes, against 0.75–0.94 under random splits.
 
 **Effluent predictions.** Predicted and true effluent concentrations on a design sub-grid were rank-correlated (Spearman 0.65 for Cr(VI), 0.55 for total Cr), with median absolute errors of 0.40 and 0.22 log₁₀ units. The 95% upper bounds held for 97.9% (Cr(VI)) and 100% (total Cr) of grid points.
 

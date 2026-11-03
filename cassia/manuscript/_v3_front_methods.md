@@ -42,8 +42,10 @@ Hexavalent chromium is a priority contaminant in effluents from electroplating, 
 
 Three endpoints are computed and never merged:
 - **Apparent Cr(VI) uptake**, q_app,VI = (C₀ − C_e,VI)/D. It is always computable.
-- **Total-aqueous-Cr uptake**, q_tot,aq = (C₀ − C_e,tot)/D. It requires a total-Cr analysis (AAS or ICP). It is not adsorption either, because it includes Cr(III) retained or precipitated on the solid.
+- **Total-aqueous-Cr removal**, q_tot,aq = (C₀ − C_e,tot)/D, per gram of sorbent. It requires a total-Cr analysis (AAS or ICP). It is not adsorption either, because it includes Cr(III) retained or precipitated on the solid.
 - **Aqueous Cr(III) index**, Σ(C_e,tot − C_e,VI)/Σ(C₀ − C_e,VI). It is a lower bound on the share of Cr(VI) disappearance due to reduction.
+
+Where this paper writes 'uptake' (e.g. apparent uptake), it means removal from solution per gram of sorbent, never adsorption.
 
 Evidence classes are assigned **per observation** (`cassia.dataset.classify`), because a single paper may report total Cr or solid-phase data for some experiments only. Oxidation-state identification and chromium mass balance are treated as different analytical tasks:
 - **Class C:** residual Cr(VI) only. Solid-phase data without a total-aqueous-Cr analysis also count as C.
@@ -59,7 +61,7 @@ Negative apparent uptake (C_e,VI > C₀ within analytical error) is retained in 
 
 ### 2.2 Software architecture and release
 
-CASSIA 0.3.7 is organised in six layers (Table 1). Analyses are run by scripts that are listed, with their outputs, in Table 2.
+CASSIA 0.3.8 is organised in six layers (Table 1). Analyses are run by scripts that are listed, with their outputs, in Table 2.
 
 **Table 1.** CASSIA layers, modules and responsibilities.
 
@@ -82,6 +84,7 @@ CASSIA 0.3.7 is organised in six layers (Table 1). Analyses are run by scripts t
 | `scripts/run_v3.py --stage figures` | Figs. 3, 5, 6, 7 (must run after `run_v2.py`, whose older versions of these files it replaces) |
 | `scripts/typeI_validation.py` | independent negative-control cohort; type-I errors with Wilson intervals (Table S14) |
 | `scripts/typeI_corpus.py` | corpus-level type-I analysis: corpus-level split conformal, heterogeneity, calibration-set sensitivity (Table S14b) |
+| `scripts/meas_sensitivity.py` | rejection test under XPS/XANES error models larger than assumed: type-I error and power with the published and a recalibrated threshold (Table S16) |
 | `scripts/seqver_oc.py` | operating characteristic of the verification rules (Table S9) |
 | `scripts/bench_partition.py` | true partition by scenario; Monte Carlo precision (Tables S11, S12) |
 | `scripts/endpoint_validation.py` | out-of-study accuracy of the four endpoint models (Table S13) |
@@ -103,7 +106,7 @@ CASSIA 0.3.7 is organised in six layers (Table 1). Analyses are run by scripts t
 - SHA-256 checksums and `$Id` revision lines for the bundled databases;
 - an end-to-end example workflow for user data (`examples/user_data_workflow.py`);
 - a release record (`release/RELEASE.md`, `release/MANIFEST.sha256`) with SHA-256 checksums of every code, database, data, result and figure file, the code commit hash and the exact commands;
-- 42 automated tests, covering mass and electron conservation for every scenario, saturation-index statuses, interpolation accuracy, the conformal constructions and a negative control for the equivalence test, and agreement of Table S1 with the constants used by the code.
+- 43 automated tests, covering mass and electron conservation for every scenario, saturation-index statuses, interpolation accuracy, the conformal constructions and a negative control for the equivalence test and its data-generating technique option, and agreement of Table S1 with the constants used by the code.
 
 Every number, table and figure in this paper is produced by the seeded scripts of Table 2, which `scripts/reproduce_all.sh` runs in order (about 9–11 h on 4 cores). All random seeds are fixed in the scripts. The reported results were produced by running these scripts stage by stage; a single uninterrupted run of `reproduce_all.sh` from the source archive has not yet been completed (see Data and code availability, Reproduction status).
 

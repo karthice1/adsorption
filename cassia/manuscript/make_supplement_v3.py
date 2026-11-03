@@ -14,7 +14,7 @@ INTRO = """All results in this supplement are synthetic (known-truth simulations
 
 | Tables | Generating script | CSV files |
 |---|---|---|
-| S1 | `scripts/make_table_s1.py` (from `cassia.simulate.parameter_table()`, CASSIA 0.3.7) | `results/v3/T_S1_simulator_parameters.csv` |
+| S1 | `scripts/make_table_s1.py` (from `cassia.simulate.parameter_table()`, CASSIA 0.3.8) | `results/v3/T_S1_simulator_parameters.csv` |
 | S2–S5 | `scripts/run_v2.py` | `results/v2/` |
 | S5b | `scripts/m2s_family.py` (from `run_v3.py` stage m2s) | `results/v3/T_m2s_family_full.csv` |
 | S5c | `scripts/m2s_exchangeability.py` | `results/v3/T_m2s_exchangeability.csv` |
@@ -25,6 +25,7 @@ INTRO = """All results in this supplement are synthetic (known-truth simulations
 | S13 | `scripts/endpoint_validation.py` | `results/v3/T_endpoint_validation.csv` |
 | S14 | `scripts/typeI_validation.py` | `results/v3/T_typeI_validation.csv` |
 | S14b | `scripts/typeI_corpus.py` (from the S14 controls; no refitting) | `results/v3/T_typeI_corpus.csv`, `typeI_corpus.json` |
+| S16 | `scripts/meas_sensitivity.py` | `results/v3/T_meas_sensitivity.csv`, `meas_sens_*.csv.gz` |
 | S15 (Note S3) | `scripts/run_v3.py` (stage seqver) | `results/v3/T_seqver_summary.csv`, `seqver.csv` |
 | Fig. S1 | `scripts/make_supp_figs.py` | `results/v2/ident_profiles.csv` |
 | Fig. S2 (Note S2) | `scripts/run_v3.py` (stage figures) | `results/v2/` (missing chemistry) |
@@ -37,7 +38,7 @@ base = re.sub(r"^Tables S1.*$|^All tables are generated.*$", "@@INTRO@@", base, 
 base = base.replace("@@INTRO@@", INTRO)
 
 t1 = pd.read_csv(R + "T_S1_simulator_parameters.csv")
-s1 = ("## Table S1. Simulator parameters, distributions, measurement models, evidence-class probabilities and numerical settings (CASSIA 0.3.7)\n\n"
+s1 = ("## Table S1. Simulator parameters, distributions, measurement models, evidence-class probabilities and numerical settings (CASSIA 0.3.8)\n\n"
       "Generated from the implementation by `scripts/make_table_s1.py`; a unit test checks that the evidence-class probabilities and "
       "measurement-model constants in this table are those used by the code. LN(m, s): log-normal with log-mean m and log-SD s; "
       "U(a, b): uniform; N(0, s): normal.\n\n" + md(t1) + "\n\n")
@@ -188,6 +189,24 @@ if os.path.exists(R + "T_typeI_corpus.csv"):
              "**(a) Study-pooled threshold: empirical cross-corpus performance, heterogeneity and calibration-set sensitivity**\n\n"
              + md(TC[list(ka)].rename(columns=ka))
              + "\n\n**(b) Corpus-level split conformal at level 1/19 against the study-pooled threshold**\n\n" + md(TC[list(kb)].rename(columns=kb)))
+if os.path.exists(R + "T_meas_sensitivity.csv"):
+    V = pd.read_csv(R + "T_meas_sensitivity.csv")
+    V = V.assign(setting=V.setting.str.replace("_", " "),
+                 perturbation=V.perturbation.str.replace('"', "").str.replace("{", "").str.replace("}", "").str.replace("_", " "))
+    V = V[["setting", "design", "perturbation", "typeI_published_threshold", "typeI_recalibrated_cv", "power_published|5-30%",
+           "power_published|>30%", "power_recalibrated|5-30%", "power_recalibrated|>30%", "n|5-30%", "n|>30%"]]
+    V.columns = ["setting", "design", "true error model (changed values)", "type-I, published threshold",
+                 "type-I, recalibrated (split-half)", "power 5–30%, published", "power > 30%, published",
+                 "power 5–30%, recalibrated", "power > 30%, recalibrated", "n 5–30%", "n > 30%"]
+    S.append("## Table S16. Rejection test under XPS and XANES error models larger than assumed (designs D4x and D4n, 3% analytical noise)\n\n"
+             "`scripts/meas_sensitivity.py`. The 120 studies and paired adsorption-only controls of Table S8 were re-simulated with the "
+             "stated changes to the technique model of Table S1 (XPS nominal: enrichment log-SD 0.4, beam reduction up to 0.15, noise 0.05; "
+             "XANES nominal: no enrichment, beam reduction up to 0.03, noise 0.03). The analyst's adsorption-only fit keeps the nominal "
+             "model, so the true error is misspecified. Published threshold: the study-pooled threshold from 360 nominal controls "
+             "(Table S14b), applied unchanged. Recalibrated: 95th percentile of the 120 perturbed controls, with split-half cross-validated "
+             "type-I error. Power: fraction of studies with a reduction share of 5–30% or > 30% in which adsorption-only was rejected. "
+             "Nominal rows repeat the procedure with the nominal model as reference; with the same optimiser start values as Table S8 they reproduce its fits. Synthetic; 120 controls per setting, so type-I "
+             "errors carry a binomial SE of about 2 percentage points.\n\n" + md(V))
 S.append("## Fig. S1. Profile likelihoods of the reductant capacity\n\n![Fig. S1](figures/figS1_profiles.png)\n\n**Fig. S1.** Profile of Δ(−2 log L) against log₁₀ R₀ relative to its true value for two virtual studies (true reduction share 0.15 and 0.60) under designs D1, D3 and D4u (D4u: unbiased solid oxidation state). Dotted line: χ²₁ 95% threshold (3.84); symmetric-log axis. Non-smooth peaks indicate local optima at individual profile points; the true profile lies at or below the plotted curve, so the profiles are indicative only. The mechanistic model structure is assumed known.")
 from latex2uni import convert
 S.append(convert(open("_v3_supp_notes.md").read().strip()))

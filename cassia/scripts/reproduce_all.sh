@@ -20,7 +20,7 @@ if [ -z "$COMMIT" ]; then
 fi
 export CASSIA_COMMIT="$COMMIT"
 echo "CASSIA commit cited in the documents: $CASSIA_COMMIT"
-python -m pytest -v tests | tee release/test_log.txt           # 42 tests (same interpreter as the scripts)
+python -m pytest -v tests | tee release/test_log.txt           # 43 tests (same interpreter as the scripts)
 python scripts/run_v2.py --stage all                           # results/v2: chemistry, benchmark, ML, UQ, design, missing chemistry; Figs 1, 2, 4, 8
 python scripts/run_v3.py --stage chem3                         # electrolyte sensitivity (Table S10), thresholds (Table S4)
 python scripts/run_v3.py --stage ident3                        # Fisher analysis, model-free diagnostics (Sect. 3.3)
@@ -38,6 +38,7 @@ CTRL_PART=1 python scripts/typeI_validation.py                 # independent neg
 CTRL_PART=2 python scripts/typeI_validation.py                 # part 2 (~45 min)
 python scripts/typeI_validation.py                             # Table S14: type-I error with Wilson intervals
 python scripts/typeI_corpus.py                                 # Table S14b: corpus-level type-I analysis (~1 min)
+python scripts/meas_sensitivity.py                             # Table S16: misspecified XPS/XANES error models (~20 min)
 python scripts/seqver_oc.py                                    # Table S9
 python scripts/bench_partition.py                              # Tables S11-S12
 python scripts/endpoint_validation.py                          # Table S13 (~15 min)

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.8 (2026-11-03) - tenth revision
+- XPS/XANES error sensitivity: `equivalence_test_v3(..., true_tech=...)` generates the solid-phase data with a
+  technique model other than the nominal one while the analyst's fit stays nominal; `scripts/meas_sensitivity.py`
+  re-simulates the Table S8 studies for D4x/D4n with larger noise, enrichment and beam reduction (Table S16), with the
+  published and a recalibrated threshold. New unit test (43 tests).
+- Claims restricted to one simulated kinetic model family under assumed error models (Abstract, Highlights,
+  Sections 4.1, 5.1, 5.2); the A2 precipitation result is called a limited benchmark finding (11 studies).
+- Highlight: "No unsafe accepted design was observed in the simulated design cohort (not zero risk)".
+- Terminology: "total-aqueous-Cr removal"; "uptake" defined as removal from solution per gram, never adsorption.
+
 ## 0.3.7 (2026-11-03) - ninth revision
 - Table S5c: the family-conditional cluster bootstrap now recomputes the pooled rate (the reported point estimate) in
   each resample, as Table S5b does; the estimand is defined in the caption, and the equal-corpus mean is written to the

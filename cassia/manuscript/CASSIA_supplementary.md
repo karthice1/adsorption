@@ -4,7 +4,7 @@ All results in this supplement are synthetic (known-truth simulations) or thermo
 
 | Tables | Generating script | CSV files |
 |---|---|---|
-| S1 | `scripts/make_table_s1.py` (from `cassia.simulate.parameter_table()`, CASSIA 0.3.7) | `results/v3/T_S1_simulator_parameters.csv` |
+| S1 | `scripts/make_table_s1.py` (from `cassia.simulate.parameter_table()`, CASSIA 0.3.8) | `results/v3/T_S1_simulator_parameters.csv` |
 | S2–S5 | `scripts/run_v2.py` | `results/v2/` |
 | S5b | `scripts/m2s_family.py` (from `run_v3.py` stage m2s) | `results/v3/T_m2s_family_full.csv` |
 | S5c | `scripts/m2s_exchangeability.py` | `results/v3/T_m2s_exchangeability.csv` |
@@ -15,6 +15,7 @@ All results in this supplement are synthetic (known-truth simulations) or thermo
 | S13 | `scripts/endpoint_validation.py` | `results/v3/T_endpoint_validation.csv` |
 | S14 | `scripts/typeI_validation.py` | `results/v3/T_typeI_validation.csv` |
 | S14b | `scripts/typeI_corpus.py` (from the S14 controls; no refitting) | `results/v3/T_typeI_corpus.csv`, `typeI_corpus.json` |
+| S16 | `scripts/meas_sensitivity.py` | `results/v3/T_meas_sensitivity.csv`, `meas_sens_*.csv.gz` |
 | S15 (Note S3) | `scripts/run_v3.py` (stage seqver) | `results/v3/T_seqver_summary.csv`, `seqver.csv` |
 | Fig. S1 | `scripts/make_supp_figs.py` | `results/v2/ident_profiles.csv` |
 | Fig. S2 (Note S2) | `scripts/run_v3.py` (stage figures) | `results/v2/` (missing chemistry) |
@@ -22,7 +23,7 @@ All results in this supplement are synthetic (known-truth simulations) or thermo
 Supplementary Notes S1–S3 give the goodness-of-fit and equivalence tests of the adsorption-only model, the full methods and results of the propagation of unreported chemistry (manuscript §2.10 and §3.7) and the sequential verification of accepted designs (§3.6).
 
 
-## Table S1. Simulator parameters, distributions, measurement models, evidence-class probabilities and numerical settings (CASSIA 0.3.7)
+## Table S1. Simulator parameters, distributions, measurement models, evidence-class probabilities and numerical settings (CASSIA 0.3.8)
 
 Generated from the implementation by `scripts/make_table_s1.py`; a unit test checks that the evidence-class probabilities and measurement-model constants in this table are those used by the code. LN(m, s): log-normal with log-mean m and log-SD s; U(a, b): uniform; N(0, s): normal.
 
@@ -508,6 +509,20 @@ Columns typeI_nominal, typeI_empirical and typeI_conformal: thresholds from the 
 | 10% | D4n | 0.054 | 0.181 | 59–1222 | 0.941 | 0.857 | 0.780 | 0.665 |
 | 10% | D4x | 0.055 | 0.141 | 59–1036 | 0.922 | 0.816 | 0.720 | 0.611 |
 | 10% | D5 | 0.055 | 0.152 | 62–1078 | 0.922 | 0.877 | 0.760 | 0.676 |
+
+## Table S16. Rejection test under XPS and XANES error models larger than assumed (designs D4x and D4n, 3% analytical noise)
+
+`scripts/meas_sensitivity.py`. The 120 studies and paired adsorption-only controls of Table S8 were re-simulated with the stated changes to the technique model of Table S1 (XPS nominal: enrichment log-SD 0.4, beam reduction up to 0.15, noise 0.05; XANES nominal: no enrichment, beam reduction up to 0.03, noise 0.03). The analyst's adsorption-only fit keeps the nominal model, so the true error is misspecified. Published threshold: the study-pooled threshold from 360 nominal controls (Table S14b), applied unchanged. Recalibrated: 95th percentile of the 120 perturbed controls, with split-half cross-validated type-I error. Power: fraction of studies with a reduction share of 5–30% or > 30% in which adsorption-only was rejected. Nominal rows repeat the procedure with the nominal model as reference; with the same optimiser start values as Table S8 they reproduce its fits. Synthetic; 120 controls per setting, so type-I errors carry a binomial SE of about 2 percentage points.
+
+| setting | design | true error model (changed values) | type-I, published threshold | type-I, recalibrated (split-half) | power 5–30%, published | power > 30%, published | power 5–30%, recalibrated | power > 30%, recalibrated | n 5–30% | n > 30% |
+|---|---|---|---|---|---|---|---|---|---|---|
+| XPS nominal | D4x | none | 0.058 | 0.042 | 0.800 | 0.961 | 0.800 | 0.961 | 50 | 51 |
+| XPS noise x2 | D4x | noise: 0.1 | 0.117 | 0.075 | 0.800 | 0.961 | 0.800 | 0.961 | 50 | 51 |
+| XPS enrichment sd x2 | D4x | enrich logsd: 0.8 | 0.058 | 0.050 | 0.800 | 0.961 | 0.800 | 0.961 | 50 | 51 |
+| XPS beam x2 | D4x | beam max: 0.3 | 0.117 | 0.083 | 0.800 | 0.961 | 0.760 | 0.941 | 50 | 51 |
+| XANES nominal | D4n | none | 0.067 | 0.033 | 0.820 | 0.941 | 0.780 | 0.941 | 50 | 51 |
+| XANES beam 0.10 | D4n | beam max: 0.1 | 0.092 | 0.058 | 0.840 | 0.941 | 0.800 | 0.941 | 50 | 51 |
+| XANES noise x2 | D4n | noise: 0.06 | 0.108 | 0.058 | 0.840 | 0.961 | 0.780 | 0.922 | 50 | 51 |
 
 ## Fig. S1. Profile likelihoods of the reductant capacity
 
