@@ -47,15 +47,18 @@ F = pd.read_csv(R + "T_m2s_family_full.csv")
 F = F[F.target.isin(["q_app_VI", "Ce_VI", "q_tot_aq", "Ce_total"])]
 F = F.assign(**{k: F[f"{k}_lo"].map("{:.2f}".format) + "–" + F[f"{k}_hi"].map("{:.2f}".format)
                 for k in ("envelope95", "cluster95", "wilson95")})
-F = F[["target", "family", "n_studies", "n_corpora", "mean_coverage", "frac_studies_cov_ge_0.9", "envelope95", "cluster95",
+F = F.assign(n_sc=F.n_studies.astype(int).astype(str) + " (" + F.n_corpora.astype(int).astype(str) + ")",
+             **{c: F[c].map("{:.2f}".format) for c in ("mean_coverage", "frac_unbounded", "mean_width_log10_bounded")},
+             frac_studies_cov_ge_09=F["frac_studies_cov_ge_0.9"].map("{:.3f}".format))
+F = F[["target", "family", "n_sc", "mean_coverage", "frac_studies_cov_ge_09", "envelope95", "cluster95",
        "wilson95", "frac_unbounded", "mean_width_log10_bounded"]]
 F = F.assign(target=F.target.str.replace("_", " "), family=F.family.str.replace("_", " "))
-F.columns = ["target", "family", "studies", "corpora", "mean coverage", "fraction ≥ 0.90", "95% envelope (reported)",
+F.columns = ["target", "family", "studies (corpora)", "mean coverage", "fraction ≥ 0.90", "95% envelope (reported)",
              "95% cluster bootstrap", "95% Wilson (descriptive)", "fraction unbounded", "mean width (log₁₀, bounded)"]
 s5b = ("## Table S5b. M2s (exact study-level split conformal) by material family at nominal 90% (10 corpora, outer leave-one-study-out; one fixed-seed calibration split per corpus, a single realisation of the role assignment; role-averaged family rates are in Table S5c)\n\n"
        "Fraction of test studies with ≥ 90% within-study coverage, mean within-study coverage, fraction of unbounded intervals "
        "(counted as full coverage) and mean width of bounded intervals (on the modelling scale log₁₀(y + c), manuscript §2.7). Three 95% intervals for the fraction: a "
-       "corpus-cluster percentile bootstrap (the contributing corpora, column \"corpora\": 10, or 9 for hydrochar on the total-Cr endpoints, resampled with replacement, 4,000 resamples), which respects the sharing of "
+       "corpus-cluster percentile bootstrap (the contributing corpora, number in parentheses: 10, or 9 for hydrochar on the total-Cr endpoints, resampled with replacement, 4,000 resamples), which respects the sharing of "
        "family hyper-priors by the studies of a corpus; the Wilson interval, descriptive only, which treats the studies of a family as "
        "independent Bernoulli observations; and the envelope of the two (lower = smaller, upper = larger), which is the interval reported in the text. With only 10 "
        "independent corpora the cluster bootstrap is itself imprecise and collapses to a point when every study of a family covers, "

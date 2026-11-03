@@ -1,11 +1,12 @@
-# CASSIA 0.3.6 release record
+# CASSIA 0.3.7 release record
 
 - Date: 2026-11-03
-- Code commit at manifest generation (parent of the commit that adds this file): `5c1f5df334af2fafa5f307d9265e9cf8a4c891c0`
+- Code commit at manifest generation (parent of the commit that adds this file): `e165fa260c9c8c506bf1e6b3ee3ba65db104f57e`
 - Content identity: `release/MANIFEST.sha256` (129 files); verify with `sha256sum -c release/MANIFEST.sha256`
 - Environment: `requirements-lock.txt` (CPython 3.13.18; package versions identical to the 3.13.17 environment of earlier releases); PHREEQC databases with checksums and provenance in `databases/`
 - Tests: `release/test_log.txt`; coverage: `results/coverage_report.txt`
-- Permanent archive: to be created by the author (GitHub release `cassia-v0.3.6` + Zenodo DOI); not available from the build environment
+- Review source archive: `git archive` (repository root) of the next commit, which adds this file and the rebuilt documents only; named `cassia-0.3.7-source-code<code commit>-docs<documents commit>.tar.gz`. Its code, data, result and figure files are those of the code commit above (verify with the manifest)
+- Permanent archive: to be created by the author (GitHub release `cassia-v0.3.7` + Zenodo DOI); not available from the build environment
 
 ## Reproduce
 

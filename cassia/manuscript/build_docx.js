@@ -81,9 +81,13 @@ function table(lines) {
     l.replace(/^\||\|$/g, "").split("|").map((c) => c.trim()));
   const n = rows[0].length;
   // width proportional to max content length, min share
-  const lens = Array.from({ length: n }, (_, j) => Math.max(...rows.map((r) => (r[j] || "").length)));
+  // body content length; the header counts by its longest word and by 40% of its length (headers wrap over a few lines)
+  const body = rows.length > 1 ? rows.slice(1) : rows;
+  const lens = Array.from({ length: n }, (_, j) => Math.max(
+    ...body.map((r) => (r[j] || "").length + 3),   // + cell margins
+    ...(rows[0][j] || "").split(/\s+/).map((w) => w.length), (rows[0][j] || "").length / 2.5));
   // clamp so short columns stay readable and long prose columns do not dominate
-  const wt = lens.map((x) => Math.min(Math.max(x, 13), 40));
+  const wt = lens.map((x) => Math.min(Math.max(x, 10), 32));
   const tot = wt.reduce((a, b) => a + b, 0);
   const widths = wt.map((x) => Math.floor((TEXT_W * x) / tot));
   widths[n - 1] += TEXT_W - widths.reduce((a, b) => a + b, 0);
@@ -99,7 +103,7 @@ function table(lines) {
         width: { size: widths[j], type: WidthType.DXA },
         borders: i === 0 ? { bottom: rule, top: rule } : i === rows.length - 1 ? { bottom: rule } : {},
         margins: { top: 40, bottom: 40, left: 80, right: 80 },
-        children: [new Paragraph({ spacing: SINGLE, children: runs(c, { size: 20, bold: i === 0 }) })],
+        children: [new Paragraph({ spacing: SINGLE, children: runs(c, { size: n >= 10 ? 16 : 20, bold: i === 0 }) })],  // 8 pt for wide tables
       })),
     })),
   });
